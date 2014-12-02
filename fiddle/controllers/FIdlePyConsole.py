@@ -30,14 +30,17 @@ class PyConsoleInterpreter(InteractiveConsole):
 
     def push(self, command):
         output = StringIO()  # http://stackoverflow.com/questions/4330812/how-do-i-clear-a-stringio-object
-        with std_redirector(stdout=output, stderr=output):
+        error = StringIO()
+        with std_redirector(stdout=output, stderr=error):
             try:
                 more = InteractiveConsole.push(self, command)
                 result = output.getvalue()
+                error = error.getvalue()
             except (SyntaxError, OverflowError):
                 more = False
                 result = ''
-            return more, result
+                error = ''
+            return more, result, error
 
 
 class PyConsoleLineEdit(QtGui.QLineEdit):

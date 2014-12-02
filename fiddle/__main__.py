@@ -7,11 +7,11 @@ import sys
 from PyQt4 import QtGui
 
 # Import app modules
-from fidle.controllers.MainWindow import MainWindow
-from fidle.config import LOG_LEVEL
+from fiddle.controllers.MainWindow import MainWindow
+from fiddle.config import LOG_LEVEL
 
 # Build the logger
-logging.basicConfig(filename='fIDLE.log',
+logging.basicConfig(filename='fIDDLE.log',
                     filemode='a',
                     format='%(asctime)s:%(levelname)s:%(message)s',
                     level=LOG_LEVEL)

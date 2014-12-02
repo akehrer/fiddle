@@ -15,7 +15,7 @@ elif __file__:
     APP_DIR = os.path.dirname(__file__)
 
 # Window title prefix
-WINDOW_TITLE = 'fIDLE'
+WINDOW_TITLE = 'fIDDLE'
 
 # Editor configuration
 EDITOR_FONT = 'Courier'

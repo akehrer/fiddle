@@ -11,7 +11,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.Qsci import QsciScintilla, QsciLexerPython
 
-from fidle.config import EDITOR_CARET_LINE_COLOR, \
+from fiddle.config import EDITOR_CARET_LINE_COLOR, \
     EDITOR_FONT, EDITOR_FONT_SIZE, EDITOR_MARGIN_COLOR, \
     EDITOR_MARKER_COLOR
 
