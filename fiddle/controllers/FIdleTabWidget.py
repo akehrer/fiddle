@@ -21,8 +21,9 @@ class FIdleTabWidget(QtGui.QWidget):
         self.basepath = None
         self.filename = None
 
-        self.filepath = filepath
         self.editor = SimplePythonEditor()
+        self.filepath = filepath
+
 
         # Set the layout and insert the editor
         self.setLayout(QtGui.QVBoxLayout())

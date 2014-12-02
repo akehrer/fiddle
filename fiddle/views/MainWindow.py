@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'MainWindow.ui'
 #
-# Created: Mon Dec  1 19:51:46 2014
+# Created: Tue Dec  2 10:57:54 2014
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -30,6 +30,7 @@ class Ui_MainWindow(object):
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.verticalLayout_3 = QtGui.QVBoxLayout(self.centralwidget)
+        self.verticalLayout_3.setMargin(0)
         self.verticalLayout_3.setObjectName(_fromUtf8("verticalLayout_3"))
         self.editorHelp_splitter = QtGui.QSplitter(self.centralwidget)
         self.editorHelp_splitter.setOrientation(QtCore.Qt.Horizontal)
@@ -258,9 +259,9 @@ class Ui_MainWindow(object):
         self.actionFind_and_Replace.setText(_translate("MainWindow", "Find and Replace", None))
         self.actionFind_and_Replace.setShortcut(_translate("MainWindow", "Ctrl+R", None))
         self.actionRestart.setText(_translate("MainWindow", "Restart Python Console", None))
-        self.actionFIDLE_Help.setText(_translate("MainWindow", "fIDDLE Help", None))
+        self.actionFIDLE_Help.setText(_translate("MainWindow", "fIDLE Help", None))
         self.actionPython_Help.setText(_translate("MainWindow", "Python Help", None))
-        self.actionAbout_fIDEL.setText(_translate("MainWindow", "About fIDDLE", None))
+        self.actionAbout_fIDEL.setText(_translate("MainWindow", "About fIDLE", None))
         self.actionRun_Current_Script.setText(_translate("MainWindow", "Run Current Script", None))
         self.actionRun_Current_Script.setShortcut(_translate("MainWindow", "F5", None))
 

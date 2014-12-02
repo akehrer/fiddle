@@ -168,12 +168,13 @@ class MainWindow(QtGui.QMainWindow):
         self.pyconsole_input.setText('')
 
     def load_anchor(self, url):
-        print(url.toString())
-        print(url.scheme())
         scheme = url.scheme()
         if scheme == 'help':
             query = dict(url.queryItems())  # queryItems returns list of tuples
-            print(query)
+            cmd = 'help({})'.format(query['object'])
+            more, res, err = self.pyconsole.push(cmd)
+            self.ui.helpPane.setPlainText(res)
+            self.ui.helpPane.show()
 
     def _get_current_tab(self):
         idx = self.ui.documents_tabWidget.currentIndex()

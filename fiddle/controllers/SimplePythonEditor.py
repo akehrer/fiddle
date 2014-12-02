@@ -67,7 +67,8 @@ class SimplePythonEditor(QsciScintilla):
         self.SendScintilla(QsciScintilla.SCI_STYLESETSIZE, 1, EDITOR_FONT_SIZE)
 
         # Don't want to see the horizontal scrollbar at all
-        self.SendScintilla(QsciScintilla.SCI_SETHSCROLLBAR, 0)
+        #self.SendScintilla(QsciScintilla.SCI_SETHSCROLLBAR, 0)
+        self.SendScintilla(QsciScintilla.SCI_SETSCROLLWIDTHTRACKING, 1)
 
         # Handle tabs properly
         self.setTabIndents(True)

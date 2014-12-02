@@ -19,7 +19,7 @@ setup(
     author="Aaron Kehrer",
     author_email="akehrer@in2being.com",
     url="https://github.com/akehrer/fiddle",
-    license="GNU General Public License (GPL)",
+    license="The MIT License (MIT)",
     windows=[{"script": "fIDDLE.py"}],
     options={"build_exe": build_exe_options},
     executables=[Executable("fIDDLE.py", base=base)]
