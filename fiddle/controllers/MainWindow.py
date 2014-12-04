@@ -7,11 +7,13 @@ import urllib.parse
 # Import Qt modules
 from PyQt4 import QtCore, QtGui
 
-# Import application window view
+# Import application modules
 from fiddle.views.MainWindow import Ui_MainWindow
-from fiddle.controllers.FIdleTabWidget import FIdleTabWidget
-from fiddle.controllers.FIdlePyConsole import PyConsoleInterpreter, PyConsoleLineEdit
-from fiddle.config import WINDOW_TITLE
+from fiddle.controllers.FiddleTabWidget import FIdleTabWidget
+from fiddle.controllers.PyConsole import PyConsoleServer, PyConsoleLineEdit
+from fiddle.controllers.pyqterm import TerminalWidget
+from fiddle.config import WINDOW_TITLE, APP_DIR
+from fiddle.utils import find_python_exe
 
 # Set up the logger
 logger = logging.getLogger(__name__)
@@ -32,7 +34,11 @@ class MainWindow(QtGui.QMainWindow):
         # Hide the help pane
         self.ui.helpPane.hide()
 
+        # Get the Python executable path
+        self.python_exe = find_python_exe()
+
         # Initialize Python console
+        self.pyterminal = TerminalWidget()
         self.pyconsole_input = PyConsoleLineEdit()
         self.ui.pyconsole_prompt_layout.insertWidget(1, self.pyconsole_input)
         self.pyconsole_input.returnPressed.connect(self.send_pyconsole_command)
@@ -65,9 +71,16 @@ class MainWindow(QtGui.QMainWindow):
         pass
 
     def start_pyconsole(self):
-        self.pyconsole = PyConsoleInterpreter()
-        self.ui.pyConsole_prompt.setText(self.pyconsole.ps1)
-        self.ui.pyConsole_output.insertPlainText(self.pyconsole.banner)
+        console_script = os.path.join(APP_DIR, 'scripts', 'console_server.py')
+        self.pyconsole = PyConsoleServer('python', console_script)
+        self.pyconsole.start()
+
+        # self.pyconsole.stream_out.new_line.connect(self._process_console_stdout)
+        # self.pyconsole.stream_err.new_line.connect(self._process_console_stderr)
+        # self.pyconsole.stream_out.start()
+        # self.pyconsole.stream_err.start()
+        # self.ui.pyConsole_prompt.setText(self.pyconsole.ps1)
+        # self.ui.pyConsole_output.insertPlainText(self.pyconsole.read_out(timeout=0.5))
 
     def new_file(self):
         tab = FIdleTabWidget(parent=self.ui.documents_tabWidget)
@@ -145,7 +158,11 @@ class MainWindow(QtGui.QMainWindow):
     def send_pyconsole_command(self):
         command = self.pyconsole_input.text()
         try:
-            more, res, err = self.pyconsole.push(command)
+            #more, res, err = self.pyconsole.push(command)
+            self.pyconsole.push(command)
+            res = '' #self.pyconsole.read_out()
+            err = '' #self.pyconsole.read_err()
+            more = True
         except EOFError:
             more = False
             res = ''
@@ -192,3 +209,10 @@ class MainWindow(QtGui.QMainWindow):
             else:
                 processed_lines.append(line)
         return '\n'.join(processed_lines)
+
+    def _process_console_stdout(self, line):
+        print(line.split(' '))
+        # print('Out: ' + line.__repr__())
+
+    def _process_console_stderr(self, line):
+        print('Err: ' + line.__repr__())

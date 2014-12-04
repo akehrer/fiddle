@@ -255,10 +255,12 @@
    </widget>
    <widget class="QMenu" name="menuShell">
     <property name="title">
-     <string>Run</string>
+     <string>Console</string>
     </property>
     <addaction name="actionRun_Current_Script"/>
     <addaction name="actionRestart"/>
+    <addaction name="separator"/>
+    <addaction name="actionConfigure"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -406,6 +408,11 @@
    </property>
    <property name="shortcut">
     <string>F5</string>
+   </property>
+  </action>
+  <action name="actionConfigure">
+   <property name="text">
+    <string>Configure</string>
    </property>
   </action>
  </widget>
