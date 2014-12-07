@@ -1,19 +1,18 @@
 # Import standard library modules
+import html
 import logging
 import os
-import re
+import subprocess
 import urllib.parse
 
 # Import Qt modules
-from PyQt4 import QtCore, QtGui
+from PyQt4 import QtCore, QtGui, QtNetwork
 
 # Import application modules
 from fiddle.views.MainWindow import Ui_MainWindow
 from fiddle.controllers.FiddleTabWidget import FIdleTabWidget
-from fiddle.controllers.PyConsole import PyConsoleServer, PyConsoleLineEdit
-from fiddle.controllers.pyqterm import TerminalWidget
-from fiddle.config import WINDOW_TITLE, APP_DIR
-from fiddle.utils import find_python_exe
+from fiddle.controllers.PyConsole import PyConsoleServer, PyConsoleClient, PyConsoleLineEdit
+from fiddle.config import WINDOW_TITLE, CONSOLE_PS1, CONSOLE_PS2, CONSOLE_PYTHON
 
 # Set up the logger
 logger = logging.getLogger(__name__)
@@ -34,23 +33,33 @@ class MainWindow(QtGui.QMainWindow):
         # Hide the help pane
         self.ui.helpPane.hide()
 
-        # Get the Python executable path
-        self.python_exe = find_python_exe()
-
         # Initialize Python console
-        self.pyterminal = TerminalWidget()
         self.pyconsole_input = PyConsoleLineEdit()
         self.ui.pyconsole_prompt_layout.insertWidget(1, self.pyconsole_input)
         self.pyconsole_input.returnPressed.connect(self.send_pyconsole_command)
         self.ui.pyConsole_output.anchorClicked.connect(self.load_anchor)
-        self.pyconsole = None
+        self.pyconsole_server = None
+        self.pyconsole_client = None
+        self.pyconsole_traceback = []
         self.start_pyconsole()
 
         # Add a blank file
         self.new_file()
 
     def stop(self):
-        pass
+        try:
+            self.pyconsole_server.stop()
+            self.pyconsole_server.quit()
+            self.pyconsole_server.wait()
+        except AttributeError:
+            pass
+
+        try:
+            self.pyconsole_client.stop()
+            self.pyconsole_client.quit()
+            self.pyconsole_client.wait()
+        except AttributeError:
+            pass
 
     def init_menu_actions(self):
         # File actions
@@ -71,9 +80,12 @@ class MainWindow(QtGui.QMainWindow):
         pass
 
     def start_pyconsole(self):
-        console_script = os.path.join(APP_DIR, 'scripts', 'console_server.py')
-        self.pyconsole = PyConsoleServer('python', console_script)
-        self.pyconsole.start()
+        self.pyconsole_server = PyConsoleServer()
+        self.pyconsole_server.start()
+
+        self.pyconsole_client = PyConsoleClient(self.pyconsole_server.host, self.pyconsole_server.port)
+        self.pyconsole_client.data_ready.connect(self._process_console_stdout)
+        self.pyconsole_client.start()
 
         # self.pyconsole.stream_out.new_line.connect(self._process_console_stdout)
         # self.pyconsole.stream_err.new_line.connect(self._process_console_stderr)
@@ -157,9 +169,15 @@ class MainWindow(QtGui.QMainWindow):
 
     def send_pyconsole_command(self):
         command = self.pyconsole_input.text()
+        self.pyconsole_client.send(command)
+        self.ui.pyConsole_output.insertPlainText('{0} {1}\n'.format(self.ui.pyConsole_prompt.text(), command))
+        self.pyconsole_input.setText("")
+
+    def send_pyconsole_command0(self):
+        command = self.pyconsole_input.text()
         try:
             #more, res, err = self.pyconsole.push(command)
-            self.pyconsole.push(command)
+            self.pyconsole_server.push(command)
             res = '' #self.pyconsole.read_out()
             err = '' #self.pyconsole.read_err()
             more = True
@@ -177,9 +195,9 @@ class MainWindow(QtGui.QMainWindow):
             self.ui.pyConsole_output.insertHtml('<pre>{0}</pre><br>'.format(p_err))
 
         if more:
-            self.ui.pyConsole_prompt.setText(self.pyconsole.ps2)
+            self.ui.pyConsole_prompt.setText(self.pyconsole_server.ps2)
         else:
-            self.ui.pyConsole_prompt.setText(self.pyconsole.ps1)
+            self.ui.pyConsole_prompt.setText(self.pyconsole_server.ps1)
 
         self.ui.pyConsole_output.ensureCursorVisible()
         self.pyconsole_input.setText('')
@@ -189,30 +207,49 @@ class MainWindow(QtGui.QMainWindow):
         if scheme == 'help':
             query = dict(url.queryItems())  # queryItems returns list of tuples
             cmd = 'help({})'.format(query['object'])
-            more, res, err = self.pyconsole.push(cmd)
-            self.ui.helpPane.setPlainText(res)
-            self.ui.helpPane.show()
+            args = [CONSOLE_PYTHON, '-c', cmd]
+            proc = subprocess.Popen(args, stdout=subprocess.PIPE, shell=False)
+            out, err = proc.communicate()
+            if err is None:
+                self.ui.helpPane.setPlainText(out.decode('utf8'))
+                self.ui.helpPane.show()
 
     def _get_current_tab(self):
         idx = self.ui.documents_tabWidget.currentIndex()
         tab = self.ui.documents_tabWidget.widget(idx)
         return tab
 
-    def _process_traceback(self, trace):
-        lines = trace.split('\n')
+    def _process_traceback(self):
         processed_lines = []
-        for line in lines:
+        # Process the Traceback buffer
+        for line in self.pyconsole_traceback:
             if 'error' in line.lower():
                 error = line.split(':')[0].strip()
                 link = '<a href="help://?object={0}&text={1}">{2}</a>'.format(error, urllib.parse.quote_plus(line), line)
                 processed_lines.append(link)
             else:
-                processed_lines.append(line)
-        return '\n'.join(processed_lines)
+                processed_lines.append(html.escape(line))
+        self.ui.pyConsole_output.insertHtml('<pre>{0}</pre><br>'.format(''.join(processed_lines)))
+        # Reset Traceback buffer
+        self.pyconsole_traceback = []
 
     def _process_console_stdout(self, line):
-        print(line.split(' '))
-        # print('Out: ' + line.__repr__())
+        words = line.split(' ')
+        # print(words)
+        # Check for InteractiveConsole prompt
+        if len(words) == 2:
+            if words[0] == CONSOLE_PS2.strip():
+                self.ui.pyConsole_prompt.setText(CONSOLE_PS2)
+            elif words[0] == CONSOLE_PS1.strip():
+                self.ui.pyConsole_prompt.setText(CONSOLE_PS1)
+                if len(self.pyconsole_traceback) > 0:
+                    self._process_traceback()
+            else:
+                self.ui.pyConsole_output.insertPlainText(line)
+        elif words[0].lower() == 'traceback' or len(self.pyconsole_traceback) > 0:
+            # Load the Traceback buffer
+            self.pyconsole_traceback.append(line)
+        else:
+            self.ui.pyConsole_output.insertPlainText(line)
 
-    def _process_console_stderr(self, line):
-        print('Err: ' + line.__repr__())
+        self.ui.pyConsole_output.ensureCursorVisible()

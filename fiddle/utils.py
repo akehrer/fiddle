@@ -15,13 +15,3 @@ def std_redirector(stdin=sys.stdin, stdout=sys.stdin, stderr=sys.stderr):
     yield
     sys.stdin, sys.stdout, sys.stderr = orig_fds
 
-
-def find_python_exe():
-    try:
-        if PLATFORM == 'win32':
-            p = subprocess.check_output(['where', 'python'])
-        else:
-            p = subprocess.check_output(['which', 'python'])
-        return p.strip().decode('utf8')
-    except subprocess.CalledProcessError:
-        return ''
