@@ -12,7 +12,10 @@ from PyQt4 import QtCore, QtGui, QtNetwork
 from fiddle.views.MainWindow import Ui_MainWindow
 from fiddle.controllers.FiddleTabWidget import FIdleTabWidget
 from fiddle.controllers.PyConsole import PyConsoleServer, PyConsoleClient, PyConsoleLineEdit
-from fiddle.config import WINDOW_TITLE, CONSOLE_PS1, CONSOLE_PS2, CONSOLE_PYTHON
+
+from fiddle.config import WINDOW_TITLE, \
+    CONSOLE_PS1, CONSOLE_PS2, CONSOLE_PYTHON, \
+    HELP_GOOGLE_URL
 
 # Set up the logger
 logger = logging.getLogger(__name__)
@@ -75,6 +78,10 @@ class MainWindow(QtGui.QMainWindow):
 
         # Edit actions
         # TODO
+
+        # Help actions
+        self.ui.actionShow_Help_Pane.triggered.connect(lambda x: self.ui.helpPane.show())
+        self.ui.actionHide_Help_Pane.triggered.connect(lambda x: self.ui.helpPane.hide())
 
     def init_open_recent(self):
         pass
@@ -204,6 +211,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def load_anchor(self, url):
         scheme = url.scheme()
+        ret = False
         if scheme == 'help':
             query = dict(url.queryItems())  # queryItems returns list of tuples
             cmd = 'help({})'.format(query['object'])
@@ -211,8 +219,28 @@ class MainWindow(QtGui.QMainWindow):
             proc = subprocess.Popen(args, stdout=subprocess.PIPE, shell=False)
             out, err = proc.communicate()
             if err is None:
-                self.ui.helpPane.setPlainText(out.decode('utf8'))
+                self.ui.helpSearch.setText(urllib.parse.unquote_plus(query['text']))
+                self.ui.helpBrowser.setPlainText(out.decode('utf8'))
                 self.ui.helpPane.show()
+                ret = True
+        elif scheme == 'http' or scheme == 'https':
+            ret = QtGui.QDesktopServices.openUrl(url)
+
+        if not ret:
+            message_box = QtGui.QMessageBox()
+            message_box.setText("Cannot open link.")
+            message_box.setInformativeText('The link at {0} cannot be opened.'.format(url.path()))
+            ok_btn = message_box.addButton(QtGui.QMessageBox.Ok)
+            message_box.setDefaultButton(ok_btn)
+
+            message_box.exec_()
+
+    def run_web_search(self):
+        query = self.ui.helpSearch.text()
+        url = HELP_GOOGLE_URL.format(query=urllib.parse.quote_plus(query))
+        qurl = QtCore.QUrl(url)
+        ret = QtGui.QDesktopServices.openUrl(qurl)
+
 
     def _get_current_tab(self):
         idx = self.ui.documents_tabWidget.currentIndex()

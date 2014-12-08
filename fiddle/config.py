@@ -25,10 +25,12 @@ def find_python_exe():
 
 # app directory, determine if application is a script file or frozen exe
 # see: http://stackoverflow.com/questions/404744/determining-application-path-in-a-python-exe-generated-by-pyinstaller
+# also up the logging level to INFO for frozen app
+APP_DIR = os.path.dirname(__file__)
 if getattr(sys, 'frozen', False):
     APP_DIR = os.path.dirname(sys.executable)
-elif __file__:
-    APP_DIR = os.path.dirname(__file__)
+    LOG_LEVEL = logging.INFO
+
 
 # Window title prefix
 WINDOW_TITLE = 'fIDDLE'
@@ -47,5 +49,8 @@ CONSOLE_PYTHON = find_python_exe()
 CONSOLE_SCRIPT = os.path.join(APP_DIR, 'scripts', 'console_server.py')
 CONSOLE_PS1 = getattr(sys, "ps1", ">>> ")
 CONSOLE_PS2 = getattr(sys, "ps2", "... ")
+
+# Help Configuration
+HELP_GOOGLE_URL = 'https://www.google.com/search?q={query}'
 
 
