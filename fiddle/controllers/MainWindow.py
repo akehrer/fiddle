@@ -79,6 +79,9 @@ class MainWindow(QtGui.QMainWindow):
         # Edit actions
         # TODO
 
+        # Console actions
+        # TODO
+
         # Help actions
         self.ui.actionShow_Help_Pane.triggered.connect(lambda x: self.ui.helpPane.show())
         self.ui.actionHide_Help_Pane.triggered.connect(lambda x: self.ui.helpPane.hide())
@@ -158,6 +161,10 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.documents_tabWidget.setTabText(idx, tabname)
 
     def handle_tab_change(self, idx):
+        if self.ui.run_remember_checkBox.checkState():
+            # don't update run command if checked
+            return
+
         # no tab selected has index of -1
         if idx >= 0:
             tab = self.ui.documents_tabWidget.widget(idx)
@@ -166,6 +173,17 @@ class MainWindow(QtGui.QMainWindow):
             self.ui.runScript_command.setText(command)
         else:
             self.ui.runScript_command.setText('')
+
+    def handle_run_remember(self, state):
+        if not state:
+            # un-checked
+            tab = self._get_current_tab()
+            if tab:
+                # set the run script command
+                command = 'python {0}'.format(tab.filename)
+                self.ui.runScript_command.setText(command)
+            else:
+                self.ui.runScript_command.setText('')
 
     def close_tab(self, idx):
         # removing the tab doesn't get the widget, so we need to get that first

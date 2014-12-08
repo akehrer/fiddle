@@ -168,6 +168,13 @@
              </widget>
             </item>
             <item>
+             <widget class="QCheckBox" name="run_remember_checkBox">
+              <property name="text">
+               <string>Remember</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QPushButton" name="runScript_button">
               <property name="text">
                <string>Run</string>
@@ -509,11 +516,28 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>run_remember_checkBox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>handle_run_remember(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>413</x>
+     <y>516</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>475</x>
+     <y>737</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>close_tab(int)</slot>
   <slot>send_pyconsole_command()</slot>
   <slot>handle_tab_change(int)</slot>
   <slot>run_web_search()</slot>
+  <slot>handle_run_remember(bool)</slot>
  </slots>
 </ui>

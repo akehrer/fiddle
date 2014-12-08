@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'MainWindow.ui'
 #
-# Created: Mon Dec  8 16:46:20 2014
+# Created: Mon Dec  8 17:20:47 2014
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -106,6 +106,9 @@ class Ui_MainWindow(object):
         self.runScript_command.setFont(font)
         self.runScript_command.setObjectName(_fromUtf8("runScript_command"))
         self.horizontalLayout.addWidget(self.runScript_command)
+        self.run_remember_checkBox = QtGui.QCheckBox(self.tab_2)
+        self.run_remember_checkBox.setObjectName(_fromUtf8("run_remember_checkBox"))
+        self.horizontalLayout.addWidget(self.run_remember_checkBox)
         self.runScript_button = QtGui.QPushButton(self.tab_2)
         self.runScript_button.setObjectName(_fromUtf8("runScript_button"))
         self.horizontalLayout.addWidget(self.runScript_button)
@@ -251,6 +254,7 @@ class Ui_MainWindow(object):
         QtCore.QObject.connect(self.documents_tabWidget, QtCore.SIGNAL(_fromUtf8("tabCloseRequested(int)")), MainWindow.close_tab)
         QtCore.QObject.connect(self.documents_tabWidget, QtCore.SIGNAL(_fromUtf8("currentChanged(int)")), MainWindow.handle_tab_change)
         QtCore.QObject.connect(self.googleButton, QtCore.SIGNAL(_fromUtf8("clicked()")), MainWindow.run_web_search)
+        QtCore.QObject.connect(self.run_remember_checkBox, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), MainWindow.handle_run_remember)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -258,6 +262,7 @@ class Ui_MainWindow(object):
         self.pyConsole_prompt.setText(_translate("MainWindow", ">>>", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Python Console", None))
         self.label.setText(_translate("MainWindow", "Run Command", None))
+        self.run_remember_checkBox.setText(_translate("MainWindow", "Remember", None))
         self.runScript_button.setText(_translate("MainWindow", "Run", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Run Script", None))
         self.googleButton.setText(_translate("MainWindow", "Google", None))
