@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2015 Aaron Kehrer
+# Licensed under the terms of the MIT License
+# (see fiddle/__init__.py for details)
+
 # Import standard library modules
 import os
 
@@ -40,6 +46,7 @@ class FIdleTabWidget(QtGui.QWidget):
     def filepath(self, path):
         global new_file_iter
         try:
+            self._filepath = path
             self.basepath, self.filename = os.path.split(path)
             with open(path) as fp:
                 self.editor.setText(fp.read())
@@ -47,6 +54,8 @@ class FIdleTabWidget(QtGui.QWidget):
         except TypeError:
             self.basepath = None
             self.filename = 'new_{}.py'.format(new_file_iter)
+            cwd = os.getcwd()
+            self._filepath = os.path.join(cwd, self.filename)
             new_file_iter += 1
             self._saved = False
 

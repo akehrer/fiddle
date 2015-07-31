@@ -1,1 +1,1 @@
-pyuic4 MainWindow.ui -o MainWindow.py
+C:\Python34\Lib\site-packages\PyQt4\pyuic4 MainWindow.ui -o MainWindow.py

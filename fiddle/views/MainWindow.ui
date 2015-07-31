@@ -219,30 +219,36 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_2">
             <item>
+             <widget class="QToolButton" name="toolButton">
+              <property name="toolTip">
+               <string>Hide help pane</string>
+              </property>
+              <property name="text">
+               <string>&gt;&gt;</string>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QLineEdit" name="helpSearch"/>
             </item>
             <item>
              <widget class="QToolButton" name="googleButton">
               <property name="text">
-               <string>Google</string>
+               <string>Web Search</string>
               </property>
              </widget>
             </item>
            </layout>
           </item>
           <item>
-           <widget class="QTextEdit" name="helpBrowser">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
-            <property name="textInteractionFlags">
-             <set>Qt::TextBrowserInteraction</set>
+           <widget class="QWebView" name="helpBrowser">
+            <property name="url">
+             <url>
+              <string>about:blank</string>
+             </url>
             </property>
            </widget>
           </item>
@@ -466,6 +472,13 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QWebView</class>
+   <extends>QWidget</extends>
+   <header>QtWebKit/QWebView</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
@@ -523,12 +536,28 @@
    <slot>handle_run_remember(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>413</x>
-     <y>516</y>
+     <x>83</x>
+     <y>505</y>
     </hint>
     <hint type="destinationlabel">
      <x>475</x>
      <y>737</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>toolButton</sender>
+   <signal>clicked()</signal>
+   <receiver>helpPane</receiver>
+   <slot>hide()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>699</x>
+     <y>51</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>729</x>
+     <y>63</y>
     </hint>
    </hints>
   </connection>

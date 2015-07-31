@@ -1,8 +1,6 @@
-#!/usr/bin/python
-#-- Content-Encoding: UTF-8 --
 """
 A simple Python remote console script.
-From: http://www.coderxpress.net/blog-dl/python-remote-console.py
+src: http://www.coderxpress.net/blog-dl/python-remote-console.py
 
 Based on multiple scripts found on the Internet, mainly :
 * http://evadeflow.com/2010/03/python-console-for-ig/
@@ -18,10 +16,10 @@ from select import select
 # Common imports
 import code
 import os
-import socket
 import sys
 import threading
 import time
+
 
 PYTHON3 = sys.version_info[0] == 3
 if PYTHON3:
@@ -31,6 +29,7 @@ if PYTHON3:
 else:
     from cStringIO import StringIO
     import SocketServer as socketserver
+
 
 # ------------------------------------------------------------------------------
 
@@ -51,14 +50,12 @@ class FakeOut(object):
         self.others = {}
         self._lock = threading.Lock()
 
-
     def set_thread_output(self, thread, outstream):
         """
         Sets the output stream for the given thread
         """
         with self._lock:
             self.others[thread] = outstream
-
 
     def unset_thread(self, thread):
         """
@@ -67,7 +64,6 @@ class FakeOut(object):
         with self._lock:
             if thread in self.others:
                 del self.others[thread]
-
 
     def write(self, data):
         """
@@ -82,7 +78,6 @@ class FakeOut(object):
             else:
                 self.default.write(data)
 
-
     def __getattr__(self, name):
         """
         Proxify attribute accesses to the stream members
@@ -94,12 +89,14 @@ class FakeOut(object):
             else:
                 return getattr(self.default, name)
 
+
 # ------------------------------------------------------------------------------
 
 class Interpreter(code.InteractiveConsole):
     """
     Interactive console with redirected output, using StringIO
     """
+
     def __init__(self, itp_locals=None):
         """
         Sets up the console
@@ -109,13 +106,12 @@ class Interpreter(code.InteractiveConsole):
         code.InteractiveConsole.__init__(self, locals=itp_locals)
         self.ps1 = getattr(sys, "ps1", ">>> ")
         self.ps2 = getattr(sys, "ps2", "... ")
-        self.banner = ("Python %s\n%s\n" % (sys.version, sys.platform) +
+        self.banner = ("Python %s on %s\n" % (sys.version, sys.platform) +
                        'Type "help", "copyright", "credits" or "license" '
                        'for more information.\n')
 
         self._more = False
         self._buffer = StringIO()
-
 
     def push(self, command):
         """
@@ -146,19 +142,20 @@ class Interpreter(code.InteractiveConsole):
 
         return self._more
 
+
 # ------------------------------------------------------------------------------
 
 class SharedBoolean(object):
     """
     Shared boolean between objects / threads
     """
+
     def __init__(self, value=False):
         """
         Set up members
         """
         self._lock = threading.Lock()
         self._value = value
-
 
     def get_value(self):
         """
@@ -167,13 +164,13 @@ class SharedBoolean(object):
         with self._lock:
             return self._value
 
-
     def set_value(self, value):
         """
         Sets the boolean value
         """
         with self._lock:
             self._value = value
+
 
 # ------------------------------------------------------------------------------
 
@@ -182,6 +179,7 @@ class RemoteConsole(socketserver.StreamRequestHandler):
     Handles incoming connections and redirect network incomings to a Python
     interpreter
     """
+
     def __init__(self, active_flag, *args):
         """
         Sets up members
@@ -190,7 +188,6 @@ class RemoteConsole(socketserver.StreamRequestHandler):
         """
         self._active = active_flag
         socketserver.StreamRequestHandler.__init__(self, *args)
-
 
     def send(self, data):
         """
@@ -204,14 +201,12 @@ class RemoteConsole(socketserver.StreamRequestHandler):
         self.wfile.write(data)
         self.wfile.flush()
 
-
     def _local_print(self, string):
         """
         Prints on local output
         """
         sys.stdout.default.write("{0}\n".format(string))
         sys.stdout.default.flush()
-
 
     def handle(self):
         """
@@ -222,9 +217,8 @@ class RemoteConsole(socketserver.StreamRequestHandler):
         thread.start()
 
         # Wait for the thread to end because exiting from here shuts down
-        #Â the connection
+        # the connection
         thread.join()
-
 
     def _inner_loop(self):
         """
@@ -237,7 +231,7 @@ class RemoteConsole(socketserver.StreamRequestHandler):
         sys.stderr.set_thread_output(thread, self.wfile)
 
         # The interpreter uses a copy the globals
-        #Â (to avoid sharing data between clients)
+        # (to avoid sharing data between clients)
         py = Interpreter(dict(globals()))
 
         # Print the banner and the first prompt
@@ -282,6 +276,7 @@ class RemoteConsole(socketserver.StreamRequestHandler):
                 # Can't send data anymore
                 pass
 
+
 # ------------------------------------------------------------------------------
 
 def createServer(ip, port):
@@ -313,9 +308,11 @@ def createServer(ip, port):
 
     return (server_thread, server, active_flag)
 
+
 # ------------------------------------------------------------------------------
 
 running = True
+
 
 def _stop():
     """
@@ -385,6 +382,7 @@ def main(host=None, port=None):
     print("Server closed")
 
     print("Bye !")
+
 
 if __name__ == "__main__":
     main()

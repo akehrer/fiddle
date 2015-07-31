@@ -2,8 +2,7 @@
 
 # Form implementation generated from reading ui file 'MainWindow.ui'
 #
-# Created: Mon Dec  8 17:20:47 2014
-#      by: PyQt4 UI code generator 4.11.3
+# Created by: PyQt4 UI code generator 4.11.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -126,14 +125,18 @@ class Ui_MainWindow(object):
         self.helpPane = QtGui.QWidget(self.splitter)
         self.helpPane.setObjectName(_fromUtf8("helpPane"))
         self.verticalLayout_3 = QtGui.QVBoxLayout(self.helpPane)
-        self.verticalLayout_3.setSpacing(0)
         self.verticalLayout_3.setMargin(0)
+        self.verticalLayout_3.setSpacing(0)
         self.verticalLayout_3.setObjectName(_fromUtf8("verticalLayout_3"))
         self.helpLayout = QtGui.QVBoxLayout()
         self.helpLayout.setSpacing(5)
         self.helpLayout.setObjectName(_fromUtf8("helpLayout"))
         self.horizontalLayout_2 = QtGui.QHBoxLayout()
         self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
+        self.toolButton = QtGui.QToolButton(self.helpPane)
+        self.toolButton.setAutoRaise(True)
+        self.toolButton.setObjectName(_fromUtf8("toolButton"))
+        self.horizontalLayout_2.addWidget(self.toolButton)
         self.helpSearch = QtGui.QLineEdit(self.helpPane)
         self.helpSearch.setObjectName(_fromUtf8("helpSearch"))
         self.horizontalLayout_2.addWidget(self.helpSearch)
@@ -141,14 +144,8 @@ class Ui_MainWindow(object):
         self.googleButton.setObjectName(_fromUtf8("googleButton"))
         self.horizontalLayout_2.addWidget(self.googleButton)
         self.helpLayout.addLayout(self.horizontalLayout_2)
-        self.helpBrowser = QtGui.QTextEdit(self.helpPane)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.helpBrowser.sizePolicy().hasHeightForWidth())
-        self.helpBrowser.setSizePolicy(sizePolicy)
-        self.helpBrowser.setReadOnly(True)
-        self.helpBrowser.setTextInteractionFlags(QtCore.Qt.TextBrowserInteraction)
+        self.helpBrowser = QtWebKit.QWebView(self.helpPane)
+        self.helpBrowser.setUrl(QtCore.QUrl(_fromUtf8("about:blank")))
         self.helpBrowser.setObjectName(_fromUtf8("helpBrowser"))
         self.helpLayout.addWidget(self.helpBrowser)
         self.verticalLayout_3.addLayout(self.helpLayout)
@@ -255,6 +252,7 @@ class Ui_MainWindow(object):
         QtCore.QObject.connect(self.documents_tabWidget, QtCore.SIGNAL(_fromUtf8("currentChanged(int)")), MainWindow.handle_tab_change)
         QtCore.QObject.connect(self.googleButton, QtCore.SIGNAL(_fromUtf8("clicked()")), MainWindow.run_web_search)
         QtCore.QObject.connect(self.run_remember_checkBox, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), MainWindow.handle_run_remember)
+        QtCore.QObject.connect(self.toolButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.helpPane.hide)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -265,7 +263,9 @@ class Ui_MainWindow(object):
         self.run_remember_checkBox.setText(_translate("MainWindow", "Remember", None))
         self.runScript_button.setText(_translate("MainWindow", "Run", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Run Script", None))
-        self.googleButton.setText(_translate("MainWindow", "Google", None))
+        self.toolButton.setToolTip(_translate("MainWindow", "Hide help pane", None))
+        self.toolButton.setText(_translate("MainWindow", ">>", None))
+        self.googleButton.setText(_translate("MainWindow", "Web Search", None))
         self.menuFile.setTitle(_translate("MainWindow", "File", None))
         self.menuEdit.setTitle(_translate("MainWindow", "Edit", None))
         self.menuShell.setTitle(_translate("MainWindow", "Console", None))
@@ -305,3 +305,4 @@ class Ui_MainWindow(object):
         self.actionShow_Help_Pane.setText(_translate("MainWindow", "Show Help Pane", None))
         self.actionHide_Help_Pane.setText(_translate("MainWindow", "Hide Help Pane", None))
 
+from PyQt4 import QtWebKit

@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2015 Aaron Kehrer
+# Licensed under the terms of the MIT License
+# (see fiddle/__init__.py for details)
+
 # Import standard library modules
 import logging
 import os

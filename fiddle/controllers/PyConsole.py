@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2015 Aaron Kehrer
+# Licensed under the terms of the MIT License
+# (see fiddle/__init__.py for details)
+
 import subprocess
 import sys
 import telnetlib
@@ -7,7 +13,7 @@ from io import StringIO
 from PyQt4 import QtCore, QtGui
 
 from fiddle.utils import std_redirector
-from fiddle.config import CONSOLE_HOST, CONSOLE_PORT, CONSOLE_PYTHON, CONSOLE_SCRIPT
+from fiddle.config import CONSOLE_HOST, CONSOLE_PORT, CONSOLE_PYTHON, CONSOLE_SCRIPT, APP_FROZEN
 
 
 class PyConsoleLineEdit(QtGui.QLineEdit):
@@ -44,6 +50,7 @@ class PyConsoleServer(QtCore.QThread):
         self.process = None
 
     def __del__(self):
+        self.stop()
         self.wait()
 
     def stop(self):
@@ -51,9 +58,15 @@ class PyConsoleServer(QtCore.QThread):
             self.process.kill()
 
     def run(self):
+        if APP_FROZEN:
+            out = subprocess.PIPE
+            err = subprocess.PIPE
+        else:
+            out, err = None, None
+
         args = [CONSOLE_PYTHON, CONSOLE_SCRIPT, self.host, self.port]
         print(' '.join(args))
-        self.process = subprocess.Popen(args, cwd=self._cwd, shell=False)
+        self.process = subprocess.Popen(args, stdout=out, stderr=err, cwd=self._cwd, shell=False)
 
 
 class PyConsoleClient(QtCore.QThread):
@@ -91,6 +104,9 @@ class PyConsoleClient(QtCore.QThread):
         if self._is_running:
             command = '{}\n'.format(data)
             self.telnet.write(bytes(command, 'utf8'))
+            return True
+        else:
+            return False
 
 
 class PyConsoleInterpreter(InteractiveConsole):
