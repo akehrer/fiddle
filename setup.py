@@ -1,16 +1,24 @@
 from distutils.core import setup
+import logging
 import sys
 # For cx-freeze to work on Windows install from here
 # http://www.lfd.uci.edu/~gohlke/pythonlibs/#cx_freeze
 from cx_Freeze import setup, Executable
 
+from fiddle.config import LOG_LEVEL
+
 # Dependencies are automatically detected, but it might need fine tuning.
-build_exe_options = {"packages": [], "excludes": ["tkinter"], 'include_files': ['fiddle/scripts']}
+build_exe_options = {"packages": [],
+                     "excludes": ["tkinter"],
+                     "includes": ['PyQt4.QtNetwork', 'PyQt4.QtWebKit'],
+                     'include_files': ['LICENSE']}
 
 # GUI applications require a different base on Windows (the default is for a console application).
 base = None
-if sys.platform == "win32":
-    base = "Win32GUI"
+if LOG_LEVEL != logging.DEBUG:
+    # Hide the console window in Windows
+    if sys.platform == "win32":
+        base = "Win32GUI"
 
 setup(
     name="fIDDLE",

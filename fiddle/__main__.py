@@ -23,32 +23,11 @@ logging.basicConfig(filename='fIDDLE.log',
                     level=LOG_LEVEL)
 
 
-class DumpStream():
-    """
-    A simple stream to dump all console I/O
-    from: http://sebsauvage.net/python/snyppets/#py2exe
-    """
-    def __init__(self):
-        pass
-
-    def write(self, data):
-        pass
-
-    def read(self, data):
-        pass
-
-    def flush(self):
-        pass
-
-    def close(self):
-        pass
-
-
 class App(QtGui.QApplication):
     def __init__(self, *args):
         QtGui.QApplication.__init__(self, *args)
 
-        self.main = MainWindow()
+        self.main = MainWindow(self)
 
         self.lastWindowClosed.connect(self.byebye)
         self.main.show()
@@ -59,20 +38,8 @@ class App(QtGui.QApplication):
         self.exit(0)
 
 
-def set_dump_streams():
-    sys.stdout = DumpStream()
-    sys.stderr = DumpStream()
-    sys.stdin = DumpStream()
-    sys.__stdout__ = DumpStream()
-    sys.__stderr__ = DumpStream()
-    sys.__stdin__ = DumpStream()
-
-
 def main():
     global app
-
-    if LOG_LEVEL != logging.DEBUG:
-        set_dump_streams()
 
     app = App(sys.argv)
     app.exec_()
