@@ -290,12 +290,21 @@
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="pyconsole_prompt_layout">
+           <layout class="QHBoxLayout" name="pyconsole_prompt_layout" stretch="0,0,0">
             <property name="spacing">
              <number>0</number>
             </property>
+            <property name="sizeConstraint">
+             <enum>QLayout::SetDefaultConstraint</enum>
+            </property>
             <item>
              <widget class="QLabel" name="pyConsole_prompt">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="font">
                <font>
                 <family>Courier</family>

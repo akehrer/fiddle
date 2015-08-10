@@ -70,6 +70,13 @@ class BaseEditor(QsciScintilla):
     def __repr__(self):
         return "<%s instance at %s>" % (self.__class__.__name__, id(self))
 
+    @property
+    def encoding(self):
+        if self.isUtf8():
+            return 'utf-8'
+        else:
+            return 'latin1'
+
     def set_wordwrap(self, state):
         if state:
             self.setWrapMode(QsciScintilla.WrapWhitespace)

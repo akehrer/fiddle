@@ -13,7 +13,7 @@ from PyQt4 import QtCore, QtGui
 from fiddle import __version__
 from fiddle.views.MainWindow import Ui_MainWindow
 from fiddle.controllers.FiddleTabWidget import FiddleTabWidget
-from fiddle.controllers.PyConsole import PyConsoleLineEdit
+from fiddle.controllers.PyConsole import PyConsoleLineEdit, PyConsoleLineCombo
 from fiddle.config import *
 from fiddle.helpers.builtins import *
 
@@ -49,8 +49,8 @@ class MainWindow(QtGui.QMainWindow):
 
         # Initialize Python console
         self.pyconsole_input = PyConsoleLineEdit()
-        self.ui.pyconsole_prompt_layout.insertWidget(1, self.pyconsole_input)
         self.pyconsole_input.returnPressed.connect(self.send_pyconsole_command)
+        self.ui.pyconsole_prompt_layout.insertWidget(1, self.pyconsole_input)
         self.ui.pyConsole_output.anchorClicked.connect(self.load_anchor)
         self.pyconsole_process = None
         self.help_process = None
@@ -177,11 +177,13 @@ class MainWindow(QtGui.QMainWindow):
 
         self.lbl_encoding = QtGui.QLabel()
         self.lbl_encoding.setMargin(5)
+        self.lbl_encoding.setToolTip('File encoding')
         self.ui.statusbar.insertPermanentWidget(0, self.lbl_encoding)
         self.lbl_encoding.setText('utf-8')
 
         self.lbl_current_position = QtGui.QLabel()
         self.lbl_current_position.setMargin(5)
+        self.lbl_current_position.setToolTip('Line no.:Column no.')
         self.ui.statusbar.insertPermanentWidget(0, self.lbl_current_position)
         self.lbl_current_position.setText('0:0')
 
@@ -270,7 +272,11 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.documents_tabWidget.setCurrentIndex(idx)
 
     def open_file(self):
-        filepath = QtGui.QFileDialog.getOpenFileName(self, 'New File', os.path.expanduser('~'), FILE_TYPES)
+        tab = self.ui.documents_tabWidget.currentWidget()
+        filepath = QtGui.QFileDialog.getOpenFileName(None,
+                                                     None,
+                                                     os.path.expanduser('~') if tab is None else tab.basepath,
+                                                     ';;'.join(FILE_TYPES))
         self.open_filepath(filepath)
         self.update_recent_files(filepath)
 
@@ -489,7 +495,7 @@ class MainWindow(QtGui.QMainWindow):
     def handle_tab_change(self, idx):
         if idx >= 0:
             tab = self.ui.documents_tabWidget.widget(idx)
-            self.lbl_encoding.setText(tab.encoding)
+            self.lbl_encoding.setText('{0}'.format(tab.encoding.upper() if 'utf' in tab.encoding.lower() else tab.encoding))
 
             if self.ui.run_remember_checkBox.checkState():
                 # don't update run command if checked

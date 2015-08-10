@@ -11,7 +11,7 @@ import chardet
 from PyQt4 import QtCore, QtGui
 
 from fiddle.controllers.Editors import *
-from fiddle.config import FILE_TYPES_SAVE
+from fiddle.config import FILE_TYPES
 
 # An iterator to update as the user creates new files
 new_file_iter = 1
@@ -30,7 +30,7 @@ class FiddleTabWidget(QtGui.QWidget):
         self.basepath = None
         self.filename = None
         self.extension = None
-        self.encoding = 'utf-8'
+        self.encoding = 'utf-8'  # Default to UTF-8 encoding
 
         self.editor = BaseEditor()
         self.filepath = filepath
@@ -77,8 +77,6 @@ class FiddleTabWidget(QtGui.QWidget):
             else:
                 self.editor = BaseEditor()
 
-            if self.encoding.lower() != 'utf-8':
-                self.editor.setUtf8(False)
             self.editor.setText(data.decode(self.encoding))
             self._saved = True
         except TypeError:
@@ -107,7 +105,7 @@ class FiddleTabWidget(QtGui.QWidget):
 
     def save_as(self):
         path = self.basepath or os.path.join(os.path.expanduser('~'), self.filename)
-        filepath = QtGui.QFileDialog.getSaveFileName(None, 'Save File', path, FILE_TYPES_SAVE)
+        filepath = QtGui.QFileDialog.getSaveFileName(None, 'Save File', path, ';;'.join(FILE_TYPES[1:]))
         if filepath is not '':
             self._write_file(filepath)
             self.filepath = filepath

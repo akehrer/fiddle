@@ -2,10 +2,8 @@
 # Licensed under the terms of the MIT License
 # (see fiddle/__init__.py for details)
 
-import os
-import sys
-import hashlib
 import unittest
+from string import ascii_letters, digits, punctuation
 from PyQt4.QtGui import QApplication
 from PyQt4.QtTest import QTest
 from PyQt4.QtCore import Qt
@@ -22,7 +20,7 @@ class FiddleMainWindowTest(unittest.TestCase):
         self.app = app
         self.form = MainWindow()
         self.this_dir = os.path.dirname(__file__)
-        self.files_dir = os.path.join(self.this_dir, 'files')
+        self.data_dir = os.path.join(self.this_dir, 'data')
 
     def tearDown(self):
         self.form.stop()
@@ -30,16 +28,16 @@ class FiddleMainWindowTest(unittest.TestCase):
     def test_pyconsolelineedit_ascii(self):
         self.form.ui.pyConsole_output.clear()
         console_pre_txt = self.form.ui.pyConsole_output.toPlainText()
-
-        self.form.pyconsole_input.setText("i = 'abcdefghijklmnopqrstuvwxyz'")
+        test_str =ascii_letters + digits + punctuation
+        self.form.pyconsole_input.setText("i = '{0}'".format(test_str))
         QTest.keyClick(self.form.pyconsole_input, Qt.Key_Return)
 
         console_post_txt = self.form.ui.pyConsole_output.toPlainText()
         self.assertNotEqual(console_pre_txt, console_post_txt)
-        self.assertTrue('abcdefghijklmnopqrstuvwxyz' in console_post_txt)
+        self.assertTrue(test_str in console_post_txt)
 
     def test_unicode_open_saveas(self):
-        srcpath = os.path.join(self.files_dir, 'utf8_test.txt')
+        srcpath = os.path.join(self.data_dir, 'utf8_test.txt')
         destpath = os.path.join(self.this_dir, 'utf8_test_temp.txt')
         srchash = sha_hash_file(srcpath)
         self.form.open_filepath(srcpath)
@@ -50,7 +48,7 @@ class FiddleMainWindowTest(unittest.TestCase):
         os.remove(destpath)
 
     def test_win1252_open_saveas(self):
-        srcpath = os.path.join(self.files_dir, 'win1252_test.txt')
+        srcpath = os.path.join(self.data_dir, 'win1252_test.txt')
         destpath = os.path.join(self.this_dir, 'win1252_test_temp.txt')
         srchash = sha_hash_file(srcpath)
         self.form.open_filepath(srcpath)

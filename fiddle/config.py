@@ -53,17 +53,11 @@ if getattr(sys, 'frozen', False):
 WINDOW_TITLE = 'fIDDLE'
 
 # App file types
-FILE_TYPES = ('Supported Files (*.py *.html *.htm *.js *.css);;'
-              'Python Files (*.py);;'
-              'HTML Files (*.html *.htm);;'
-              'Javascript Files (*.js);;'
-              'CSS Files (*.css);;'
-              'All Files (*.*)')
-FILE_TYPES_SAVE = ('Python Files (*.py);;'
-                   'HTML Files (*.html *.htm);;'
-                   'Javascript Files (*.js);;'
-                   'CSS Files (*.css);;'
-                   'All Files (*.*)')
+FILE_TYPES = ['All Files (*.*)',
+              'Python Files (*.py)',
+              'HTML Files (*.html *.htm)',
+              'Javascript Files (*.js)',
+              'CSS Files (*.css)']
 
 # Editor configuration
 EDITOR_FONT = 'Courier'
