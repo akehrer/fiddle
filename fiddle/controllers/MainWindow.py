@@ -284,6 +284,10 @@ class MainWindow(QtGui.QMainWindow):
         self.update_recent_files(filepath)
 
     def open_filepath(self, filepath):
+        if not os.path.exists(filepath):
+            self.ui.statusbar.showMessage(self.tr('No file at {0}').format(filepath), 5000)
+            return None
+
         if filepath is not '' and not None:
             tab = self.create_tab(filepath)
             if os.path.normcase(CONSOLE_PYTHON_DIR) in os.path.normcase(filepath):

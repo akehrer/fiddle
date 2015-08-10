@@ -12,7 +12,7 @@ from fiddle import __version__
 build_exe_options = {'packages': [],
                      'excludes': ['tkinter'],
                      'includes': ['PyQt4.QtNetwork', 'PyQt4.QtWebKit'],
-                     'include_files': ['LICENSE', 'searchers.json']}
+                     'include_files': ['locale/', 'LICENSE', 'searchers.json']}
 
 # GUI applications require a different base on Windows (the default is for a console application).
 base = None
