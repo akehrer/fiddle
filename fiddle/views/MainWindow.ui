@@ -964,22 +964,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>web_search_Button</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>run_web_search()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1316</x>
-     <y>84</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1362</x>
-     <y>54</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>find_next_Button</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
@@ -1136,6 +1120,22 @@
     <hint type="destinationlabel">
      <x>808</x>
      <y>819</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>web_search_Button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>run_web_search()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1298</x>
+     <y>93</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1300</x>
+     <y>797</y>
     </hint>
    </hints>
   </connection>

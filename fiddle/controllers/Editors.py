@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # Copyright (c) 2015 Aaron Kehrer
 # Licensed under the terms of the MIT License
 # (see fiddle/__init__.py for details)
@@ -28,6 +26,9 @@ class BaseEditor(QsciScintilla):
         self.font.setPointSize(EDITOR_FONT_SIZE)
         self.setFont(self.font)
         self.setMarginsFont(self.font)
+
+        # Default to UTF-8 encoding
+        self.setUtf8(True)
 
         # Margin 0 is used for line numbers
         fontmetrics = QFontMetrics(self.font)

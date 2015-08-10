@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # Copyright (c) 2015 Aaron Kehrer
 # Licensed under the terms of the MIT License
 # (see fiddle/__init__.py for details)
@@ -7,9 +5,13 @@
 # Import standard library modules
 import os
 
+# Import additional modules
+import chardet
+
 from PyQt4 import QtCore, QtGui
 
 from fiddle.controllers.Editors import *
+from fiddle.config import FILE_TYPES_SAVE
 
 # An iterator to update as the user creates new files
 new_file_iter = 1
@@ -28,6 +30,7 @@ class FiddleTabWidget(QtGui.QWidget):
         self.basepath = None
         self.filename = None
         self.extension = None
+        self.encoding = 'utf-8'
 
         self.editor = BaseEditor()
         self.filepath = filepath
@@ -58,6 +61,11 @@ class FiddleTabWidget(QtGui.QWidget):
             self.basepath, self.filename = os.path.split(path)
             _, ext = os.path.splitext(path)
             self.extension = ext.lower()
+
+            with open(path, 'rb') as fp:
+                data = fp.read()
+            self.encoding = chardet.detect(data)['encoding']
+
             if '.htm' in self.extension:
                 self.editor = HTMLEditor()
             elif self.extension == '.js':
@@ -69,8 +77,9 @@ class FiddleTabWidget(QtGui.QWidget):
             else:
                 self.editor = BaseEditor()
 
-            with open(path) as fp:
-                self.editor.setText(fp.read())
+            if self.encoding.lower() != 'utf-8':
+                self.editor.setUtf8(False)
+            self.editor.setText(data.decode(self.encoding))
             self._saved = True
         except TypeError:
             self.basepath = None
@@ -93,17 +102,15 @@ class FiddleTabWidget(QtGui.QWidget):
         if self.basepath is None:
             self.save_as()
         else:
-            with open(self.filepath, 'w') as fp:
-                fp.write(self.editor.text())
+            self._write_file(self.filepath)
             self.saved = True
 
     def save_as(self):
         path = self.basepath or os.path.join(os.path.expanduser('~'), self.filename)
-        file_path = QtGui.QFileDialog.getSaveFileName(None, "Save File", path, "Python Files (*.py)")
-        if file_path is not '':
-            with open(file_path, 'w') as fp:
-                fp.write(self.editor.text())
-            self.filepath = file_path
+        filepath = QtGui.QFileDialog.getSaveFileName(None, 'Save File', path, FILE_TYPES_SAVE)
+        if filepath is not '':
+            self._write_file(filepath)
+            self.filepath = filepath
             self.saved = True
 
     def find_text(self, expr, re, cs, wo, wrap,
@@ -182,6 +189,10 @@ class FiddleTabWidget(QtGui.QWidget):
                 self.editor.replace(new_text)
                 while self.editor.findNext():
                     self.editor.replace(new_text)
+
+    def _write_file(self, filepath):
+        with open(filepath, 'wb') as fp:
+            fp.write(bytes(self.editor.text(), self.encoding))
 
     def _set_text_changed(self):
         self.editor.autoCompleteFromAll()

@@ -5,6 +5,7 @@ A experimental Python code editor aimed at new programmer education. Inspired by
 ## Requirements
  - Python 3.4
  - PyQt4
+ - chardet
 
 ![0.1pre](./media/fiddle_0.1pre_main.png)
 

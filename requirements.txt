@@ -1,1 +1,2 @@
 PyQt4
+chardet

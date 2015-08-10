@@ -1,0 +1,6 @@
+[
+  {"name": "Google",
+  "query_tmpl": "https://www.google.com/search?q={query}"},
+  {"name": "Read the docs",
+  "query_tmpl": "https://readthedocs.org/search/?q={query}"}
+]

@@ -1,17 +1,15 @@
-# -*- coding: utf-8 -*-
-#
 # Copyright (c) 2015 Aaron Kehrer
 # Licensed under the terms of the MIT License
 # (see fiddle/__init__.py for details)
 
 # Import standard library modules
+import json
 import logging
 import os
 import re
 import subprocess
 import sys
 
-VERSION = '0.1'
 PLATFORM = sys.platform
 LOG_LEVEL = logging.DEBUG
 
@@ -22,7 +20,6 @@ Licensed under the terms of the MIT License
 Created using Python and PyQT
 
 Silk icons CC-BY Mark James
-http://www.famfamfam.com/lab/icons/silk/
 """
 
 
@@ -55,6 +52,19 @@ if getattr(sys, 'frozen', False):
 # Window title prefix
 WINDOW_TITLE = 'fIDDLE'
 
+# App file types
+FILE_TYPES = ('Supported Files (*.py *.html *.htm *.js *.css);;'
+              'Python Files (*.py);;'
+              'HTML Files (*.html *.htm);;'
+              'Javascript Files (*.js);;'
+              'CSS Files (*.css);;'
+              'All Files (*.*)')
+FILE_TYPES_SAVE = ('Python Files (*.py);;'
+                   'HTML Files (*.html *.htm);;'
+                   'Javascript Files (*.js);;'
+                   'CSS Files (*.css);;'
+                   'All Files (*.*)')
+
 # Editor configuration
 EDITOR_FONT = 'Courier'
 EDITOR_FONT_SIZE = 10
@@ -80,8 +90,9 @@ CONSOLE_RE_PYVER = re.compile(r'.*?(\d)\.(\d)\.(\d)', re.IGNORECASE|re.DOTALL)
 CONSOLE_RE_LINENUM = re.compile(r'(\s+File\s+)(".*?")(.\s+line\s+)(\d+)(.\sin\s)(.+)', re.IGNORECASE|re.DOTALL)
 
 # Help Configuration
-HELP_WEB_SEARCH_SOURCES = [('Google', 'https://www.google.com/search?q={query}'),
-                           ('DuckDuckGo', 'https://duckduckgo.com/?q={query}')]
-
-
-
+try:
+    with open('searchers.json') as fp:
+        HELP_WEB_SEARCH_SOURCES = json.load(fp)
+except (ValueError, FileNotFoundError):
+    HELP_WEB_SEARCH_SOURCES = [{'name': 'Google',
+                                'query_tmpl': 'https://www.google.com/search?q={query}'}]

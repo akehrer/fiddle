@@ -1,29 +1,20 @@
-# -*- coding: utf-8 -*-
-#
 # Copyright (c) 2015 Aaron Kehrer
 # Licensed under the terms of the MIT License
 # (see fiddle/__init__.py for details)
 
 # Import standard library modules
-import html
 import logging
-import os
-import re
-import subprocess
-import time
 import urllib.parse
 
 # Import Qt modules
 from PyQt4 import QtCore, QtGui
-from PyQt4.Qsci import QsciScintilla
 
 # Import application modules
+from fiddle import __version__
 from fiddle.views.MainWindow import Ui_MainWindow
 from fiddle.controllers.FiddleTabWidget import FiddleTabWidget
 from fiddle.controllers.PyConsole import PyConsoleLineEdit
-
 from fiddle.config import *
-
 from fiddle.helpers.builtins import *
 
 # Set up the logger
@@ -47,6 +38,7 @@ class MainWindow(QtGui.QMainWindow):
         # Initialize statusbar
         self.lbl_pyversion = None
         self.lbl_current_position = None
+        self.lbl_encoding = None
         self.init_statusbar()
 
         # Hide the help pane
@@ -147,29 +139,20 @@ class MainWindow(QtGui.QMainWindow):
         ag = QtGui.QActionGroup(self)
         ag.setExclusive(True)
         for item in HELP_WEB_SEARCH_SOURCES:
-            k, v = item
             a = QtGui.QAction(self)
-            a.setText(k)
+            a.setText(item['name'])
             a.setCheckable(True)
-            a.triggered.connect(lambda x: self.set_search_provider(v))
+            a.triggered.connect(lambda x: self.set_search_provider(item['name'], item['query_tmpl']))
             ag.addAction(a)
             self.ui.menuSearch_Provider.addAction(a)
-            if k == HELP_WEB_SEARCH_SOURCES[0][0]:
+            if item['name'] == HELP_WEB_SEARCH_SOURCES[0]['name']:
                 a.trigger()
 
     def init_open_recent(self):
         if os.path.exists('.recent'):
             with open('.recent') as fp:
                 self.recent_files = fp.readlines()
-
-        for filepath in reversed(self.recent_files):
-            sfp = filepath.strip()
-            if sfp != '':
-                a = QtGui.QAction(self)
-                a.setText(self._elide_filepath(sfp))
-                a.setData(sfp)
-                a.triggered.connect(self.open_recent_filepath)
-                self.ui.menuOpen_Recent.addAction(a)
+        self.create_recent_files_menu()
 
     def init_console_text_formats(self):
         # Base format (defined in Qt Designer)
@@ -191,6 +174,11 @@ class MainWindow(QtGui.QMainWindow):
         self.lbl_pyversion.setMargin(5)
         self.ui.statusbar.addPermanentWidget(self.lbl_pyversion)
         self.lbl_pyversion.setText("")
+
+        self.lbl_encoding = QtGui.QLabel()
+        self.lbl_encoding.setMargin(5)
+        self.ui.statusbar.insertPermanentWidget(0, self.lbl_encoding)
+        self.lbl_encoding.setText('utf-8')
 
         self.lbl_current_position = QtGui.QLabel()
         self.lbl_current_position.setMargin(5)
@@ -282,12 +270,7 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.documents_tabWidget.setCurrentIndex(idx)
 
     def open_file(self):
-        filepath = QtGui.QFileDialog.getOpenFileName(self, 'New File', os.path.expanduser('~'),
-                                                     'Python Files (*.py);;'
-                                                     'HTML Files (*.html *.htm);;'
-                                                     'Javascript Files (*.js);;'
-                                                     'CSS Files (*.css);;'
-                                                     'All Files (*.*)')
+        filepath = QtGui.QFileDialog.getOpenFileName(self, 'New File', os.path.expanduser('~'), FILE_TYPES)
         self.open_filepath(filepath)
         self.update_recent_files(filepath)
 
@@ -321,6 +304,18 @@ class MainWindow(QtGui.QMainWindow):
                 fp.write('\n'.join(set(self.recent_files[-10:])))
             else:
                 fp.write('\n'.join(set(self.recent_files)))
+        self.create_recent_files_menu()
+
+    def create_recent_files_menu(self):
+        self.ui.menuOpen_Recent.clear()
+        for filepath in reversed(self.recent_files):
+            sfp = filepath.strip()
+            if sfp != '':
+                a = QtGui.QAction(self.ui.menuOpen_Recent)
+                a.setText(self._elide_filepath(sfp))
+                a.setData(sfp)
+                a.triggered.connect(self.open_recent_filepath)
+                self.ui.menuOpen_Recent.addAction(a)
 
     def save_file(self):
         idx = self.ui.documents_tabWidget.currentIndex()
@@ -415,9 +410,14 @@ class MainWindow(QtGui.QMainWindow):
         else:
             self.ui.console_tabWidget.hide()
 
+    def set_search_provider(self, provider, query_str):
+        self.search_url = query_str
+        self.ui.helpSearch.setPlaceholderText(provider)
+
     def show_about_fiddle(self):
         message_box = QtGui.QMessageBox()
         message_box.setWindowTitle('About fIDDLE')
+        message_box.setText('fIDDLE {0}'.format(__version__))
         message_box.setInformativeText(ABOUT_FIDDLE)
         ok_btn = message_box.addButton(QtGui.QMessageBox.Ok)
         message_box.setDefaultButton(ok_btn)
@@ -487,22 +487,22 @@ class MainWindow(QtGui.QMainWindow):
         self.lbl_current_position.setText('{0}:{1}'.format(line+1, idx+1))  # zero indexed
 
     def handle_tab_change(self, idx):
-        if self.ui.run_remember_checkBox.checkState():
-            # don't update run command if checked
-            return
-
-        # no tab selected has index of -1
         if idx >= 0:
             tab = self.ui.documents_tabWidget.widget(idx)
-            # set the run script command
-            if PLATFORM == 'win32':
-                command = '{0} "{1}" '.format(CONSOLE_PYTHON, tab.filepath)
+            self.lbl_encoding.setText(tab.encoding)
+
+            if self.ui.run_remember_checkBox.checkState():
+                # don't update run command if checked
+                return
             else:
-                command = '{0} {1} '.format(CONSOLE_PYTHON, tab.filepath)
-            self.ui.runScript_command.setText(command)
-            self.ui.runScript_command.setToolTip(command)
-            # set the run script path
-            self.runscript_tab = tab
+                # set the run script command
+                if PLATFORM == 'win32':
+                    command = '{0} "{1}" '.format(CONSOLE_PYTHON, tab.filepath)
+                else:
+                    command = '{0} {1} '.format(CONSOLE_PYTHON, tab.filepath)
+                self.ui.runScript_command.setText(command)
+                self.ui.runScript_command.setToolTip(command)
+                self.runscript_tab = tab
         else:
             self.ui.runScript_command.setText('')
             self.runscript_tab = None
@@ -592,9 +592,6 @@ class MainWindow(QtGui.QMainWindow):
             ok_btn = message_box.addButton(QtGui.QMessageBox.Ok)
             message_box.setDefaultButton(ok_btn)
             message_box.exec_()
-
-    def set_search_provider(self, query_str):
-        self.search_url = query_str
 
     def run_web_search(self):
         query = self.ui.helpSearch.text()
