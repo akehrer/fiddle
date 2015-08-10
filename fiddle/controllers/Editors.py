@@ -75,7 +75,7 @@ class BaseEditor(QsciScintilla):
         if self.isUtf8():
             return 'utf-8'
         else:
-            return 'latin1'
+            return 'Latin1'
 
     def set_wordwrap(self, state):
         if state:

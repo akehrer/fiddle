@@ -8,7 +8,7 @@ import os
 import sys
 
 # Import Qt modules
-from PyQt4 import QtGui
+from PyQt4 import QtCore, QtGui
 
 # Import app modules
 from fiddle.controllers.MainWindow import MainWindow
@@ -38,8 +38,9 @@ class App(QtGui.QApplication):
 
 def main():
     global app
-
     app = App(sys.argv)
+    translator = QtCore.QTranslator()
+    translator.load(QtCore.QLocale.system().name() + '.qm', 'locale')
     app.exec_()
 
 if __name__ == "__main__":

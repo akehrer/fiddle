@@ -177,13 +177,13 @@ class MainWindow(QtGui.QMainWindow):
 
         self.lbl_encoding = QtGui.QLabel()
         self.lbl_encoding.setMargin(5)
-        self.lbl_encoding.setToolTip('File encoding')
+        self.lbl_encoding.setToolTip(self.tr('File encoding'))
         self.ui.statusbar.insertPermanentWidget(0, self.lbl_encoding)
         self.lbl_encoding.setText('utf-8')
 
         self.lbl_current_position = QtGui.QLabel()
         self.lbl_current_position.setMargin(5)
-        self.lbl_current_position.setToolTip('Line no.:Column no.')
+        self.lbl_current_position.setToolTip(self.tr('Line no.:Column no.'))
         self.ui.statusbar.insertPermanentWidget(0, self.lbl_current_position)
         self.lbl_current_position.setText('0:0')
 
@@ -200,7 +200,8 @@ class MainWindow(QtGui.QMainWindow):
     def restart_pyconsole_process(self):
         if self.pyconsole_process is not None:
             self.app.setOverrideCursor(QtCore.Qt.WaitCursor)
-            self.print_data_to_pyconsole('\nPython console is restarting...', self.info_format)
+            self.print_data_to_pyconsole('\n', self.info_format)
+            self.print_data_to_pyconsole(self.tr('Python console is restarting...'), self.info_format)
             self.pyconsole_process.terminate()
             if not self.pyconsole_process.waitForFinished(5000):
                 self.pyconsole_process.kill()
@@ -212,7 +213,8 @@ class MainWindow(QtGui.QMainWindow):
     def terminate_pyconsole_process(self):
         if self.pyconsole_process is not None:
             self.app.setOverrideCursor(QtCore.Qt.WaitCursor)
-            self.print_data_to_pyconsole('\nPython console is teminating...', self.info_format)
+            self.print_data_to_pyconsole('\n', self.info_format)
+            self.print_data_to_pyconsole(self.tr('Python console is teminating...'), self.info_format)
             self.pyconsole_process.terminate()
             if not self.pyconsole_process.waitForFinished(5000):
                 self.pyconsole_process.kill()
@@ -252,7 +254,8 @@ class MainWindow(QtGui.QMainWindow):
 
     def terminate_current_script(self):
         if self.runscript_process is not None:
-            self.print_data_to_runconsole('\nScript is terminating...', self.info_format)
+            self.print_data_to_pyconsole('\n', self.info_format)
+            self.print_data_to_runconsole(self.tr('Script is terminating...'), self.info_format)
             self.app.setOverrideCursor(QtCore.Qt.WaitCursor)
             self.runscript_process.terminate()
             if not self.runscript_process.waitForFinished(5000):
@@ -422,7 +425,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def show_about_fiddle(self):
         message_box = QtGui.QMessageBox()
-        message_box.setWindowTitle('About fIDDLE')
+        message_box.setWindowTitle(self.tr('About fIDDLE'))
         message_box.setText('fIDDLE {0}'.format(__version__))
         message_box.setInformativeText(ABOUT_FIDDLE)
         ok_btn = message_box.addButton(QtGui.QMessageBox.Ok)
@@ -592,9 +595,9 @@ class MainWindow(QtGui.QMainWindow):
 
         if not ret:
             message_box = QtGui.QMessageBox()
-            message_box.setWindowTitle('Link Error')
-            message_box.setText('Cannot open link')
-            message_box.setInformativeText('The link at {0} cannot be opened.'.format(url.path()))
+            message_box.setWindowTitle(self.tr('Link Error'))
+            message_box.setText(self.tr('Cannot open link'))
+            message_box.setInformativeText(self.tr('The link at {0} cannot be opened.').format(url.path()))
             ok_btn = message_box.addButton(QtGui.QMessageBox.Ok)
             message_box.setDefaultButton(ok_btn)
             message_box.exec_()
@@ -690,7 +693,8 @@ class MainWindow(QtGui.QMainWindow):
                 self.lbl_pyversion.setText('Python {0}.{1}.{2}'.format(*self.pyconsole_pyversion))
 
     def process_console_finished(self, code):
-        self.ui.pyConsole_output.insertPlainText('\nExited with code {0}'.format(code))
+        self.ui.pyConsole_output.insertPlainText('\n')
+        self.ui.pyConsole_output.insertPlainText(self.tr('Exited with code {0}').format(code))
         self.ui.runScript_output.ensureCursorVisible()
         self.pyconsole_process.close()
 
@@ -710,7 +714,8 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.runScript_output.ensureCursorVisible()
 
     def process_runscript_finished(self, code):
-        self.print_data_to_runconsole('\nExited with code {0}'.format(code), self.info_format)
+        self.print_data_to_runconsole('\n', self.info_format)
+        self.print_data_to_runconsole(self.tr('Exited with code {0}').format(code), self.info_format)
         self.runscript_process.close()
 
     def process_help_stdout(self):
@@ -735,7 +740,8 @@ class MainWindow(QtGui.QMainWindow):
     def process_help_finished(self, code):
         cursor = self.ui.runScript_output.textCursor()
         cursor.movePosition(QtGui.QTextCursor.End)
-        cursor.insertText('\nHELP: Exited with code {0}'.format(code), self.info_format)
+        cursor.insertText('\n', self.info_format)
+        cursor.insertText(self.tr('HELP: Exited with code {0}').format(code), self.info_format)
         cursor.movePosition(QtGui.QTextCursor.End)
         self.ui.runScript_output.ensureCursorVisible()
         self.help_process.close()

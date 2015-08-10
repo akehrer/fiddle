@@ -105,7 +105,7 @@ class FiddleTabWidget(QtGui.QWidget):
 
     def save_as(self):
         path = self.basepath or os.path.join(os.path.expanduser('~'), self.filename)
-        filepath = QtGui.QFileDialog.getSaveFileName(None, 'Save File', path, ';;'.join(FILE_TYPES[1:]))
+        filepath = QtGui.QFileDialog.getSaveFileName(None, None, path, ';;'.join(FILE_TYPES[1:]))
         if filepath is not '':
             self._write_file(filepath)
             self.filepath = filepath
