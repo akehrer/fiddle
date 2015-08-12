@@ -589,7 +589,13 @@
     <property name="title">
      <string>Console</string>
     </property>
+    <widget class="QMenu" name="menuPython_Interpreter">
+     <property name="title">
+      <string>Python Interpreter</string>
+     </property>
+    </widget>
     <addaction name="actionShow_Console"/>
+    <addaction name="menuPython_Interpreter"/>
     <addaction name="separator"/>
     <addaction name="actionRun_Current_Script"/>
     <addaction name="actionHalt_Current_Script"/>

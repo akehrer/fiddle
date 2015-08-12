@@ -90,3 +90,10 @@ try:
 except (ValueError, FileNotFoundError):
     HELP_WEB_SEARCH_SOURCES = [{'name': 'Google',
                                 'query_tmpl': 'https://www.google.com/search?q={query}'}]
+
+# Python Interpreters Configuration
+try:
+    with open('interpreters.json') as fp:
+        CONSOLE_PYTHON_INTERPRETERS = json.load(fp)
+except (ValueError, FileNotFoundError):
+    CONSOLE_PYTHON_INTERPRETERS = []

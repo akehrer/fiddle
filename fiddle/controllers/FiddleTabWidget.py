@@ -56,7 +56,7 @@ class FiddleTabWidget(QtGui.QWidget):
     @filepath.setter
     def filepath(self, path):
         global new_file_iter
-        try:
+        if path is not None:
             self._filepath = path
             self.basepath, self.filename = os.path.split(path)
             _, ext = os.path.splitext(path)
@@ -79,7 +79,7 @@ class FiddleTabWidget(QtGui.QWidget):
 
             self.editor.setText(data.decode(self.encoding))
             self._saved = True
-        except TypeError:
+        else:
             self.basepath = None
             self.filename = 'new_{}.py'.format(new_file_iter)
             self._filepath = os.path.join(os.path.expanduser('~'), self.filename)
