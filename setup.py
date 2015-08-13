@@ -1,4 +1,4 @@
-from distutils.core import setup
+import setuptools
 import logging
 import sys
 # For cx-freeze to work on Windows install from here
@@ -25,7 +25,7 @@ setup(
     name='fIDDLE',
     version=__version__,
     author='Aaron Kehrer',
-    author_email='akehrer@in2being.com',
+    author_email='akehrer@gmail.com',
     url='https://github.com/akehrer/fiddle',
     license='The MIT License (MIT)',
     windows=[{'script': 'fIDDLE.py'}],

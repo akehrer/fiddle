@@ -14,6 +14,7 @@ from fiddle import __version__
 from fiddle.views.MainWindow import Ui_MainWindow
 from fiddle.controllers.FiddleTabWidget import FiddleTabWidget
 from fiddle.controllers.PyConsole import PyConsoleLineEdit, PyConsoleLineCombo
+from fiddle.controllers.ManageInterpretersDialog import ManageInterpretersDialog
 from fiddle.config import *
 from fiddle.helpers.builtins import *
 
@@ -155,9 +156,11 @@ class MainWindow(QtGui.QMainWindow):
                 a.trigger()
 
     def init_interpreters(self):
+        self.ui.menuPython_Interpreter.clear()
         # Add the default actions
         a_manage = QtGui.QAction(self)
         a_manage.setText(self.tr('Manage Interpreters'))
+        a_manage.triggered.connect(self.show_manage_interpreters)
         self.ui.menuPython_Interpreter.addAction(a_manage)
         self.ui.menuPython_Interpreter.addSeparator()
         # Add the available interpreters
@@ -165,18 +168,20 @@ class MainWindow(QtGui.QMainWindow):
         ag.setExclusive(True)
         # Set default interpreter
         a = QtGui.QAction(self)
+        a.setData(CONSOLE_PYTHON)
         a.setText('(Default) ' + self._elide_filepath(CONSOLE_PYTHON_DIR))
         a.setCheckable(True)
         a.setChecked(True)
-        a.triggered.connect(lambda x: self.set_current_interpreter(CONSOLE_PYTHON))
+        a.triggered.connect(self.set_current_interpreter)
         ag.addAction(a)
         self.ui.menuPython_Interpreter.addAction(a)
         # Add additional interpreters
         for item in CONSOLE_PYTHON_INTERPRETERS:
             a = QtGui.QAction(self)
+            a.setData(item)
             a.setText(self._elide_filepath(os.path.dirname(item)))
             a.setCheckable(True)
-            a.triggered.connect(lambda x: self.set_current_interpreter(item))
+            a.triggered.connect(self.set_current_interpreter)
             ag.addAction(a)
             self.ui.menuPython_Interpreter.addAction(a)
 
@@ -219,9 +224,14 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.statusbar.insertPermanentWidget(0, self.lbl_current_position)
         self.lbl_current_position.setText('0:0')
 
-    def set_current_interpreter(self, path):
-        print(os.path.dirname(path))
-        print(path)
+    def set_current_interpreter(self):
+        action = self.sender()
+        path = action.data()
+        if os.path.exists(path):
+            self.current_interpreter = os.path.normpath(path)
+            self.current_interpreter_dir = os.path.dirname(self.current_interpreter)
+            self.restart_pyconsole_process()
+            self.restart_pyconsole_help()
 
     def start_pyconsole_process(self):
         # Create a shell process
@@ -242,7 +252,7 @@ class MainWindow(QtGui.QMainWindow):
             self.print_data_to_pyconsole(self.tr('Python console is restarting...'), self.info_format)
             self.ui.pyConsole_output.repaint()  # Force message to show
             self.pyconsole_process.terminate()
-            if not self.pyconsole_process.waitForFinished(5000):
+            if not self.pyconsole_process.waitForFinished(2000):
                 self.pyconsole_process.kill()
             self.pyconsole_process.close()
         self.ui.pyConsole_output.clear()
@@ -281,7 +291,7 @@ class MainWindow(QtGui.QMainWindow):
             self.print_data_to_runconsole(self.tr('Python help is restarting...'), self.info_format)
             self.ui.runScript_output.repaint()  # Force message to show
             self.help_process.terminate()
-            if not self.help_process.waitForFinished(5000):
+            if not self.help_process.waitForFinished(2000):
                 self.help_process.kill()
             self.help_process.close()
         self.ui.runScript_output.clear()
@@ -391,12 +401,14 @@ class MainWindow(QtGui.QMainWindow):
         tab = self.ui.documents_tabWidget.widget(idx)
         tab.save()
         self.ui.documents_tabWidget.setTabToolTip(idx, tab.filepath)
+        self.handle_tab_change(idx)
 
     def save_file_as(self):
         idx = self.ui.documents_tabWidget.currentIndex()
         tab = self.ui.documents_tabWidget.widget(idx)
         tab.save_as()
         self.ui.documents_tabWidget.setTabToolTip(idx, tab.filepath)
+        self.handle_tab_change(idx)
 
     def print_file(self):
         pass
@@ -491,6 +503,15 @@ class MainWindow(QtGui.QMainWindow):
         ok_btn = message_box.addButton(QtGui.QMessageBox.Ok)
         message_box.setDefaultButton(ok_btn)
         message_box.exec_()
+
+    def show_manage_interpreters(self):
+        dialog = ManageInterpretersDialog(self)
+        ret = dialog.exec_()
+        if ret == QtGui.QDialog.Accepted:
+            with open('interpreters.json', 'w') as fp:
+                CONSOLE_PYTHON_INTERPRETERS = dialog.temp_interpreters
+                json.dump(CONSOLE_PYTHON_INTERPRETERS, fp)
+            self.init_interpreters()
 
     def find_in_file(self):
         if self.ui.findReplace_Frame.isHidden():

@@ -257,8 +257,6 @@ class Ui_MainWindow(object):
         self.web_search_Button.setObjectName(_fromUtf8("web_search_Button"))
         self.horizontalLayout_2.addWidget(self.web_search_Button)
         self.verticalLayout_3.addLayout(self.horizontalLayout_2)
-        spacerItem1 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.verticalLayout_3.addItem(spacerItem1)
         self.label_4 = QtGui.QLabel(self.helpPane)
         self.label_4.setObjectName(_fromUtf8("label_4"))
         self.verticalLayout_3.addWidget(self.label_4)
@@ -266,6 +264,7 @@ class Ui_MainWindow(object):
         self.helpBrowser.setUrl(QtCore.QUrl(_fromUtf8("about:blank")))
         self.helpBrowser.setObjectName(_fromUtf8("helpBrowser"))
         self.verticalLayout_3.addWidget(self.helpBrowser)
+        self.verticalLayout_3.setStretch(3, 1)
         self.verticalLayout_6.addWidget(self.editor_help_Splitter)
         self.verticalLayout_6.setStretch(0, 2)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -535,4 +534,4 @@ class Ui_MainWindow(object):
         self.actionWord_Wrap.setText(_translate("MainWindow", "Word Wrap", None))
 
 from PyQt4 import QtWebKit
-import fiddle.views.resources_rc
+from . import resources_rc

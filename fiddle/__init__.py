@@ -15,6 +15,6 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-__version__ = '0.1pre'
+__version__ = '0.1dev'
 
 from fiddle.__main__ import main

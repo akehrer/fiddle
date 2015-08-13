@@ -32,22 +32,18 @@ class FiddleTabWidget(QtGui.QWidget):
         self.extension = None
         self.encoding = 'utf-8'  # Default to UTF-8 encoding
 
-        self.editor = BaseEditor()
-        self.filepath = filepath
+        # Set the layout and insert the editor
+        self.editor = None
+        self.setLayout(QtGui.QVBoxLayout())
+        self.layout().setMargin(0)
+        self.layout().setSpacing(0)
 
         # Find/Replace
         self.find_expr = ''
         self.find_forward = False
         self.found_first = False
 
-        # Set the layout and insert the editor
-        self.setLayout(QtGui.QVBoxLayout())
-        self.layout().setMargin(0)
-        self.layout().setSpacing(0)
-        self.layout().addWidget(self.editor)
-
-        self.editor.textChanged.connect(self._set_text_changed)
-        self.editor.cursorPositionChanged.connect(self._cursor_position_changed)
+        self.filepath = filepath
 
     @property
     def filepath(self):
@@ -67,15 +63,20 @@ class FiddleTabWidget(QtGui.QWidget):
             self.encoding = chardet.detect(data)['encoding']
 
             if '.htm' in self.extension:
-                self.editor = HTMLEditor()
+                #self.editor = HTMLEditor()
+                self.insert_editor(HTMLEditor())
             elif self.extension == '.js':
-                self.editor = JavascriptEditor()
+                #self.editor = JavascriptEditor()
+                self.insert_editor(JavascriptEditor())
             elif self.extension == '.css':
-                self.editor = CSSEditor()
+                #self.editor = CSSEditor()
+                self.insert_editor(CSSEditor())
             elif self.extension == '.py':
-                self.editor = PythonEditor()
+                #self.editor = PythonEditor()
+                self.insert_editor(PythonEditor())
             else:
-                self.editor = BaseEditor()
+                #self.editor = BaseEditor()
+                self.insert_editor(BaseEditor())
 
             self.editor.setText(data.decode(self.encoding))
             self._saved = True
@@ -83,7 +84,7 @@ class FiddleTabWidget(QtGui.QWidget):
             self.basepath = None
             self.filename = 'new_{}.py'.format(new_file_iter)
             self._filepath = os.path.join(os.path.expanduser('~'), self.filename)
-            self.editor = PythonEditor()
+            self.insert_editor(PythonEditor())
             new_file_iter += 1
             self._saved = False
 
@@ -95,6 +96,14 @@ class FiddleTabWidget(QtGui.QWidget):
     def saved(self, state):
         self._saved = state
         self.editor_changed.emit()
+
+    def insert_editor(self, editor):
+        if self.editor is not None and self.layout().indexOf(self.editor) >= 0:
+            self.layout().removeWidget(self.editor)
+        self.editor = editor
+        self.editor.textChanged.connect(self._set_text_changed)
+        self.editor.cursorPositionChanged.connect(self._cursor_position_changed)
+        self.layout().addWidget(self.editor)
 
     def save(self):
         if self.basepath is None:
