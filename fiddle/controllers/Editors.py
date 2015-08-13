@@ -61,12 +61,6 @@ class BaseEditor(QsciScintilla):
         #self.SendScintilla(QsciScintilla.SCI_SETHSCROLLBAR, 0)  # Hide the horizontal scrollbar
         self.SendScintilla(QsciScintilla.SCI_SETSCROLLWIDTHTRACKING, 1)
 
-        # Handle tabs properly
-        self.setTabIndents(True)
-        self.setTabWidth(4)
-        self.setAutoIndent(True)
-        self.setIndentationGuides(True)
-
     def __repr__(self):
         return "<%s instance at %s>" % (self.__class__.__name__, id(self))
 
@@ -102,6 +96,8 @@ class PythonEditor(BaseEditor):
         # Set Python lexer
         self.lexer = QsciLexerPython(self)
         self.lexer.setDefaultFont(self.font)
+        # Indentation warning ("The indentation is inconsistent when compared to the previous line")
+        self.lexer.setIndentationWarning(QsciLexerPython.Inconsistent)
         # Set auto-completion
         self.api = QsciAPIs(self.lexer)
         if autocomplete_list is not None:
@@ -112,6 +108,12 @@ class PythonEditor(BaseEditor):
         self.setAutoCompletionThreshold(2)
         self.setAutoCompletionSource(QsciScintilla.AcsAPIs)
         self.setLexer(self.lexer)
+
+        # PEP8 tabs
+        self.setIndentationsUseTabs(False)
+        self.setIndentationWidth(4)
+        self.setAutoIndent(True)
+        self.setIndentationGuides(True)
 
 
 class HTMLEditor(BaseEditor):
