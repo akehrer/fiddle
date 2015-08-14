@@ -34,13 +34,12 @@ class BaseEditor(QsciScintilla):
         fontmetrics = QFontMetrics(self.font)
         self.setMarginsFont(self.font)
         margin_width = '0' * (line_num_margin + 1)
-        self.setMarginWidth(0, fontmetrics.width(margin_width) + 5)
+        self.setMarginWidth(0, fontmetrics.width(margin_width))
         self.setMarginLineNumbers(0, True)
         self.setMarginsBackgroundColor(QColor(EDITOR_MARGIN_COLOR))
 
-        # Edge Mode shows a gray vertical bar at 80 chars
-        self.setEdgeMode(QsciScintilla.EdgeLine)
-        self.setEdgeColumn(80)
+        # Edge Mode shows a gray vertical bar  at the column set
+        self._edgecol = 0
         self.setEdgeColor(QColor(EDITOR_EDGECOL_COLOR))
 
         # Fold code
@@ -70,23 +69,57 @@ class BaseEditor(QsciScintilla):
             return 'utf-8'
         else:
             return 'Latin1'
-
-    def set_wordwrap(self, state):
+            
+    @property
+    def wordwrap(self):
+        if self.wrapMode() == QsciScintilla.WrapWhitespace:
+            return True
+        else:
+            return False
+        
+    @wordwrap.setter
+    def wordwrap(self, state):
         if state:
             self.setWrapMode(QsciScintilla.WrapWhitespace)
             self.setWrapVisualFlags(QsciScintilla.WrapFlagByBorder)
         else:
             self.setWrapMode(QsciScintilla.WrapNone)
             self.setWrapVisualFlags(QsciScintilla.WrapFlagNone)
+            
+    @property
+    def whitespace(self):
+        if self.whitespaceVisibility() == QsciScintilla.WsVisible:
+            return True
+        else:
+            return False
 
-    def set_whitespace(self, state):
+    @whitespace.setter
+    def whitespace(self, state):
         if state:
             self.setWhitespaceVisibility(QsciScintilla.WsVisible)
         else:
             self.setWhitespaceVisibility(QsciScintilla.WsInvisible)
 
-    def set_eolchars(self, state):
+    @property
+    def eolchars(self):
+        return self.eolVisibility()
+    
+    @eolchars.setter
+    def eolchars(self, state):
         self.setEolVisibility(state)
+        
+    @property
+    def edgecol(self):
+        return self._edgecol
+    
+    @edgecol.setter
+    def edgecol(self, col):
+        self._edgecol = col
+        self.setEdgeColumn(col)
+        if col > 0:
+            self.setEdgeMode(QsciScintilla.EdgeLine)
+        else:
+            self.setEdgeMode(QsciScintilla.EdgeNone)
 
 
 class PythonEditor(BaseEditor):
@@ -105,7 +138,7 @@ class PythonEditor(BaseEditor):
             for i in autocomplete_list:
                 self.api.add(i)
         self.api.prepare()
-        self.setAutoCompletionThreshold(2)
+        self.setAutoCompletionThreshold(3)
         self.setAutoCompletionSource(QsciScintilla.AcsAPIs)
         self.setLexer(self.lexer)
 
@@ -114,7 +147,9 @@ class PythonEditor(BaseEditor):
         self.setIndentationWidth(4)
         self.setAutoIndent(True)
         self.setIndentationGuides(True)
-
+        
+        #PEP8 edge column line
+        self.edgecol = 80
 
 class HTMLEditor(BaseEditor):
     def __init__(self, parent=None, line_num_margin=3, autocomplete_list=None):
@@ -130,7 +165,7 @@ class HTMLEditor(BaseEditor):
             for i in autocomplete_list:
                 self.api.add(i)
         self.api.prepare()
-        self.setAutoCompletionThreshold(2)
+        self.setAutoCompletionThreshold(3)
         self.setAutoCompletionSource(QsciScintilla.AcsAPIs)
         self.setLexer(self.lexer)
 
@@ -149,7 +184,7 @@ class JavascriptEditor(BaseEditor):
             for i in autocomplete_list:
                 self.api.add(i)
         self.api.prepare()
-        self.setAutoCompletionThreshold(2)
+        self.setAutoCompletionThreshold(3)
         self.setAutoCompletionSource(QsciScintilla.AcsAPIs)
         self.setLexer(self.lexer)
 
@@ -168,6 +203,6 @@ class CSSEditor(BaseEditor):
             for i in autocomplete_list:
                 self.api.add(i)
         self.api.prepare()
-        self.setAutoCompletionThreshold(2)
+        self.setAutoCompletionThreshold(3)
         self.setAutoCompletionSource(QsciScintilla.AcsAPIs)
         self.setLexer(self.lexer)

@@ -169,7 +169,7 @@ class MainWindow(QtGui.QMainWindow):
         # Set default interpreter
         a = QtGui.QAction(self)
         a.setData(CONSOLE_PYTHON)
-        a.setText('(Default) ' + self._elide_filepath(CONSOLE_PYTHON_DIR))
+        a.setText('(Default) ' + self._elide_filepath(CONSOLE_PYTHON_DIR, threshold=30))
         a.setCheckable(True)
         a.setChecked(True)
         a.triggered.connect(self.set_current_interpreter)
@@ -179,7 +179,7 @@ class MainWindow(QtGui.QMainWindow):
         for item in CONSOLE_PYTHON_INTERPRETERS:
             a = QtGui.QAction(self)
             a.setData(item)
-            a.setText(self._elide_filepath(os.path.dirname(item)))
+            a.setText(self._elide_filepath(os.path.dirname(item), threshold=50, margin=10))
             a.setCheckable(True)
             a.triggered.connect(self.set_current_interpreter)
             ag.addAction(a)
@@ -232,6 +232,8 @@ class MainWindow(QtGui.QMainWindow):
             self.current_interpreter_dir = os.path.dirname(self.current_interpreter)
             self.restart_pyconsole_process()
             self.restart_pyconsole_help()
+            idx = self.ui.documents_tabWidget.currentIndex()
+            self.handle_tab_change(idx)
 
     def start_pyconsole_process(self):
         # Create a shell process
@@ -323,7 +325,7 @@ class MainWindow(QtGui.QMainWindow):
             self.ui.runScript_output.repaint()  # Force message to show
             self.app.setOverrideCursor(QtCore.Qt.WaitCursor)
             self.runscript_process.terminate()
-            if not self.runscript_process.waitForFinished(5000):
+            if not self.runscript_process.waitForFinished(2000):
                 self.runscript_process.kill()
             self.app.restoreOverrideCursor()
 
@@ -391,7 +393,7 @@ class MainWindow(QtGui.QMainWindow):
             sfp = filepath.strip()
             if sfp != '':
                 a = QtGui.QAction(self.ui.menuOpen_Recent)
-                a.setText(self._elide_filepath(sfp))
+                a.setText(self._elide_filepath(sfp, threshold=50, margin=10))
                 a.setData(sfp)
                 a.triggered.connect(self.open_recent_filepath)
                 self.ui.menuOpen_Recent.addAction(a)
@@ -462,17 +464,17 @@ class MainWindow(QtGui.QMainWindow):
     def set_editors_wordwrap(self, state):
         for i in range(self.ui.documents_tabWidget.count()):
             tab = self.ui.documents_tabWidget.widget(i)
-            tab.editor.set_wordwrap(state)
+            tab.editor.wordwrap = state
 
     def set_editors_whitespace(self, state):
         for i in range(self.ui.documents_tabWidget.count()):
             tab = self.ui.documents_tabWidget.widget(i)
-            tab.editor.set_whitespace(state)
+            tab.editor.whitespace = state
 
     def set_editors_eolchars(self, state):
         for i in range(self.ui.documents_tabWidget.count()):
             tab = self.ui.documents_tabWidget.widget(i)
-            tab.editor.set_eolchars(state)
+            tab.editor.eolchars = state
 
     def toggle_help_pane(self):
         if self.ui.helpBrowser.url().path() == 'blank':
@@ -516,7 +518,9 @@ class MainWindow(QtGui.QMainWindow):
     def find_in_file(self):
         if self.ui.findReplace_Frame.isHidden():
             self.ui.findReplace_Frame.show()
-            self.ui.find_text_lineEdit.setFocus()
+            
+        self.ui.find_text_lineEdit.setFocus()
+        self.ui.find_text_lineEdit.selectAll()
 
         if self.ui.find_text_lineEdit.text() != '':
             current_doc = self.ui.documents_tabWidget.currentWidget()
@@ -634,7 +638,7 @@ class MainWindow(QtGui.QMainWindow):
                                                                                   query['object']))
             elif self.pyconsole_pyversion[0] == 3:
                 if query['object'] in py3_exceptions:
-                    src = QtCore.QUrl('http://{0}:{1}/exceptions.html#{2}'.format(CONSOLE_HOST,
+                    src = QtCore.QUrl('http://{0}:{1}/builtins.html#{2}'.format(CONSOLE_HOST,
                                                                                   CONSOLE_HELP_PORT,
                                                                                   query['object']))
             else:
@@ -691,17 +695,23 @@ class MainWindow(QtGui.QMainWindow):
         qurl = QtCore.QUrl(url)
         QtGui.QDesktopServices.openUrl(qurl)
 
-    def print_data_to_pyconsole(self, data, fmt):
+    def print_data_to_pyconsole(self, data, fmt, html=False):
         cursor = self.ui.pyConsole_output.textCursor()
         cursor.movePosition(QtGui.QTextCursor.End)
-        cursor.insertText(data, fmt)
+        if html:
+            cursor.insertHtml(data)
+        else:
+            cursor.insertText(data, fmt)
         cursor.movePosition(QtGui.QTextCursor.End)
         self.ui.pyConsole_output.ensureCursorVisible()
 
-    def print_data_to_runconsole(self, data, fmt):
+    def print_data_to_runconsole(self, data, fmt, html=False):
         cursor = self.ui.runScript_output.textCursor()
         cursor.movePosition(QtGui.QTextCursor.End)
-        cursor.insertText(data, fmt)
+        if html:
+            cursor.insertHtml(data)
+        else:
+            cursor.insertText(data, fmt)
         cursor.movePosition(QtGui.QTextCursor.End)
         self.ui.runScript_output.ensureCursorVisible()
 
@@ -756,7 +766,18 @@ class MainWindow(QtGui.QMainWindow):
     def process_console_stdout(self):
         self.pyconsole_process.setReadChannel(QtCore.QProcess.StandardOutput)
         data = self.pyconsole_process.readAll()
-        self.print_data_to_pyconsole(data.data().decode(), self.base_format)
+        lines = data.data().decode().split(os.linesep)
+        for line in lines:
+            line = line + os.linesep  # Line separators were stripped off in the split, add them back
+            m = CONSOLE_RE_HTTP.findall(line)
+            if m:
+                linked = line
+                for g in m:
+                    linked = linked.replace(g, '<a href={0}>{0}</a>'.format(g))
+                self.print_data_to_pyconsole(linked, self.base_format, html=True)
+                self.print_data_to_pyconsole(os.linesep, self.base_format)
+            else:
+                self.print_data_to_pyconsole(line, self.base_format)
 
     def process_console_stderr(self):
         self.pyconsole_process.setReadChannel(QtCore.QProcess.StandardError)
@@ -785,7 +806,18 @@ class MainWindow(QtGui.QMainWindow):
     def process_runscript_stdout(self):
         self.runscript_process.setReadChannel(QtCore.QProcess.StandardOutput)
         data = self.runscript_process.readAll()
-        self.print_data_to_runconsole(data.data().decode(), self.base_format)
+        lines = data.data().decode().split(os.linesep)
+        for line in lines:
+            line = line + os.linesep  # Line separators were stripped off in the split, add them back
+            m = CONSOLE_RE_HTTP.findall(line)
+            if m:
+                linked = line
+                for g in m:
+                    linked = linked.replace(g, '<a href={0}>{0}</a>'.format(g))
+                self.print_data_to_runconsole(linked, self.base_format, html=True)
+                self.print_data_to_runconsole(os.linesep, self.base_format)
+            else:
+                self.print_data_to_runconsole(line, self.base_format)
 
     def process_runscript_stderr(self):
         self.runscript_process.setReadChannel(QtCore.QProcess.StandardError)
@@ -831,9 +863,9 @@ class MainWindow(QtGui.QMainWindow):
         self.help_process.close()
 
     @staticmethod
-    def _elide_filepath(path):
+    def _elide_filepath(path, threshold=20, margin=5):
         basepath, filename = os.path.split(path)
-        if len(basepath) > 20:
-            return '{0}...{1}{sep}{2}'.format(basepath[:5], basepath[-5:], filename, sep=os.sep)
+        if len(basepath) > threshold:
+            return '{0}...{1}{sep}{2}'.format(basepath[:margin], basepath[-margin:], filename, sep=os.sep)
         else:
             return path

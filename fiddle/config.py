@@ -41,7 +41,7 @@ def find_python_exe():
 # Determine if application is a script file or frozen exe
 # see: http://stackoverflow.com/questions/404744/determining-application-path-in-a-python-exe-generated-by-pyinstaller
 # also up the logging level to INFO for frozen app
-APP_DIR = os.path.dirname(__file__)
+APP_DIR = os.path.dirname(os.path.realpath(__file__))
 APP_FROZEN = False
 if getattr(sys, 'frozen', False):
     APP_DIR = os.path.dirname(sys.executable)
@@ -82,6 +82,7 @@ CONSOLE_COLOR_INFO = "#000099"
 # Console RegEx
 CONSOLE_RE_PYVER = re.compile(r'.*?(\d)\.(\d)\.(\d)', re.IGNORECASE|re.DOTALL)
 CONSOLE_RE_LINENUM = re.compile(r'(\s+File\s+)(".*?")(.\s+line\s+)(\d+)(.\sin\s)(.+)', re.IGNORECASE|re.DOTALL)
+CONSOLE_RE_HTTP = re.compile(r'(https?://[^\s/$.?#].[^\s\'\"]*)', re.IGNORECASE|re.DOTALL)  # based on @stephenhay
 
 # Help Configuration
 try:
