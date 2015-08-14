@@ -37,27 +37,28 @@ class FiddleMainWindowTest(unittest.TestCase):
         self.assertNotEqual(console_pre_txt, console_post_txt)
         self.assertTrue(test_str in console_post_txt)
 
-    def test_unicode_open_saveas(self):
-        srcpath = os.path.join(self.data_dir, 'utf8_test.txt')
-        destpath = os.path.join(self.this_dir, 'utf8_test_temp.txt')
-        srchash = sha_hash_file(srcpath)
-        self.form.open_filepath(srcpath)
-        tab = self.form.ui.documents_tabWidget.currentWidget()
-        tab._write_file(destpath)
-        desthash = sha_hash_file(destpath)
-        self.assertEqual(srchash, desthash)
-        os.remove(destpath)
+    def test_pyconsolelineedit_history(self):
+        self.form.ui.pyConsole_output.clear()
+        test_strs = [ascii_letters, digits, punctuation]
+        # Load the history
+        for ts in test_strs:
+            self.form.pyconsole_input.setText("i = '{0}'".format(ts))
+            QTest.keyClick(self.form.pyconsole_input, Qt.Key_Return)
 
-    def test_win1252_open_saveas(self):
-        srcpath = os.path.join(self.data_dir, 'win1252_test.txt')
-        destpath = os.path.join(self.this_dir, 'win1252_test_temp.txt')
-        srchash = sha_hash_file(srcpath)
-        self.form.open_filepath(srcpath)
-        tab = self.form.ui.documents_tabWidget.currentWidget()
-        tab._write_file(destpath)
-        desthash = sha_hash_file(destpath)
-        self.assertEqual(srchash, desthash)
-        os.remove(destpath)
+        # Check up arrow against history
+        self.assertEqual('', self.form.pyconsole_input.text())
+        for ts in reversed(test_strs):
+            QTest.keyClick(self.form.pyconsole_input, Qt.Key_Up)
+            self.assertEqual("i = '{0}'".format(ts), self.form.pyconsole_input.text())
+
+        # Check down arrow agaist history
+        for ts in test_strs[1:]:
+            QTest.keyClick(self.form.pyconsole_input, Qt.Key_Down)
+            self.assertEqual("i = '{0}'".format(ts), self.form.pyconsole_input.text())
+
+        # Last down arrow should clear the input
+        QTest.keyClick(self.form.pyconsole_input, Qt.Key_Down)
+        self.assertEqual('', self.form.pyconsole_input.text())
 
     def test_no_console_restart(self):
         old_int = self.form.current_interpreter

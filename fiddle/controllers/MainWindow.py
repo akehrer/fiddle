@@ -495,7 +495,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def set_search_provider(self, provider, query_str):
         self.search_url = query_str
-        self.ui.helpSearch.setPlaceholderText(provider)
+        self.ui.searchProvider_label.setText(provider)
 
     def show_about_fiddle(self):
         message_box = QtGui.QMessageBox()

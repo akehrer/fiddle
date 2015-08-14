@@ -474,11 +474,18 @@
          <number>0</number>
         </property>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,1,0">
           <item>
            <widget class="QLabel" name="label_5">
             <property name="text">
-             <string>Web Search</string>
+             <string>Web Search - </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="searchProvider_label">
+            <property name="text">
+             <string notr="true">&lt;provider&gt;</string>
             </property>
            </widget>
           </item>
@@ -1116,8 +1123,8 @@
    <slot>terminate_current_script()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>781</x>
-     <y>519</y>
+     <x>1359</x>
+     <y>74</y>
     </hint>
     <hint type="destinationlabel">
      <x>808</x>
