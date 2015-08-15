@@ -27,7 +27,7 @@ class App(QtGui.QApplication):
 
         self.main = MainWindow(self)
 
-        self.lastWindowClosed.connect(self.byebye)
+        self.aboutToQuit.connect(self.byebye)
         self.main.show()
         self.main.raise_()
 

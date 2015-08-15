@@ -126,6 +126,7 @@ class PythonEditor(BaseEditor):
         # Set Python lexer
         self.lexer = QsciLexerPython(self)
         self.lexer.setDefaultFont(self.font)
+        self.lexer.setFont(self.font, QsciLexerPython.Comment)
         # Indentation warning ("The indentation is inconsistent when compared to the previous line")
         self.lexer.setIndentationWarning(QsciLexerPython.Inconsistent)
         # Set auto-completion

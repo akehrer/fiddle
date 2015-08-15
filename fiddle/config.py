@@ -60,7 +60,12 @@ FILE_TYPES = ['All Files (*.*)',
               'CSS Files (*.css)']
 
 # Editor configuration
-EDITOR_FONT = 'Courier'
+if PLATFORM == 'win32':
+    EDITOR_FONT = 'Consolas'
+elif PLATFORM == 'darwin':
+    EDITOR_FONT = 'Menlo'
+else:
+    EDITOR_FONT = 'Courier'
 EDITOR_FONT_SIZE = 10
 EDITOR_MARGIN_COLOR = '#cccccc'
 EDITOR_EDGECOL_COLOR = '#dddddd'
