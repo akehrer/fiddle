@@ -5,15 +5,13 @@
 import os
 import unittest
 from string import ascii_letters, digits, punctuation
-from PyQt4.QtGui import QApplication
+
 from PyQt4.QtTest import QTest
 from PyQt4.QtCore import Qt
 
 from fiddle.controllers.MainWindow import MainWindow
+from tests import app
 from tests.helpers import *
-
-
-app = QApplication(sys.argv)
 
 
 class FiddleMainWindowTest(unittest.TestCase):

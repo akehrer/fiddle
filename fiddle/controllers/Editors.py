@@ -30,7 +30,7 @@ class BaseEditor(QsciScintilla):
         # Default to UTF-8 encoding
         self.setUtf8(True)
 
-        # Margin 0 is used for line numbers
+        # Margin is used for line numbers
         fontmetrics = QFontMetrics(self.font)
         self.setMarginsFont(self.font)
         margin_width = '0' * (line_num_margin + 1)
@@ -52,12 +52,9 @@ class BaseEditor(QsciScintilla):
         self.setCaretLineVisible(True)
         self.setCaretLineBackgroundColor(QColor(EDITOR_CARET_LINE_COLOR))
 
-        # Use raw message to Scintilla here (all messages are documented here:
-        # http://www.scintilla.org/ScintillaDoc.html)
-        self.SendScintilla(QsciScintilla.SCI_STYLESETFONT, 1, bytearray(EDITOR_FONT, 'utf8'))
-        self.SendScintilla(QsciScintilla.SCI_STYLESETSIZE, 1, EDITOR_FONT_SIZE)
-
-        #self.SendScintilla(QsciScintilla.SCI_SETHSCROLLBAR, 0)  # Hide the horizontal scrollbar
+        # Use raw messages to Scintilla here
+        # (all messages are documented here: http://www.scintilla.org/ScintillaDoc.html)
+        # Ensure the width of the currently visible lines can be scrolled
         self.SendScintilla(QsciScintilla.SCI_SETSCROLLWIDTHTRACKING, 1)
 
     def __repr__(self):
@@ -148,8 +145,9 @@ class PythonEditor(BaseEditor):
         self.setAutoIndent(True)
         self.setIndentationGuides(True)
         
-        #PEP8 edge column line
+        # PEP8 edge column line
         self.edgecol = 80
+        
 
 class HTMLEditor(BaseEditor):
     def __init__(self, parent=None, line_num_margin=3, autocomplete_list=None):

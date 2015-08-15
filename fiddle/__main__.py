@@ -37,7 +37,6 @@ class App(QtGui.QApplication):
 
 
 def main():
-    global app
     app = App(sys.argv)
     translator = QtCore.QTranslator()
     translator.load(QtCore.QLocale.system().name() + '.qm', 'locale')
