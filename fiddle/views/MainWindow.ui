@@ -672,6 +672,9 @@
    <addaction name="actionFind"/>
    <addaction name="actionFind_and_Replace"/>
    <addaction name="separator"/>
+   <addaction name="actionRun_Current_Script"/>
+   <addaction name="actionHalt_Current_Script"/>
+   <addaction name="separator"/>
    <addaction name="actionShow_Help_Pane"/>
   </widget>
   <action name="actionNew">
@@ -807,6 +810,10 @@
    </property>
   </action>
   <action name="actionRestart_Console">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/icons/arrow_refresh.png</normaloff>:/icons/icons/arrow_refresh.png</iconset>
+   </property>
    <property name="text">
     <string>Restart Python Console</string>
    </property>
@@ -822,6 +829,10 @@
    </property>
   </action>
   <action name="actionRun_Current_Script">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/icons/play_green.png</normaloff>:/icons/icons/play_green.png</iconset>
+   </property>
    <property name="text">
     <string>Run Current Script</string>
    </property>
@@ -847,11 +858,19 @@
    </property>
   </action>
   <action name="actionHalt_Python_Console">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/icons/cross.png</normaloff>:/icons/icons/cross.png</iconset>
+   </property>
    <property name="text">
     <string>Halt Python Console</string>
    </property>
   </action>
   <action name="actionHalt_Current_Script">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/icons/cross.png</normaloff>:/icons/icons/cross.png</iconset>
+   </property>
    <property name="text">
     <string>Halt Current Script</string>
    </property>

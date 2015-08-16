@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 class MainWindow(QtGui.QMainWindow):
-    def __init__(self, app=None):
+    def __init__(self, app=None, files=None):
         super(MainWindow, self).__init__()
 
         self.app = app
@@ -84,8 +84,8 @@ class MainWindow(QtGui.QMainWindow):
         self.recent_files = []
         self.init_open_recent()
 
-        # Add a blank file
-        self.new_file()
+        # Load any files/dirs passed on the command line
+        self.init_load_files(files)
 
     def stop(self):
         try:
@@ -105,6 +105,21 @@ class MainWindow(QtGui.QMainWindow):
             self.runscript_process.close()
         except AttributeError:
             pass
+
+    def init_load_files(self, files):
+        if files is not None and len(files) > 0:
+            # Open all the files
+            for path in files:
+                if os.path.isfile(path):
+                    self.open_filepath(path)
+                elif os.path.isdir(path):
+                    for item in os.listdir(path):
+                        ipath = os.path.join(path, item)
+                        if os.path.isfile(ipath):
+                            self.open_filepath(ipath)
+        else:
+            # Add a blank file
+            self.new_file()
 
     def init_actions(self):
         # File actions

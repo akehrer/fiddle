@@ -3,6 +3,7 @@
 # (see fiddle/__init__.py for details)
 
 # Import standard library modules
+import argparse
 import logging
 import os
 import sys
@@ -20,12 +21,17 @@ logging.basicConfig(filename='fIDDLE.log',
                     format='%(asctime)s:%(levelname)s:%(message)s',
                     level=LOG_LEVEL)
 
+# Commandline arguments
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*')
+
 
 class App(QtGui.QApplication):
     def __init__(self, *args):
         QtGui.QApplication.__init__(self, *args)
+        pargs = parser.parse_args()
 
-        self.main = MainWindow(self)
+        self.main = MainWindow(self, files=pargs.files)
 
         self.aboutToQuit.connect(self.byebye)
         self.main.show()

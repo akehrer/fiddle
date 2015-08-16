@@ -8,6 +8,7 @@ from string import ascii_letters, digits, punctuation
 
 from PyQt4.QtTest import QTest
 from PyQt4.QtCore import Qt
+from PyQt4.QtGui import *
 
 from fiddle.controllers.MainWindow import MainWindow
 from tests import app
@@ -58,25 +59,6 @@ class FiddleMainWindowTest(unittest.TestCase):
         QTest.keyClick(self.form.pyconsole_input, Qt.Key_Down)
         self.assertEqual('', self.form.pyconsole_input.text())
 
-    def test_no_console_restart(self):
-        old_int = self.form.current_interpreter
-        old_int_dir = self.form.current_interpreter_dir
-        self.form.current_interpreter = ''
-        self.form.current_interpreter_dir = ''
-        self.form.restart_pyconsole_process()
-        self.assertEqual('', self.form.ui.pyConsole_output.toPlainText())
-        self.form.current_interpreter = old_int
-        self.form.current_interpreter_dir = old_int_dir
-
-    def test_no_help_restart(self):
-        old_int = self.form.current_interpreter
-        old_int_dir = self.form.current_interpreter_dir
-        self.form.current_interpreter = ''
-        self.form.current_interpreter_dir = ''
-        self.form.restart_pyconsole_help()
-        self.assertEqual('', self.form.ui.helpBrowser.page().mainFrame().toPlainText())
-        self.form.current_interpreter = old_int
-        self.form.current_interpreter_dir = old_int_dir
 
 if __name__ == "__main__":
     unittest.main()
