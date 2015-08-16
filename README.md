@@ -1,5 +1,5 @@
 # fIDDLE
-A experimental Python code editor aimed at new programmer education. Inspired by the
+A Python code editor aimed at new programmers as an alternate to IDLE. Inspired by the
 [IDLE Reimagined](https://github.com/asweigart/idle-reimagined) project.
 
 ## Requirements

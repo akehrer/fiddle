@@ -1,0 +1,1168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1366</width>
+    <height>768</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout_6" stretch="2">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>5</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>5</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QSplitter" name="editor_help_Splitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="childrenCollapsible">
+       <bool>false</bool>
+      </property>
+      <widget class="QSplitter" name="editor_console_Splitter">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="opaqueResize">
+        <bool>true</bool>
+       </property>
+       <property name="childrenCollapsible">
+        <bool>false</bool>
+       </property>
+       <widget class="QWidget" name="layoutWidget">
+        <layout class="QVBoxLayout" name="verticalLayout_5" stretch="2,0">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="sizeConstraint">
+          <enum>QLayout::SetMinimumSize</enum>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QTabWidget" name="documents_tabWidget">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>5</horstretch>
+             <verstretch>3</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>800</width>
+             <height>300</height>
+            </size>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="tabShape">
+            <enum>QTabWidget::Rounded</enum>
+           </property>
+           <property name="currentIndex">
+            <number>-1</number>
+           </property>
+           <property name="elideMode">
+            <enum>Qt::ElideRight</enum>
+           </property>
+           <property name="documentMode">
+            <bool>true</bool>
+           </property>
+           <property name="tabsClosable">
+            <bool>true</bool>
+           </property>
+           <property name="movable">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="findReplace_Frame">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QGridLayout" name="gridLayout" columnstretch="0,2,0,0,0">
+            <property name="sizeConstraint">
+             <enum>QLayout::SetMinimumSize</enum>
+            </property>
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>1</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
+             <number>1</number>
+            </property>
+            <property name="spacing">
+             <number>1</number>
+            </property>
+            <item row="1" column="3">
+             <widget class="QPushButton" name="find_next_Button">
+              <property name="text">
+               <string>Next</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_2">
+              <property name="text">
+               <string>Find</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1" colspan="2">
+             <widget class="QLineEdit" name="find_text_lineEdit"/>
+            </item>
+            <item row="2" column="1" colspan="2">
+             <widget class="QLineEdit" name="replace_text_lineEdit"/>
+            </item>
+            <item row="2" column="3">
+             <widget class="QPushButton" name="replace_Button">
+              <property name="text">
+               <string>Replace</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_3">
+              <property name="text">
+               <string>Replace</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="4">
+             <widget class="QPushButton" name="find_previous_Button">
+              <property name="text">
+               <string>Previous</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="4">
+             <widget class="QPushButton" name="replace_all_Button">
+              <property name="text">
+               <string>Replace All</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0" colspan="5">
+             <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <item>
+               <widget class="QCheckBox" name="find_re_checkBox">
+                <property name="text">
+                 <string>RegEx</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="find_case_checkBox">
+                <property name="text">
+                 <string>Match Case</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="find_word_checkBox">
+                <property name="text">
+                 <string>Whole Word</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="find_selection_checkBox">
+                <property name="text">
+                 <string>In Selection</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QToolButton" name="findPaneHide_toolButton">
+                <property name="font">
+                 <font>
+                  <weight>50</weight>
+                  <italic>false</italic>
+                  <bold>false</bold>
+                  <underline>false</underline>
+                  <strikeout>false</strikeout>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>X</string>
+                </property>
+                <property name="autoRaise">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QTabWidget" name="console_tabWidget">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="pyconsole_Tab">
+         <attribute name="title">
+          <string>Python Console</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <property name="margin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QTextBrowser" name="pyConsole_output">
+            <property name="font">
+             <font>
+              <family>Courier</family>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="lineWrapMode">
+             <enum>QTextEdit::NoWrap</enum>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse|Qt::TextBrowserInteraction|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+            </property>
+            <property name="openExternalLinks">
+             <bool>false</bool>
+            </property>
+            <property name="openLinks">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="pyconsole_prompt_layout" stretch="0,0,0">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="sizeConstraint">
+             <enum>QLayout::SetDefaultConstraint</enum>
+            </property>
+            <item>
+             <widget class="QLabel" name="pyConsole_prompt">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <family>Courier</family>
+                <pointsize>10</pointsize>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">background-color: white;</string>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Plain</enum>
+              </property>
+              <property name="text">
+               <string>&gt;&gt;&gt;</string>
+              </property>
+              <property name="textFormat">
+               <enum>Qt::PlainText</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="pyconsole_restart_Button">
+              <property name="toolTip">
+               <string>Restart Python Console</string>
+              </property>
+              <property name="text">
+               <string>...</string>
+              </property>
+              <property name="icon">
+               <iconset resource="resources.qrc">
+                <normaloff>:/icons/icons/arrow_refresh.png</normaloff>:/icons/icons/arrow_refresh.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="pyconsole_halt_Button">
+              <property name="toolTip">
+               <string>Halt Python Console</string>
+              </property>
+              <property name="text">
+               <string>...</string>
+              </property>
+              <property name="icon">
+               <iconset resource="resources.qrc">
+                <normaloff>:/icons/icons/cross.png</normaloff>:/icons/icons/cross.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="runscript_Tab">
+         <attribute name="title">
+          <string>Run Script</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <property name="leftMargin">
+           <number>5</number>
+          </property>
+          <property name="topMargin">
+           <number>5</number>
+          </property>
+          <property name="rightMargin">
+           <number>5</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>Run Command</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="runScript_command">
+              <property name="font">
+               <font>
+                <family>Courier</family>
+                <pointsize>10</pointsize>
+               </font>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="run_remember_checkBox">
+              <property name="text">
+               <string>Remember</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="run_script_Button">
+              <property name="toolTip">
+               <string>Run Script</string>
+              </property>
+              <property name="text">
+               <string>Run</string>
+              </property>
+              <property name="icon">
+               <iconset resource="resources.qrc">
+                <normaloff>:/icons/icons/play_green.png</normaloff>:/icons/icons/play_green.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="halt_script_Button">
+              <property name="toolTip">
+               <string>Halt Running Script</string>
+              </property>
+              <property name="text">
+               <string>Halt</string>
+              </property>
+              <property name="icon">
+               <iconset resource="resources.qrc">
+                <normaloff>:/icons/icons/cross.png</normaloff>:/icons/icons/cross.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QTextBrowser" name="runScript_output">
+            <property name="font">
+             <font>
+              <family>Courier</family>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse|Qt::TextBrowserInteraction|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+            </property>
+            <property name="openLinks">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="helpPane" native="true">
+       <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,0,0,1">
+        <property name="spacing">
+         <number>2</number>
+        </property>
+        <property name="margin">
+         <number>0</number>
+        </property>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,1,0">
+          <item>
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>Web Search - </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="searchProvider_label">
+            <property name="text">
+             <string>&lt;provider&gt;</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="hideHelp_toolButton">
+            <property name="toolTip">
+             <string>Hide help pane</string>
+            </property>
+            <property name="text">
+             <string>X</string>
+            </property>
+            <property name="autoRaise">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QLineEdit" name="helpSearch"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="web_search_Button">
+            <property name="text">
+             <string>Search</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>Built-in Help</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWebView" name="helpBrowser">
+          <property name="url">
+           <url>
+            <string>about:blank</string>
+           </url>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1366</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menuOpen_Recent">
+     <property name="title">
+      <string>Open Recent</string>
+     </property>
+    </widget>
+    <addaction name="actionNew"/>
+    <addaction name="actionOpen"/>
+    <addaction name="menuOpen_Recent"/>
+    <addaction name="actionSave_File"/>
+    <addaction name="actionSave_File_As"/>
+    <addaction name="actionPrint"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionCut"/>
+    <addaction name="actionCopy"/>
+    <addaction name="actionPaste"/>
+    <addaction name="actionSelect_All"/>
+    <addaction name="separator"/>
+    <addaction name="actionFind"/>
+    <addaction name="actionFind_and_Replace"/>
+   </widget>
+   <widget class="QMenu" name="menuShell">
+    <property name="title">
+     <string>Console</string>
+    </property>
+    <widget class="QMenu" name="menuPython_Interpreter">
+     <property name="title">
+      <string>Python Interpreter</string>
+     </property>
+    </widget>
+    <addaction name="actionShow_Console"/>
+    <addaction name="menuPython_Interpreter"/>
+    <addaction name="separator"/>
+    <addaction name="actionRun_Current_Script"/>
+    <addaction name="actionHalt_Current_Script"/>
+    <addaction name="separator"/>
+    <addaction name="actionRestart_Console"/>
+    <addaction name="actionHalt_Python_Console"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <widget class="QMenu" name="menuSearch_Provider">
+     <property name="title">
+      <string>Search Provider</string>
+     </property>
+    </widget>
+    <addaction name="actionShow_Help_Pane"/>
+    <addaction name="menuSearch_Provider"/>
+    <addaction name="separator"/>
+    <addaction name="actionFIDDLE_Help"/>
+    <addaction name="actionAbout_fIDDEL"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <widget class="QMenu" name="menuShow">
+     <property name="title">
+      <string>Show</string>
+     </property>
+     <addaction name="actionShow_Whitespace"/>
+     <addaction name="actionShow_End_of_Line"/>
+    </widget>
+    <addaction name="actionClose_Tab"/>
+    <addaction name="actionClose_All_Tabs"/>
+    <addaction name="separator"/>
+    <addaction name="actionWord_Wrap"/>
+    <addaction name="menuShow"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuView"/>
+   <addaction name="menuShell"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="main_toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::AllToolBarAreas</set>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>16</width>
+     <height>16</height>
+    </size>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionNew"/>
+   <addaction name="actionOpen"/>
+   <addaction name="actionSave_File"/>
+   <addaction name="separator"/>
+   <addaction name="actionCut"/>
+   <addaction name="actionCopy"/>
+   <addaction name="actionPaste"/>
+   <addaction name="separator"/>
+   <addaction name="actionFind"/>
+   <addaction name="actionFind_and_Replace"/>
+   <addaction name="separator"/>
+   <addaction name="actionShow_Help_Pane"/>
+  </widget>
+  <action name="actionNew">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/icons/page_white.png</normaloff>:/icons/icons/page_white.png</iconset>
+   </property>
+   <property name="text">
+    <string>New</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/icons/folder.png</normaloff>:/icons/icons/folder.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionSave_File">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/icons/disk.png</normaloff>:/icons/icons/disk.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save File</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionSave_File_As">
+   <property name="text">
+    <string>Save File As</string>
+   </property>
+  </action>
+  <action name="actionPrint">
+   <property name="text">
+    <string>Print</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionClose_Tab">
+   <property name="text">
+    <string>Close Tab</string>
+   </property>
+  </action>
+  <action name="actionClose_All_Tabs">
+   <property name="text">
+    <string>Close All Tabs</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionCut">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/icons/cut.png</normaloff>:/icons/icons/cut.png</iconset>
+   </property>
+   <property name="text">
+    <string>Cut</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
+   </property>
+  </action>
+  <action name="actionCopy">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/icons/page_white_copy.png</normaloff>:/icons/icons/page_white_copy.png</iconset>
+   </property>
+   <property name="text">
+    <string>Copy</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="actionPaste">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/icons/paste_plain.png</normaloff>:/icons/icons/paste_plain.png</iconset>
+   </property>
+   <property name="text">
+    <string>Paste</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="actionSelect_All">
+   <property name="text">
+    <string>Select All</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="actionFind">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/icons/find.png</normaloff>:/icons/icons/find.png</iconset>
+   </property>
+   <property name="text">
+    <string>Find</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
+   </property>
+  </action>
+  <action name="actionFind_and_Replace">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/icons/find_replace.png</normaloff>:/icons/icons/find_replace.png</iconset>
+   </property>
+   <property name="text">
+    <string>Find and Replace</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionRestart_Console">
+   <property name="text">
+    <string>Restart Python Console</string>
+   </property>
+  </action>
+  <action name="actionFIDDLE_Help">
+   <property name="text">
+    <string>fIDDLE Help</string>
+   </property>
+  </action>
+  <action name="actionAbout_fIDDEL">
+   <property name="text">
+    <string>About fIDDLE</string>
+   </property>
+  </action>
+  <action name="actionRun_Current_Script">
+   <property name="text">
+    <string>Run Current Script</string>
+   </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
+  </action>
+  <action name="actionShow_Help_Pane">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/icons/help.png</normaloff>:/icons/icons/help.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show/Hide Help</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+H</string>
+   </property>
+  </action>
+  <action name="actionShow_Console">
+   <property name="text">
+    <string>Show/Hide Console</string>
+   </property>
+  </action>
+  <action name="actionHalt_Python_Console">
+   <property name="text">
+    <string>Halt Python Console</string>
+   </property>
+  </action>
+  <action name="actionHalt_Current_Script">
+   <property name="text">
+    <string>Halt Current Script</string>
+   </property>
+  </action>
+  <action name="actionShow_Whitespace">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Whitespace</string>
+   </property>
+  </action>
+  <action name="actionShow_End_of_Line">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show End of Line</string>
+   </property>
+  </action>
+  <action name="actionWord_Wrap">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Word Wrap</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QWebView</class>
+   <extends>QWidget</extends>
+   <header>QtWebKit/QWebView</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>documents_tabWidget</sender>
+   <signal>tabCloseRequested(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close_tab(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>377</x>
+     <y>154</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>448</x>
+     <y>28</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>documents_tabWidget</sender>
+   <signal>currentChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>handle_tab_change(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>530</x>
+     <y>167</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>631</x>
+     <y>26</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>run_remember_checkBox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>handle_run_remember(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>728</x>
+     <y>519</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>475</x>
+     <y>737</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>findPaneHide_toolButton</sender>
+   <signal>clicked()</signal>
+   <receiver>findReplace_Frame</receiver>
+   <slot>hide()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>789</x>
+     <y>392</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>382</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>find_next_Button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>find_in_file()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>663</x>
+     <y>416</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>422</x>
+     <y>801</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>find_previous_Button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>find_in_file_previous()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>754</x>
+     <y>419</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>701</x>
+     <y>801</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>find_text_lineEdit</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>find_in_file()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>329</x>
+     <y>416</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>599</x>
+     <y>811</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>replace_Button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>replace_in_file()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>640</x>
+     <y>449</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>620</x>
+     <y>782</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>replace_all_Button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>replace_all_in_file()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>730</x>
+     <y>452</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>721</x>
+     <y>785</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>helpSearch</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>run_web_search()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>930</x>
+     <y>90</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>955</x>
+     <y>785</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pyconsole_restart_Button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>restart_pyconsole_process()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>763</x>
+     <y>724</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>769</x>
+     <y>829</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pyconsole_halt_Button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>terminate_pyconsole_process()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>787</x>
+     <y>735</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>787</x>
+     <y>800</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>run_script_Button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>run_current_script()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>749</x>
+     <y>516</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>750</x>
+     <y>791</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>web_search_Button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>run_web_search()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1298</x>
+     <y>93</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1300</x>
+     <y>797</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hideHelp_toolButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>toggle_help_pane()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1342</x>
+     <y>67</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1348</x>
+     <y>783</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>halt_script_Button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>terminate_current_script()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>787</x>
+     <y>517</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>773</x>
+     <y>805</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>close_tab(int)</slot>
+  <slot>send_pyconsole_command()</slot>
+  <slot>handle_tab_change(int)</slot>
+  <slot>run_web_search()</slot>
+  <slot>handle_run_remember(bool)</slot>
+  <slot>find_in_file()</slot>
+  <slot>find_in_file_previous()</slot>
+  <slot>replace_in_file()</slot>
+  <slot>replace_all_in_file()</slot>
+  <slot>run_current_script()</slot>
+  <slot>terminate_current_script()</slot>
+  <slot>restart_pyconsole_process()</slot>
+  <slot>terminate_pyconsole_process()</slot>
+  <slot>toggle_help_pane()</slot>
+ </slots>
+</ui>

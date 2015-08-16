@@ -1,0 +1,20 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>icons/python_twosnakes.png</file>
+    <file>icons/python_twosnakes_v.png</file>
+    <file>icons/add.png</file>
+    <file>icons/delete.png</file>
+    <file>icons/play_green.png</file>
+    <file>icons/arrow_refresh.png</file>
+    <file>icons/cross.png</file>
+    <file>icons/find.png</file>
+    <file>icons/find_replace.png</file>
+    <file>icons/cut.png</file>
+    <file>icons/help.png</file>
+    <file>icons/page_white_copy.png</file>
+    <file>icons/paste_plain.png</file>
+    <file>icons/disk.png</file>
+    <file>icons/folder.png</file>
+    <file>icons/page_white.png</file>
+  </qresource>
+</RCC>
