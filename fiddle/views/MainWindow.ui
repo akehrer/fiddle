@@ -224,7 +224,7 @@
                </spacer>
               </item>
               <item>
-               <widget class="QToolButton" name="toolButton_2">
+               <widget class="QToolButton" name="findPaneHide_toolButton">
                 <property name="font">
                  <font>
                   <weight>50</weight>
@@ -410,7 +410,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QToolButton" name="runScript_button">
+             <widget class="QToolButton" name="run_script_Button">
               <property name="toolTip">
                <string>Run Script</string>
               </property>
@@ -427,7 +427,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QToolButton" name="toolButton">
+             <widget class="QToolButton" name="halt_script_Button">
               <property name="toolTip">
                <string>Halt Running Script</string>
               </property>
@@ -485,12 +485,12 @@
           <item>
            <widget class="QLabel" name="searchProvider_label">
             <property name="text">
-             <string notr="true">&lt;provider&gt;</string>
+             <string>&lt;provider&gt;</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QToolButton" name="toolButton">
+           <widget class="QToolButton" name="hideHelp_toolButton">
             <property name="toolTip">
              <string>Hide help pane</string>
             </property>
@@ -941,23 +941,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>toolButton</sender>
-   <signal>clicked()</signal>
-   <receiver>helpPane</receiver>
-   <slot>hide()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1354</x>
-     <y>53</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1004</x>
-     <y>52</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>toolButton_2</sender>
+   <sender>findPaneHide_toolButton</sender>
    <signal>clicked()</signal>
    <receiver>findReplace_Frame</receiver>
    <slot>hide()</slot>
@@ -1101,7 +1085,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>runScript_button</sender>
+   <sender>run_script_Button</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>run_current_script()</slot>
@@ -1113,22 +1097,6 @@
     <hint type="destinationlabel">
      <x>750</x>
      <y>791</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>toolButton</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>terminate_current_script()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1359</x>
-     <y>74</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>808</x>
-     <y>819</y>
     </hint>
    </hints>
   </connection>
@@ -1148,6 +1116,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>hideHelp_toolButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>toggle_help_pane()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1342</x>
+     <y>67</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1348</x>
+     <y>783</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>halt_script_Button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>terminate_current_script()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>787</x>
+     <y>517</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>773</x>
+     <y>805</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>close_tab(int)</slot>
@@ -1163,5 +1163,6 @@
   <slot>terminate_current_script()</slot>
   <slot>restart_pyconsole_process()</slot>
   <slot>terminate_pyconsole_process()</slot>
+  <slot>toggle_help_pane()</slot>
  </slots>
 </ui>
