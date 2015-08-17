@@ -8,6 +8,8 @@
 #   http://eli.thegreenplace.net/2011/04/01/sample-using-qscintilla-with-pyqt
 # -------------------------------------------------------------------------
 
+import autopep8
+
 from PyQt4.QtGui import *
 from PyQt4.Qsci import QsciScintilla, QsciAPIs, QsciLexerPython, QsciLexerHTML, QsciLexerJavaScript, QsciLexerCSS
 
@@ -118,6 +120,14 @@ class BaseEditor(QsciScintilla):
         else:
             self.setEdgeMode(QsciScintilla.EdgeNone)
 
+    def clean_code(self):
+        # Runs a code cleaner to conform code to a certain style a la PEP8
+        pass
+
+    def check_code(self, path):
+        # Runs a code linter to catch mistakes
+        pass
+
 
 class PythonEditor(BaseEditor):
     def __init__(self, parent=None, line_num_margin=3, autocomplete_list=None):
@@ -148,7 +158,10 @@ class PythonEditor(BaseEditor):
         
         # PEP8 edge column line
         self.edgecol = 80
-        
+
+    def clean_code(self):
+        self.setText(autopep8.fix_code(self.text(), options={'aggressive': 2}))
+
 
 class HTMLEditor(BaseEditor):
     def __init__(self, parent=None, line_num_margin=3, autocomplete_list=None):

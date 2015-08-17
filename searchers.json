@@ -1,6 +1,10 @@
 [
-  {"name": "Google",
-  "query_tmpl": "https://www.google.com/search?q={query}"},
+  {"name": "Python 2",
+  "query_tmpl": "https://docs.python.org/2/search.html?q={query}"},
+  {"name": "Python 3",
+  "query_tmpl": "https://docs.python.org/3/search.html?q={query}"},
   {"name": "Read the docs",
-  "query_tmpl": "https://readthedocs.org/search/?q={query}"}
+  "query_tmpl": "https://readthedocs.org/search/?q={query}"},
+  {"name": "Google",
+  "query_tmpl": "https://www.google.com/search?q={query}"}
 ]

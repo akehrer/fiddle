@@ -145,6 +145,10 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.actionShow_Whitespace.triggered.connect(self.set_editors_whitespace)
         self.ui.actionShow_End_of_Line.triggered.connect(self.set_editors_eolchars)
 
+        # Code actions
+        self.ui.actionClean_Code.triggered.connect(self.clean_current_editor)
+        self.ui.actionCheck_Code.triggered.connect(self.check_current_editor)
+
         # Console actions
         self.ui.actionShow_Console.triggered.connect(self.toggle_console)
         self.ui.actionRestart_Console.triggered.connect(self.restart_pyconsole_process)
@@ -330,6 +334,7 @@ class MainWindow(QtGui.QMainWindow):
         # Run the script in the process
         if not os.path.isfile(self.runscript_tab.filepath) or not self.runscript_tab.saved:
             self.runscript_tab.save()
+            self.set_current_run_command(self.runscript_tab)  # Update the command to the saved location
         command = self.ui.runScript_command.text()
         self.runscript_process.start(command)
 
@@ -491,6 +496,17 @@ class MainWindow(QtGui.QMainWindow):
             tab = self.ui.documents_tabWidget.widget(i)
             tab.editor.eolchars = state
 
+    def clean_current_editor(self):
+        self.app.setOverrideCursor(QtCore.Qt.WaitCursor)
+        tab = self.ui.documents_tabWidget.currentWidget()
+        tab.editor.clean_code()
+        self.app.restoreOverrideCursor()
+
+    def check_current_editor(self):
+        self.app.setOverrideCursor(QtCore.Qt.WaitCursor)
+        tab = self.ui.documents_tabWidget.currentWidget()
+        self.app.restoreOverrideCursor()
+
     def toggle_help_pane(self):
         if self.ui.helpBrowser.url().path() == 'blank':
             src = QtCore.QUrl('http://{0}:{1}/'.format(self.pyconsole_server.host, CONSOLE_HELP_PORT))
@@ -595,6 +611,16 @@ class MainWindow(QtGui.QMainWindow):
     def update_cursor_position(self, line, idx):
         self.lbl_current_position.setText('{0}:{1}'.format(line+1, idx+1))  # zero indexed
 
+    def set_current_run_command(self, tab):
+        # set the run script command
+        if PLATFORM == 'win32':
+            command = '{0} "{1}" '.format(self.current_interpreter, tab.filepath)
+        else:
+            command = '{0} {1} '.format(self.current_interpreter, tab.filepath)
+        self.ui.runScript_command.setText(command)
+        self.ui.runScript_command.setToolTip(command)
+        self.runscript_tab = tab
+
     def handle_tab_change(self, idx):
         if idx >= 0:
             tab = self.ui.documents_tabWidget.widget(idx)
@@ -606,14 +632,7 @@ class MainWindow(QtGui.QMainWindow):
                 # don't update run command if checked
                 return
             else:
-                # set the run script command
-                if PLATFORM == 'win32':
-                    command = '{0} "{1}" '.format(self.current_interpreter, tab.filepath)
-                else:
-                    command = '{0} {1} '.format(self.current_interpreter, tab.filepath)
-                self.ui.runScript_command.setText(command)
-                self.ui.runScript_command.setToolTip(command)
-                self.runscript_tab = tab
+                self.set_current_run_command(tab)
         else:
             self.ui.runScript_command.setText('')
             self.runscript_tab = None

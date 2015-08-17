@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="icons">
+    <file>icons/wand.png</file>
+    <file>icons/zoom.png</file>
     <file>icons/python_twosnakes.png</file>
     <file>icons/python_twosnakes_v.png</file>
     <file>icons/add.png</file>

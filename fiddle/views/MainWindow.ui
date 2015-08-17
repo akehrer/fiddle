@@ -629,9 +629,17 @@
     <addaction name="actionWord_Wrap"/>
     <addaction name="menuShow"/>
    </widget>
+   <widget class="QMenu" name="menuCode">
+    <property name="title">
+     <string>Code</string>
+    </property>
+    <addaction name="actionClean_Code"/>
+    <addaction name="actionCheck_Code"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
+   <addaction name="menuCode"/>
    <addaction name="menuShell"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -674,6 +682,9 @@
    <addaction name="separator"/>
    <addaction name="actionRun_Current_Script"/>
    <addaction name="actionHalt_Current_Script"/>
+   <addaction name="separator"/>
+   <addaction name="actionClean_Code"/>
+   <addaction name="actionCheck_Code"/>
    <addaction name="separator"/>
    <addaction name="actionShow_Help_Pane"/>
   </widget>
@@ -897,6 +908,24 @@
    </property>
    <property name="text">
     <string>Word Wrap</string>
+   </property>
+  </action>
+  <action name="actionClean_Code">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/icons/wand.png</normaloff>:/icons/icons/wand.png</iconset>
+   </property>
+   <property name="text">
+    <string>Clean Code</string>
+   </property>
+  </action>
+  <action name="actionCheck_Code">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/icons/zoom.png</normaloff>:/icons/icons/zoom.png</iconset>
+   </property>
+   <property name="text">
+    <string>Check Code</string>
    </property>
   </action>
  </widget>

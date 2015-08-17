@@ -44,6 +44,7 @@ class FiddleTabWidget(QtGui.QWidget):
         self.found_first = False
 
         self.filepath = filepath
+        self.watcher = None
 
     @property
     def filepath(self):
@@ -63,22 +64,20 @@ class FiddleTabWidget(QtGui.QWidget):
             self.encoding = chardet.detect(data)['encoding']
 
             if '.htm' in self.extension:
-                #self.editor = HTMLEditor()
                 self.insert_editor(HTMLEditor())
             elif self.extension == '.js':
-                #self.editor = JavascriptEditor()
                 self.insert_editor(JavascriptEditor())
             elif self.extension == '.css':
-                #self.editor = CSSEditor()
                 self.insert_editor(CSSEditor())
             elif self.extension == '.py':
-                #self.editor = PythonEditor()
                 self.insert_editor(PythonEditor())
             else:
-                #self.editor = BaseEditor()
                 self.insert_editor(BaseEditor())
 
-            self.editor.setText(data.decode(self.encoding))
+            try:
+                self.editor.setText(data.decode(self.encoding))
+            except TypeError:
+                self.editor.setText('')
             self._saved = True
         else:
             self.basepath = None
