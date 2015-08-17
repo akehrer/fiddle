@@ -5,7 +5,8 @@ A Python code editor aimed at new programmers as an alternate to IDLE. Inspired 
 ## Requirements
  - Python 3.4
  - PyQt4
- - chardet
+ - chardet - to guess file encodings
+ - autopep8 - to clean Python files
 
 ![0.1pre](./media/fiddle_0.1pre_main.png)
 

@@ -159,16 +159,17 @@ class MainWindow(QtGui.QMainWindow):
         # Help actions
         self.ui.actionShow_Help_Pane.triggered.connect(self.toggle_help_pane)
         self.ui.actionAbout_fIDDEL.triggered.connect(self.show_about_fiddle)
-        #self.ui.actionFIDDLE_Help.triggered.connect()  # TODO
+        #self.ui.actionFIDDLE_Help.triggered.connect()  # TODO: Create
 
     def init_search_providers(self):
         ag = QtGui.QActionGroup(self)
         ag.setExclusive(True)
         for item in HELP_WEB_SEARCH_SOURCES:
             a = QtGui.QAction(self)
+            a.setData(item)
             a.setText(item['name'])
             a.setCheckable(True)
-            a.triggered.connect(lambda x: self.set_search_provider(item['name'], item['query_tmpl']))
+            a.triggered.connect(self.set_search_provider)
             ag.addAction(a)
             self.ui.menuSearch_Provider.addAction(a)
             if item['name'] == HELP_WEB_SEARCH_SOURCES[0]['name']:
@@ -519,14 +520,16 @@ class MainWindow(QtGui.QMainWindow):
             self.ui.helpSearch.setFocus()
 
     def toggle_console(self):
-        if self.ui.console_tabWidget.isHidden():
-            self.ui.console_tabWidget.show()
+        if self.ui.consolePane.isHidden():
+            self.ui.consolePane.show()
         else:
-            self.ui.console_tabWidget.hide()
+            self.ui.consolePane.hide()
 
-    def set_search_provider(self, provider, query_str):
-        self.search_url = query_str
-        self.ui.searchProvider_label.setText(provider)
+    def set_search_provider(self):
+        action = self.sender()
+        data = action.data()
+        self.search_url = data['query_tmpl']
+        self.ui.searchProvider_label.setText(data['name'])
 
     def show_about_fiddle(self):
         message_box = QtGui.QMessageBox()
