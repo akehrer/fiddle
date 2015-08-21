@@ -46,7 +46,7 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.helpPane.hide()
 
         # Hide the Find/Replace frame
-        self.ui.findReplace_Frame.hide()
+        self.ui.findPane.hide()
 
         # Initialize interpreters
         self.current_interpreter = CONSOLE_PYTHON
@@ -476,10 +476,10 @@ class MainWindow(QtGui.QMainWindow):
             self.close_tab(0)
 
     def close_tab(self, idx):
-        # removing the tab doesn't get the widget, so we need to get that first
+        # removing the tab doesn't get the widget, so we need to get that first...
         widget = self.ui.documents_tabWidget.widget(idx)
         self.ui.documents_tabWidget.removeTab(idx)
-        # then delete it
+        # ...then delete it
         del widget
 
     def set_editors_wordwrap(self, state):
@@ -506,6 +506,7 @@ class MainWindow(QtGui.QMainWindow):
     def check_current_editor(self):
         self.app.setOverrideCursor(QtCore.Qt.WaitCursor)
         tab = self.ui.documents_tabWidget.currentWidget()
+        tab.editor.check_code(tab.filepath)
         self.app.restoreOverrideCursor()
 
     def toggle_help_pane(self):
@@ -550,8 +551,8 @@ class MainWindow(QtGui.QMainWindow):
             self.init_interpreters()
 
     def find_in_file(self):
-        if self.ui.findReplace_Frame.isHidden():
-            self.ui.findReplace_Frame.show()
+        if self.ui.findPane.isHidden():
+            self.ui.findPane.show()
             
         self.ui.find_text_lineEdit.setFocus()
         self.ui.find_text_lineEdit.selectAll()
@@ -579,8 +580,8 @@ class MainWindow(QtGui.QMainWindow):
                                       forward=False)
 
     def replace_in_file(self):
-        if self.ui.findReplace_Frame.isHidden():
-            self.ui.findReplace_Frame.show()
+        if self.ui.findPane.isHidden():
+            self.ui.findPane.show()
             self.ui.find_text_lineEdit.setFocus()
 
         if self.ui.replace_text_lineEdit.text() != '':
@@ -598,12 +599,13 @@ class MainWindow(QtGui.QMainWindow):
         if self.ui.replace_text_lineEdit.text() != '':
             current_doc = self.ui.documents_tabWidget.currentWidget()
             if current_doc is not None:
-                current_doc.replace_all_text(self.ui.find_text_lineEdit.text(),
-                                             self.ui.replace_text_lineEdit.text(),
-                                             self.ui.find_re_checkBox.isChecked(),
-                                             self.ui.find_case_checkBox.isChecked(),
-                                             self.ui.find_word_checkBox.isChecked(),
-                                             self.ui.find_selection_checkBox.isChecked())
+                i = current_doc.replace_all_text(self.ui.find_text_lineEdit.text(),
+                                                 self.ui.replace_text_lineEdit.text(),
+                                                 self.ui.find_re_checkBox.isChecked(),
+                                                 self.ui.find_case_checkBox.isChecked(),
+                                                 self.ui.find_word_checkBox.isChecked(),
+                                                 self.ui.find_selection_checkBox.isChecked())
+                self.ui.statusbar.showMessage(self.tr('Replaced {0} instances').format(i), 5000)
 
     def update_tab_title(self):
         idx = self.ui.documents_tabWidget.currentIndex()

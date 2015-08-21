@@ -16,22 +16,13 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_7">
     <property name="spacing">
-     <number>0</number>
-    </property>
-    <property name="leftMargin">
      <number>5</number>
     </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>5</number>
-    </property>
-    <property name="bottomMargin">
+    <property name="margin">
      <number>0</number>
     </property>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_5" stretch="2,0">
+     <layout class="QVBoxLayout" name="verticalLayout_5" stretch="0,0">
       <property name="spacing">
        <number>0</number>
       </property>
@@ -79,148 +70,135 @@
        </widget>
       </item>
       <item>
-       <widget class="QFrame" name="findReplace_Frame">
-        <property name="enabled">
-         <bool>true</bool>
+       <widget class="QDockWidget" name="findPane">
+        <property name="features">
+         <set>QDockWidget::DockWidgetClosable</set>
         </property>
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
+        <property name="allowedAreas">
+         <set>Qt::BottomDockWidgetArea</set>
         </property>
-        <property name="frameShadow">
-         <enum>QFrame::Raised</enum>
+        <property name="windowTitle">
+         <string>Find/Replace</string>
         </property>
-        <layout class="QGridLayout" name="gridLayout" columnstretch="0,2,0,0,0">
-         <property name="sizeConstraint">
-          <enum>QLayout::SetMinimumSize</enum>
-         </property>
-         <property name="leftMargin">
-          <number>5</number>
-         </property>
-         <property name="topMargin">
-          <number>1</number>
-         </property>
-         <property name="rightMargin">
-          <number>5</number>
-         </property>
-         <property name="bottomMargin">
-          <number>1</number>
-         </property>
-         <property name="spacing">
-          <number>1</number>
-         </property>
-         <item row="1" column="3">
-          <widget class="QPushButton" name="find_next_Button">
-           <property name="text">
-            <string>Next</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>Find</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1" colspan="2">
-          <widget class="QLineEdit" name="find_text_lineEdit"/>
-         </item>
-         <item row="2" column="1" colspan="2">
-          <widget class="QLineEdit" name="replace_text_lineEdit"/>
-         </item>
-         <item row="2" column="3">
-          <widget class="QPushButton" name="replace_Button">
-           <property name="text">
-            <string>Replace</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>Replace</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="4">
-          <widget class="QPushButton" name="find_previous_Button">
-           <property name="text">
-            <string>Previous</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="4">
-          <widget class="QPushButton" name="replace_all_Button">
-           <property name="text">
-            <string>Replace All</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0" colspan="5">
-          <layout class="QHBoxLayout" name="horizontalLayout_3">
-           <item>
-            <widget class="QCheckBox" name="find_re_checkBox">
-             <property name="text">
-              <string>RegEx</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="find_case_checkBox">
-             <property name="text">
-              <string>Match Case</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="find_word_checkBox">
-             <property name="text">
-              <string>Whole Word</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="find_selection_checkBox">
-             <property name="text">
-              <string>In Selection</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="QToolButton" name="findPaneHide_toolButton">
-             <property name="font">
-              <font>
-               <weight>50</weight>
-               <italic>false</italic>
-               <bold>false</bold>
-               <underline>false</underline>
-               <strikeout>false</strikeout>
-              </font>
-             </property>
-             <property name="text">
-              <string>X</string>
-             </property>
-             <property name="autoRaise">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
+        <widget class="QWidget" name="dockWidgetContents_3">
+         <layout class="QVBoxLayout" name="verticalLayout_8">
+          <property name="spacing">
+           <number>5</number>
+          </property>
+          <property name="leftMargin">
+           <number>5</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>5</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <widget class="QCheckBox" name="find_re_checkBox">
+              <property name="text">
+               <string>RegEx</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="find_case_checkBox">
+              <property name="text">
+               <string>Match Case</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="find_word_checkBox">
+              <property name="text">
+               <string>Whole Word</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="find_selection_checkBox">
+              <property name="text">
+               <string>In Selection</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QGridLayout" name="gridLayout">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_2">
+              <property name="text">
+               <string>Find</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="find_text_lineEdit"/>
+            </item>
+            <item row="0" column="2">
+             <widget class="QPushButton" name="find_next_Button">
+              <property name="text">
+               <string>Next</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QPushButton" name="find_previous_Button">
+              <property name="text">
+               <string>Previous</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_3">
+              <property name="text">
+               <string>Replace</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLineEdit" name="replace_text_lineEdit"/>
+            </item>
+            <item row="1" column="2">
+             <widget class="QPushButton" name="replace_Button">
+              <property name="text">
+               <string>Replace</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3">
+             <widget class="QPushButton" name="replace_all_Button">
+              <property name="text">
+               <string>Replace All</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+         <zorder>documents_tabWidget</zorder>
+         <zorder></zorder>
+         <zorder></zorder>
+        </widget>
        </widget>
       </item>
      </layout>
@@ -404,6 +382,12 @@
      </property>
      <item>
       <widget class="QWidget" name="helpFrame" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,0,0,1">
         <property name="spacing">
          <number>2</number>
@@ -455,6 +439,18 @@
         </item>
         <item>
          <widget class="QWebView" name="helpBrowser">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>320</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="url">
            <url>
             <string>about:blank</string>
@@ -469,6 +465,12 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="consolePane">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <property name="features">
     <set>QDockWidget::DockWidgetClosable</set>
    </property>
@@ -482,6 +484,12 @@
     <number>8</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_2">
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
     <layout class="QVBoxLayout" name="verticalLayout_6">
      <property name="leftMargin">
       <number>5</number>
@@ -986,62 +994,14 @@
  </resources>
  <connections>
   <connection>
-   <sender>documents_tabWidget</sender>
-   <signal>tabCloseRequested(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>close_tab(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>377</x>
-     <y>154</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>448</x>
-     <y>28</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>documents_tabWidget</sender>
-   <signal>currentChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>handle_tab_change(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>530</x>
-     <y>167</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>631</x>
-     <y>26</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>findPaneHide_toolButton</sender>
-   <signal>clicked()</signal>
-   <receiver>findReplace_Frame</receiver>
-   <slot>hide()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>793</x>
-     <y>492</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>439</x>
-     <y>553</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>find_next_Button</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>find_in_file()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>700</x>
-     <y>522</y>
+     <x>928</x>
+     <y>517</y>
     </hint>
     <hint type="destinationlabel">
      <x>422</x>
@@ -1056,8 +1016,8 @@
    <slot>find_in_file_previous()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>794</x>
-     <y>522</y>
+     <x>1028</x>
+     <y>517</y>
     </hint>
     <hint type="destinationlabel">
      <x>701</x>
@@ -1072,8 +1032,8 @@
    <slot>find_in_file()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>382</x>
-     <y>519</y>
+     <x>441</x>
+     <y>514</y>
     </hint>
     <hint type="destinationlabel">
      <x>599</x>
@@ -1088,8 +1048,8 @@
    <slot>replace_in_file()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>700</x>
-     <y>551</y>
+     <x>928</x>
+     <y>552</y>
     </hint>
     <hint type="destinationlabel">
      <x>620</x>
@@ -1104,8 +1064,8 @@
    <slot>replace_all_in_file()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>794</x>
-     <y>551</y>
+     <x>1028</x>
+     <y>552</y>
     </hint>
     <hint type="destinationlabel">
      <x>721</x>
@@ -1200,8 +1160,8 @@
    <slot>run_web_search()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>883</x>
-     <y>122</y>
+     <x>1259</x>
+     <y>123</y>
     </hint>
     <hint type="destinationlabel">
      <x>921</x>
@@ -1222,6 +1182,38 @@
     <hint type="destinationlabel">
      <x>1328</x>
      <y>813</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>documents_tabWidget</sender>
+   <signal>tabCloseRequested(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close_tab(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>530</x>
+     <y>271</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>529</x>
+     <y>834</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>replace_text_lineEdit</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>replace_in_file()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>334</x>
+     <y>544</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>336</x>
+     <y>832</y>
     </hint>
    </hints>
   </connection>

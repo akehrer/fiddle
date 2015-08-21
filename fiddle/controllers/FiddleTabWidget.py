@@ -184,17 +184,23 @@ class FiddleTabWidget(QtGui.QWidget):
             self.find_text(old_expr, re, cs, wo, wrap, in_select, forward, line, index, show, posix)
 
     def replace_all_text(self, old_expr, new_text, re, cs, wo, in_select=False):
+        i = 0
         if in_select:
             if self.editor.findFirstInSelection(old_expr, re, cs, wo, False):
                 self.editor.replace(new_text)
+                i = 1
                 while self.editor.findNext():
                     self.editor.replace(new_text)
+                    i += 1
         else:
             # Start from the beginning of the document and work to the end
             if self.editor.findFirst(old_expr, re, cs, wo, False, True, 0, 0):
                 self.editor.replace(new_text)
+                i = 1
                 while self.editor.findNext():
                     self.editor.replace(new_text)
+                    i += 1
+        return i
 
     def _write_file(self, filepath):
         with open(filepath, 'wb') as fp:

@@ -50,7 +50,7 @@ class FiddleMainWindowTest(unittest.TestCase):
             QTest.keyClick(self.form.pyconsole_input, Qt.Key_Up)
             self.assertEqual("i = '{0}'".format(ts), self.form.pyconsole_input.text())
 
-        # Check down arrow agaist history
+        # Check down arrow against history
         for ts in test_strs[1:]:
             QTest.keyClick(self.form.pyconsole_input, Qt.Key_Down)
             self.assertEqual("i = '{0}'".format(ts), self.form.pyconsole_input.text())
