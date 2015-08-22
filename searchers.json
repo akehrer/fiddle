@@ -1,7 +1,7 @@
 [
-  {"name": "Python 2",
+  {"name": "Python 2 (python.org)",
   "query_tmpl": "https://docs.python.org/2/search.html?q={query}"},
-  {"name": "Python 3",
+  {"name": "Python 3 (python.org)",
   "query_tmpl": "https://docs.python.org/3/search.html?q={query}"},
   {"name": "Read the docs",
   "query_tmpl": "https://readthedocs.org/search/?q={query}"},

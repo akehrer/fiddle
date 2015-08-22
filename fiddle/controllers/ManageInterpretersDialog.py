@@ -50,8 +50,11 @@ class ManageInterpretersDialog(QtGui.QDialog):
         self.ui.pyInterpreters_List.clear()
         for item in self.temp_interpreters:
             w = QtGui.QListWidgetItem()
-            w.setText(item)
-            w.setIcon(self.py_icon)
+            w.setText(item['path'])
+            if item['virtualenv']:
+                w.setIcon(self.pyvenv_icon)
+            else:
+                w.setIcon(self.py_icon)
             self.ui.pyInterpreters_List.addItem(w)
 
     def add_interpreter(self):
@@ -60,7 +63,15 @@ class ManageInterpretersDialog(QtGui.QDialog):
                                                      '/',
                                                      'python.exe' if PLATFORM == 'win32' else 'python')
         if filepath != '':
-            self.temp_interpreters.append(filepath)
+            interpreter = {'path': filepath, 'virtualenv': False}
+            # Check for virtual environment scripts
+            basepath, filename = os.path.split(filepath)
+            files = os.listdir(basepath)
+            for f in files:
+                if f.startswith('activate'):
+                    interpreter['virtualenv'] = True
+                    break
+            self.temp_interpreters.append(interpreter)
             self.init_elements()
 
     def remove_interpreter(self):

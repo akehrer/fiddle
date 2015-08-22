@@ -199,7 +199,7 @@ class MainWindow(QtGui.QMainWindow):
         for item in CONSOLE_PYTHON_INTERPRETERS:
             a = QtGui.QAction(self)
             a.setData(item)
-            a.setText(self._elide_filepath(os.path.dirname(item), threshold=50, margin=10))
+            a.setText(self._elide_filepath(os.path.dirname(item['path']), threshold=50, margin=10))
             a.setCheckable(True)
             a.triggered.connect(self.set_current_interpreter)
             ag.addAction(a)
@@ -246,9 +246,9 @@ class MainWindow(QtGui.QMainWindow):
 
     def set_current_interpreter(self):
         action = self.sender()
-        path = action.data()
-        if os.path.exists(path):
-            self.current_interpreter = os.path.normpath(path)
+        item = action.data()
+        if os.path.exists(item['path']):
+            self.current_interpreter = os.path.normpath(item['path'])
             self.current_interpreter_dir = os.path.dirname(self.current_interpreter)
             self.restart_pyconsole_process()
             self.restart_pyconsole_help()
