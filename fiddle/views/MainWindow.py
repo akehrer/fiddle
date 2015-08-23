@@ -106,7 +106,6 @@ class Ui_MainWindow(object):
         self.replace_all_Button.setObjectName(_fromUtf8("replace_all_Button"))
         self.gridLayout.addWidget(self.replace_all_Button, 1, 3, 1, 1)
         self.verticalLayout_8.addLayout(self.gridLayout)
-        self.documents_tabWidget.raise_()
         self.findPane.setWidget(self.dockWidgetContents_3)
         self.verticalLayout_5.addWidget(self.findPane)
         self.verticalLayout_7.addLayout(self.verticalLayout_5)
@@ -502,6 +501,7 @@ class Ui_MainWindow(object):
         QtCore.QObject.connect(self.web_search_Button, QtCore.SIGNAL(_fromUtf8("clicked()")), MainWindow.run_web_search)
         QtCore.QObject.connect(self.documents_tabWidget, QtCore.SIGNAL(_fromUtf8("tabCloseRequested(int)")), MainWindow.close_tab)
         QtCore.QObject.connect(self.replace_text_lineEdit, QtCore.SIGNAL(_fromUtf8("returnPressed()")), MainWindow.replace_in_file)
+        QtCore.QObject.connect(self.documents_tabWidget, QtCore.SIGNAL(_fromUtf8("currentChanged(int)")), MainWindow.handle_tab_change)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
