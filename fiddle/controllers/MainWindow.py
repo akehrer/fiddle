@@ -189,7 +189,10 @@ class MainWindow(QtGui.QMainWindow):
         # Set default interpreter
         a = QtGui.QAction(self)
         a.setData(CONSOLE_PYTHON)
-        a.setText('(Default) ' + self._elide_filepath(CONSOLE_PYTHON_DIR, threshold=30))
+        if PLATFORM == 'win32':
+            a.setText(self.tr('(Default) {0}'.format(os.path.dirname(CONSOLE_PYTHON))))
+        else:
+            a.setText(self.tr('(Default) {0}'.format(CONSOLE_PYTHON)))
         a.setCheckable(True)
         a.setChecked(True)
         a.triggered.connect(self.set_current_interpreter)
@@ -199,7 +202,13 @@ class MainWindow(QtGui.QMainWindow):
         for item in CONSOLE_PYTHON_INTERPRETERS:
             a = QtGui.QAction(self)
             a.setData(item)
-            a.setText(self._elide_filepath(os.path.dirname(item['path']), threshold=50, margin=10))
+            if item['virtualenv']:
+                a.setText(self._elide_filepath(os.path.dirname(item['path']), threshold=50, margin=10))
+            else:
+                if PLATFORM == 'win32':
+                    a.setText(os.path.dirname(item['path']))
+                else:
+                    a.setText(item['path'])
             a.setCheckable(True)
             a.triggered.connect(self.set_current_interpreter)
             ag.addAction(a)
@@ -236,7 +245,7 @@ class MainWindow(QtGui.QMainWindow):
         self.lbl_encoding.setMargin(5)
         self.lbl_encoding.setToolTip(self.tr('File encoding'))
         self.ui.statusbar.insertPermanentWidget(0, self.lbl_encoding)
-        self.lbl_encoding.setText('utf-8')
+        self.lbl_encoding.setText('UTF-8')
 
         self.lbl_current_position = QtGui.QLabel()
         self.lbl_current_position.setMargin(5)
@@ -254,6 +263,8 @@ class MainWindow(QtGui.QMainWindow):
             self.restart_pyconsole_help()
             idx = self.ui.documents_tabWidget.currentIndex()
             self.handle_tab_change(idx)
+        else:
+            self.ui.statusbar.showMessage(self.tr('No Python executable at {0}').format(item['path']), 5000)
 
     def start_pyconsole_process(self):
         # Create a shell process
@@ -658,7 +669,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def send_pyconsole_command(self):
         command = self.pyconsole_input.text()
-        self.pyconsole_process.write('{0}\n'.format(command).encode('utf-8'))
+        self.pyconsole_process.write('{0}\n'.format(command))
         cursor = self.ui.pyConsole_output.textCursor()
         cursor.movePosition(QtGui.QTextCursor.End)
         cursor.insertText('{0}{1}'.format(command, os.linesep))

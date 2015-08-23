@@ -44,6 +44,54 @@ class FiddleMainWindowTest(unittest.TestCase):
         self.form.current_interpreter = old_int
         self.form.current_interpreter_dir = old_int_dir
 
+    def test_pyconsolelineedit_ascii(self):
+        self.form.ui.pyConsole_output.clear()
+        console_pre_txt = self.form.ui.pyConsole_output.toPlainText()
+        test_str = ascii_letters + digits + punctuation
+        self.form.pyconsole_input.setText("i = '{0}'".format(test_str))
+        QTest.keyClick(self.form.pyconsole_input, Qt.Key_Return)
+
+        console_post_txt = self.form.ui.pyConsole_output.toPlainText()
+        self.assertNotEqual(console_pre_txt, console_post_txt)
+        self.assertTrue(test_str in console_post_txt)
+
+    def test_pyconsolelineedit_history(self):
+        self.form.ui.pyConsole_output.clear()
+        test_strs = [ascii_letters, digits, punctuation]
+        # Load the history
+        for ts in test_strs:
+            self.form.pyconsole_input.setText("i = '{0}'".format(ts))
+            QTest.keyClick(self.form.pyconsole_input, Qt.Key_Return)
+
+        # Check up arrow against history
+        self.assertEqual('', self.form.pyconsole_input.text())
+        for ts in reversed(test_strs):
+            QTest.keyClick(self.form.pyconsole_input, Qt.Key_Up)
+            self.assertEqual("i = '{0}'".format(ts), self.form.pyconsole_input.text())
+
+        # Check down arrow against history
+        for ts in test_strs[1:]:
+            QTest.keyClick(self.form.pyconsole_input, Qt.Key_Down)
+            self.assertEqual("i = '{0}'".format(ts), self.form.pyconsole_input.text())
+
+        # Last down arrow should clear the input
+        QTest.keyClick(self.form.pyconsole_input, Qt.Key_Down)
+        self.assertEqual('', self.form.pyconsole_input.text())
+
+    def test_console_NameError_link(self):
+        """
+        Cause a NameError on the console and check that it results in a help//: link
+        :return:
+        """
+        self.form.ui.pyConsole_output.clear()
+        console_pre_txt = self.form.ui.pyConsole_output.toPlainText()
+        self.form.pyconsole_input.setText('i')
+        QTest.keyClick(self.form.pyconsole_input, Qt.Key_Return, delay=200)
+        console_post_txt = self.form.ui.pyConsole_output.toPlainText()
+        console_post_html = self.form.ui.pyConsole_output.toHtml()
+        self.assertNotEqual(console_pre_txt, console_post_txt)
+        self.assertTrue('href="help://?object=NameError' in console_post_html)
+
 
 if __name__ == "__main__":
     unittest.main()

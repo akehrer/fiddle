@@ -61,18 +61,20 @@ class ManageInterpretersDialog(QtGui.QDialog):
         filepath = QtGui.QFileDialog.getOpenFileName(None,
                                                      None,
                                                      '/',
-                                                     'python.exe' if PLATFORM == 'win32' else 'python')
+                                                     'python.exe' if PLATFORM == 'win32' else 'python*')
         if filepath != '':
-            interpreter = {'path': filepath, 'virtualenv': False}
-            # Check for virtual environment scripts
-            basepath, filename = os.path.split(filepath)
-            files = os.listdir(basepath)
-            for f in files:
-                if f.startswith('activate'):
-                    interpreter['virtualenv'] = True
-                    break
-            self.temp_interpreters.append(interpreter)
-            self.init_elements()
+            # Check for executable
+            if os.path.isfile(filepath) and os.access(filepath, os.X_OK):
+                interpreter = {'path': filepath, 'virtualenv': False}
+                # Check for virtual environment scripts
+                basepath, filename = os.path.split(filepath)
+                files = os.listdir(basepath)
+                for f in files:
+                    if f.startswith('activate'):
+                        interpreter['virtualenv'] = True
+                        break
+                self.temp_interpreters.append(interpreter)
+                self.init_elements()
 
     def remove_interpreter(self):
         item = self.ui.pyInterpreters_List.takeItem(self.ui.pyInterpreters_List.currentRow())
