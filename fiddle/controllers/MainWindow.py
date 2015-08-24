@@ -80,7 +80,7 @@ class MainWindow(QtGui.QMainWindow):
         self.search_url = ''
         self.init_search_providers()
 
-        # Intialize recent files
+        # Initialize recent files
         self.recent_files = []
         self.init_open_recent()
 
@@ -106,10 +106,17 @@ class MainWindow(QtGui.QMainWindow):
         except AttributeError:
             pass
 
-    def init_load_files(self, files):
-        if files is not None and len(files) > 0:
+    def init_load_files(self, paths):
+        """
+        Given a list of paths, open all the files found. If a path is a directory then open all the files in that
+        directory.
+
+        :param list paths:
+        :return:
+        """
+        if paths is not None and len(paths) > 0:
             # Open all the files
-            for path in files:
+            for path in paths:
                 if os.path.isfile(path):
                     self.open_filepath(path)
                 elif os.path.isdir(path):
@@ -406,17 +413,30 @@ class MainWindow(QtGui.QMainWindow):
             self.open_filepath(action.data())
 
     def update_recent_files(self, filepath):
-        # Save filepath to recent files, truncating to 10 files and removing duplicates
+        """
+        Save file path to recent files, truncating to 10 files and removing duplicates.
+
+        :param str filepath:
+        :return:
+        """
         try:
             self.recent_files.append(filepath)
         except AttributeError:
             self.recent_files = []
             self.recent_files.append(filepath)
+        # Remove duplicates
+        seen = []
+        filtered = []
+        for item in self.recent_files:
+            if item in seen:
+                continue
+            seen.append(item)
+            filtered.append(item)
         with open('.recent', 'w') as fp:
-            if len(self.recent_files) > 10:
-                fp.write('\n'.join(set(self.recent_files[-10:])))
+            if len(filtered) > 10:
+                fp.write('\n'.join(filtered[-10:]))
             else:
-                fp.write('\n'.join(set(self.recent_files)))
+                fp.write('\n'.join(filtered))
         self.create_recent_files_menu()
 
     def create_recent_files_menu(self):
@@ -494,27 +514,61 @@ class MainWindow(QtGui.QMainWindow):
         del widget
 
     def set_editors_wordwrap(self, state):
+        """
+        Set the display of the word wrap in all the editors.
+
+        :param bool state:
+        :return:
+
+        See QsiScinitilla.setWrapMode()
+        """
         for i in range(self.ui.documents_tabWidget.count()):
             tab = self.ui.documents_tabWidget.widget(i)
             tab.editor.wordwrap = state
 
     def set_editors_whitespace(self, state):
+        """
+        Set the display of the whitespace characters in all the editors.
+
+        :param bool state:
+        :return:
+
+        See QsiScinitilla.setEolVisibility()
+        """
         for i in range(self.ui.documents_tabWidget.count()):
             tab = self.ui.documents_tabWidget.widget(i)
             tab.editor.whitespace = state
 
     def set_editors_eolchars(self, state):
+        """
+        Set the display of the end-of-line characters in all the editors
+
+        :param bool state:
+        :return:
+
+        See QsiScinitilla.setWhitespaceVisibility()
+        """
         for i in range(self.ui.documents_tabWidget.count()):
             tab = self.ui.documents_tabWidget.widget(i)
             tab.editor.eolchars = state
 
     def clean_current_editor(self):
+        """
+        Run the `clean_code` function in the currenly displayed editor widget.
+
+        :return:
+        """
         self.app.setOverrideCursor(QtCore.Qt.WaitCursor)
         tab = self.ui.documents_tabWidget.currentWidget()
         tab.editor.clean_code()
         self.app.restoreOverrideCursor()
 
     def check_current_editor(self):
+        """
+        Run the `check_code` function in the currently displayed editor widget.
+
+        :return:
+        """
         self.app.setOverrideCursor(QtCore.Qt.WaitCursor)
         tab = self.ui.documents_tabWidget.currentWidget()
         tab.editor.check_code(tab.filepath)
@@ -553,6 +607,11 @@ class MainWindow(QtGui.QMainWindow):
         message_box.exec_()
 
     def show_manage_interpreters(self):
+        """
+        Display the Manage Interpreters dialog and save any changes if the Save button in clicked.
+
+        :return:
+        """
         dialog = ManageInterpretersDialog(self)
         ret = dialog.exec_()
         if ret == QtGui.QDialog.Accepted:
@@ -625,6 +684,13 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.documents_tabWidget.setTabText(idx, tabname)
 
     def update_cursor_position(self, line, idx):
+        """
+        Process cursor position changes from editors for display in statusbar.
+
+        :param int line:
+        :param int idx:
+        :return:
+        """
         self.lbl_current_position.setText('{0}:{1}'.format(line+1, idx+1))  # zero indexed
 
     def set_current_run_command(self, tab):
@@ -677,10 +743,38 @@ class MainWindow(QtGui.QMainWindow):
         self.pyconsole_input.setText("")
 
     def load_anchor(self, url):
+        """
+        This slot processes URLs for specific actions internal to the application or loads the URLs in the system
+        web browser.
+
+        :param QtCore.QUrl url:
+            The URL to process, it may have schemes beyond http(s)
+        :return bool:
+            Whether the function handled the signal or not
+
+        URLs may have schemes beyond http(s) that the application recognizes and processes for display by the
+        built-in browser widget.  They follow the standard format {scheme}://{query} where query is a standard URL
+        query (?item1=var1&item2=var2)
+        Schemes:
+        - help: load current interpreter's documentation for a specific Python object, often used to link to error
+                documentation in the console tracebacks
+            - Query items:
+                - object: the Python object to get docstring
+                - text: the full text that caused the link to the object (often an error), this is loaded in to the
+                        help search line widget
+        - goto: load a file in to an editor tab and move the cursor to the beginning of a specific line, often used to
+                show the user where in a file and error was raised in the console tracebacks
+            - Query items:
+                - filepath: the full path to the file to load
+                - linenum: the line number to move the cursor to
+        - http(s): load the full URL in the system browser
+        """
         scheme = url.scheme()
         ret = False
         if scheme == 'help':
             query = dict(url.queryItems())  # queryItems returns list of tuples
+            src = QtCore.QUrl('http://{0}:{1}/'.format(CONSOLE_HOST,
+                                                       CONSOLE_HELP_PORT))
             if self.pyconsole_pyversion[0] == 2:
                 if query['object'] in py2_exceptions:
                     src = QtCore.QUrl('http://{0}:{1}/exceptions.html#{2}'.format(CONSOLE_HOST,
@@ -689,11 +783,8 @@ class MainWindow(QtGui.QMainWindow):
             elif self.pyconsole_pyversion[0] == 3:
                 if query['object'] in py3_exceptions:
                     src = QtCore.QUrl('http://{0}:{1}/builtins.html#{2}'.format(CONSOLE_HOST,
-                                                                                  CONSOLE_HELP_PORT,
-                                                                                  query['object']))
-            else:
-                src = QtCore.QUrl('http://{0}:{1}/exceptions.html'.format(CONSOLE_HOST,
-                                                                          CONSOLE_HELP_PORT))
+                                                                                CONSOLE_HELP_PORT,
+                                                                                query['object']))
             try:
                 self.ui.helpBrowser.setUrl(src)
                 self.ui.helpSearch.setText(urllib.parse.unquote_plus(query['text']))
@@ -706,10 +797,11 @@ class MainWindow(QtGui.QMainWindow):
             filepath = urllib.parse.unquote_plus(query['filepath'])
             linenum = int(query['linenum']) - 1
             found = False
+            # Is the file already open?
             for i in range(self.ui.documents_tabWidget.count()):
                 tab = self.ui.documents_tabWidget.widget(i)
+                # Take care of slash discrepancies, ahem Windows
                 if os.path.normcase(tab.filepath) == os.path.normcase(filepath):
-                    # Take care of slash discrepancies, ahem Windows
                     self.ui.documents_tabWidget.setCurrentWidget(tab)
                     tab.editor.setCursorPosition(linenum, 0)
                     tab.editor.ensureLineVisible(linenum)
@@ -724,10 +816,16 @@ class MainWindow(QtGui.QMainWindow):
                     tab.editor.ensureLineVisible(linenum)
                     tab.editor.setFocus()
                 except AttributeError:
-                    # TODO: file doesn't exist error
-                    pass
+                    message_box = QtGui.QMessageBox()
+                    message_box.setWindowTitle(self.tr('File Error'))
+                    message_box.setText(self.tr('Cannot open file'))
+                    message_box.setInformativeText(self.tr('The file at {0} cannot be opened.').format(filepath))
+                    ok_btn = message_box.addButton(QtGui.QMessageBox.Ok)
+                    message_box.setDefaultButton(ok_btn)
+                    message_box.exec_()
             ret = True
         elif scheme == 'http' or scheme == 'https':
+            # Open URL in system browser
             ret = QtGui.QDesktopServices.openUrl(url)
 
         if not ret:
@@ -740,6 +838,12 @@ class MainWindow(QtGui.QMainWindow):
             message_box.exec_()
 
     def run_web_search(self):
+        """
+        Combine the search text from the search input with the current web search template and open it with the system
+        browser.
+
+        :return:
+        """
         query = self.ui.helpSearch.text()
         url = self.search_url.format(query=urllib.parse.quote_plus(query))
         qurl = QtCore.QUrl(url)
@@ -765,7 +869,18 @@ class MainWindow(QtGui.QMainWindow):
         cursor.movePosition(QtGui.QTextCursor.End)
         self.ui.runScript_output.ensureCursorVisible()
 
-    def process_traceback(self, lines, cursor):
+    def process_stderr_lines(self, lines, cursor):
+        """
+        Process lines from a Python interpreter stderr. For tracebacks additional information is added.
+
+        :param list lines:
+        :param QtGui.QTextCursor cursor:
+        :return:
+
+        Lines from stderr often contain traceback data. This function processes those lines and adds additional
+        information to help the user troubleshoot. For example links are created to error documentation and to lines
+        in source files where errors were raised. The output is entered on the text cursor provided by `cursor`.
+        """
         for line in lines:
             line = line + os.linesep  # Line separators were stripped off in the split, add them back
             ll = line.lower()
@@ -819,6 +934,7 @@ class MainWindow(QtGui.QMainWindow):
         lines = data.data().decode().split(os.linesep)
         for line in lines:
             line = line + os.linesep  # Line separators were stripped off in the split, add them back
+            # Create clickable links
             m = CONSOLE_RE_HTTP.findall(line)
             if m:
                 linked = line
@@ -835,7 +951,7 @@ class MainWindow(QtGui.QMainWindow):
         lines = data.data().decode().split(os.linesep)
         cursor = self.ui.pyConsole_output.textCursor()
         cursor.movePosition(QtGui.QTextCursor.End)
-        self.process_traceback(lines, cursor)
+        self.process_stderr_lines(lines, cursor)
         cursor.movePosition(QtGui.QTextCursor.End)
         self.ui.pyConsole_output.ensureCursorVisible()
 
@@ -875,7 +991,7 @@ class MainWindow(QtGui.QMainWindow):
         lines = data.data().decode().split(os.linesep)
         cursor = self.ui.runScript_output.textCursor()
         cursor.movePosition(QtGui.QTextCursor.End)
-        self.process_traceback(lines, cursor)
+        self.process_stderr_lines(lines, cursor)
         cursor.movePosition(QtGui.QTextCursor.End)
         self.ui.runScript_output.ensureCursorVisible()
 
@@ -899,7 +1015,7 @@ class MainWindow(QtGui.QMainWindow):
         lines = data.data().decode().split(os.linesep)
         cursor = self.ui.runScript_output.textCursor()
         cursor.movePosition(QtGui.QTextCursor.End)
-        self.process_traceback(lines, cursor)
+        self.process_stderr_lines(lines, cursor)
         cursor.movePosition(QtGui.QTextCursor.End)
         self.ui.runScript_output.ensureCursorVisible()
 
@@ -914,6 +1030,16 @@ class MainWindow(QtGui.QMainWindow):
 
     @staticmethod
     def _elide_filepath(path, threshold=20, margin=5):
+        """
+        Shorten a file path string using '...' for easier display
+        :param str path:
+            The file path to shorten
+        :param int threshold:
+            Paths with lengths less than then will not be shortened
+        :param int margin:
+            This many characters will be kept before and after the '...'
+        :return str:
+        """
         basepath, filename = os.path.split(path)
         if len(basepath) > threshold:
             return '{0}...{1}{sep}{2}'.format(basepath[:margin], basepath[-margin:], filename, sep=os.sep)
