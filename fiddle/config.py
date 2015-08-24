@@ -73,8 +73,8 @@ EDITOR_CARET_LINE_COLOR = '#ffffe0'
 
 # Python Console Configuration
 CONSOLE_HOST = '127.0.0.1'
-CONSOLE_PYTHON = find_python_exe()
-CONSOLE_PYTHON_DIR = os.path.dirname(CONSOLE_PYTHON)
+CONSOLE_PYTHON = {'path': find_python_exe(), 'virtualenv': False}
+CONSOLE_PYTHON_DIR = os.path.dirname(CONSOLE_PYTHON['path'])
 CONSOLE_PS1 = getattr(sys, "ps1", ">>> ")
 CONSOLE_PS2 = getattr(sys, "ps2", "... ")
 CONSOLE_HELP_PORT = 7464
@@ -86,7 +86,8 @@ CONSOLE_COLOR_INFO = "#000099"
 
 # Console RegEx
 CONSOLE_RE_PYVER = re.compile(r'.*?(\d)\.(\d)\.(\d)', re.IGNORECASE|re.DOTALL)
-CONSOLE_RE_LINENUM = re.compile(r'(\s+File\s+)(".*?")(.\s+line\s+)(\d+)(.\sin\s)(.+)', re.IGNORECASE|re.DOTALL)
+CONSOLE_RE_LINENUM = re.compile(r'(\s+File\s+)(".*")(.\s+line\s+)(\d+)(.*)', re.IGNORECASE|re.DOTALL)
+CONSOLE_RE_ERROR = re.compile(r'([A-Za-z]+Error)', re.IGNORECASE|re.DOTALL)
 CONSOLE_RE_HTTP = re.compile(r'(https?://[^\s/$.?#].[^\s\'\"]*)', re.IGNORECASE|re.DOTALL)  # based on @stephenhay
 
 # Help Configuration

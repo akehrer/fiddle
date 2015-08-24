@@ -49,7 +49,7 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.findPane.hide()
 
         # Initialize interpreters
-        self.current_interpreter = CONSOLE_PYTHON
+        self.current_interpreter = CONSOLE_PYTHON['path']
         self.current_interpreter_dir = CONSOLE_PYTHON_DIR
         self.interpreters = []
         self.init_interpreters()
@@ -197,9 +197,9 @@ class MainWindow(QtGui.QMainWindow):
         a = QtGui.QAction(self)
         a.setData(CONSOLE_PYTHON)
         if PLATFORM == 'win32':
-            a.setText(self.tr('(Default) {0}'.format(os.path.dirname(CONSOLE_PYTHON))))
+            a.setText(self.tr('(Default) {0}'.format(os.path.dirname(CONSOLE_PYTHON['path']))))
         else:
-            a.setText(self.tr('(Default) {0}'.format(CONSOLE_PYTHON)))
+            a.setText(self.tr('(Default) {0}'.format(CONSOLE_PYTHON['path'])))
         a.setCheckable(True)
         a.setChecked(True)
         a.triggered.connect(self.set_current_interpreter)
@@ -888,17 +888,26 @@ class MainWindow(QtGui.QMainWindow):
             lsl = ls.lower()
             if 'error' in ll and ll[0] != ' ':
                 # Information lines start with whitespace so they're not processed here
-                try:
-                    i = line.split(':')
-                    error = i[0]
-                    desc = os.linesep.join(i[1:])
-                    link = '<a href="help://?object={0}&text={1}">{2}</a>'.format(error,
-                                                                                  urllib.parse.quote_plus(ls),
-                                                                                  error)
-                    cursor.insertHtml(link)
-                    cursor.insertText(':{0}'.format(desc), self.error_format)
-                    cursor.insertText(os.linesep, self.base_format)
-                except ValueError:
+                m = CONSOLE_RE_ERROR.search(line)
+                if m:
+                    groups = m.groups()
+                    error = groups[0]
+                    try:
+                        desc = line.split(error)
+                        link = '<a href="help://?object={0}&text={1}">{2}</a>'.format(error,
+                                                                                      urllib.parse.quote_plus(ls),
+                                                                                      error)
+                        if len(desc) > 1:
+                            cursor.insertText(desc[0], self.error_format)
+                            cursor.insertHtml(link)
+                            cursor.insertText(''.join(desc[1:]), self.error_format)
+                        else:
+                            cursor.insertHtml(link)
+                            cursor.insertText(''.join(desc), self.error_format)
+                        cursor.insertText(os.linesep, self.base_format)
+                    except ValueError:
+                        cursor.insertText(line, self.error_format)
+                else:
                     cursor.insertText(line, self.error_format)
             elif 'file' in lsl:
                 m = CONSOLE_RE_LINENUM.search(line)
@@ -906,7 +915,6 @@ class MainWindow(QtGui.QMainWindow):
                     groups = m.groups()
                     filepath = groups[1]
                     linenum = groups[3]
-                    module = groups[5]
                     url_filepath = urllib.parse.quote_plus(filepath[1:-1])  # Strip leading and trailing quotes
                     if 'stdin' in filepath:
                         cursor.insertText(line, self.error_format)
