@@ -11,7 +11,7 @@ import chardet
 from PyQt4 import QtCore, QtGui
 
 from fiddle.controllers.Editors import *
-from fiddle.config import FILE_TYPES
+from fiddle.config import FILE_TYPES, PLATFORM
 
 # An iterator to update as the user creates new files
 new_file_iter = 1
@@ -82,6 +82,7 @@ class FiddleTabWidget(QtGui.QWidget):
         else:
             self.basepath = None
             self.filename = 'new_{}.py'.format(new_file_iter)
+            self.extension = '.py'
             self._filepath = os.path.join(os.path.expanduser('~'), self.filename)
             self.insert_editor(PythonEditor())
             new_file_iter += 1
@@ -212,4 +213,3 @@ class FiddleTabWidget(QtGui.QWidget):
 
     def _cursor_position_changed(self, line, idx):
         self.cursor_changed.emit(line, idx)
-
