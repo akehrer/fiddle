@@ -2,6 +2,11 @@
 # Licensed under the terms of the MIT License
 # (see fiddle/__init__.py for details)
 
+"""
+The internal linter uses :mod:`pyflakes` as its base with the need for a :class:`pyflakes.reporter.Reporter` class
+removed and the warnings passed as a list to the caller.
+"""
+
 import sys
 import _ast
 
@@ -39,6 +44,15 @@ class LinterSyntaxError(LinterError):
 
 
 def check(codeString, filename):
+    """
+    This is a reimplementation of :func:`pyflask.api.check` to output a list of warnings.
+
+    :param codeString: the code to parse for issues
+    :param filename: the source filename
+    :return: list of :class:`pyflakes.messages.Message`
+
+    See the pyflakes license in the LICENSE file.
+    """
     # First, compile into an AST and handle syntax errors.
     try:
         tree = compile(codeString, filename, "exec", _ast.PyCF_ONLY_AST)

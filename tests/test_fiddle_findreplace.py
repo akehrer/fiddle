@@ -2,29 +2,16 @@
 # Licensed under the terms of the MIT License
 # (see fiddle/__init__.py for details)
 
-import os
-import unittest
-from string import ascii_letters, digits, punctuation
-
 from PyQt4.QtTest import QTest
 from PyQt4.QtCore import Qt
 
-from fiddle.controllers.MainWindow import MainWindow
-from tests import app
+from tests import FiddleTestFixture
 from tests.helpers import *
 
 
-class FiddleFindReplaceTest(unittest.TestCase):
-    def setUp(self):
-        self.app = app
-        self.form = MainWindow(app=app)
-        self.this_dir = os.path.dirname(__file__)
-        self.data_dir = os.path.join(self.this_dir, 'data')
-        self.findtext = 'abhorreant'
-        self.replacetext = 'tnaerrohba'
-
-    def tearDown(self):
-        self.form.stop()
+class FiddleFindReplaceTest(FiddleTestFixture):
+    findtext = 'abhorreant'
+    replacetext = 'tnaerrohba'
 
     def test_find_text_return(self):
         """

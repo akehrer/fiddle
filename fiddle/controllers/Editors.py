@@ -288,6 +288,7 @@ class PythonEditor(BaseEditor):
                     self._show_margin_popup(desc.strip(), bg_color=self.colorWarnBackground)
             except KeyError:
                 pass
+        return True
 
 
 class HTMLEditor(BaseEditor):

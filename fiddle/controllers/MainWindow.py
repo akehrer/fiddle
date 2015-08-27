@@ -3,7 +3,6 @@
 # (see fiddle/__init__.py for details)
 
 # Import standard library modules
-import logging
 import urllib.parse
 
 # Import Qt modules

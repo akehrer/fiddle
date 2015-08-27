@@ -387,7 +387,7 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,0,0,1">
+       <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,0,0,0,1">
         <property name="spacing">
          <number>2</number>
         </property>
@@ -435,6 +435,63 @@
            <string>Built-in Help</string>
           </property>
          </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QToolButton" name="toolButton_2">
+            <property name="toolTip">
+             <string>Back</string>
+            </property>
+            <property name="text">
+             <string>Back</string>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/icons/icons/arrow_left.png</normaloff>:/icons/icons/arrow_left.png</iconset>
+            </property>
+            <property name="autoRaise">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="toolButton">
+            <property name="toolTip">
+             <string>Forward</string>
+            </property>
+            <property name="text">
+             <string>Forward</string>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/icons/icons/arrow_right.png</normaloff>:/icons/icons/arrow_right.png</iconset>
+            </property>
+            <property name="autoRaise">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
         </item>
         <item>
          <widget class="QWebView" name="helpBrowser">
@@ -1229,6 +1286,38 @@
     <hint type="destinationlabel">
      <x>580</x>
      <y>835</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>toolButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>helpBrowser</receiver>
+   <slot>back()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>823</x>
+     <y>160</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>900</x>
+     <y>195</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>toolButton</sender>
+   <signal>clicked()</signal>
+   <receiver>helpBrowser</receiver>
+   <slot>forward()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>854</x>
+     <y>168</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>971</x>
+     <y>183</y>
     </hint>
    </hints>
   </connection>
