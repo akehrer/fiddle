@@ -12,11 +12,11 @@ fIDDLE has been inspired by the [IDLE Reimagined](https://github.com/asweigart/i
 ![0.2dev](./media/fiddle_0.2dev_main.png)
 
 ## Features
- - Interacitve interpreter (Python shell)
+ - Interactive interpreter (Python shell)
  - Tabbed file editor with code completion
  - Easy access to built-in Python documentation (via pydoc)
  - Quick search for errors
- - Improved tracback information
+ - Improved traceback information
  - One touch code cleaner and code checker
  - Easily switch between interpreters (including virtual environments)
 
