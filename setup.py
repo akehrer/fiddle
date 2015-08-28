@@ -14,15 +14,48 @@ from fiddle import __version__
 # Dependencies are automatically detected, but it might need fine tuning.
 build_exe_options = {'packages': [],
                      'excludes': ['tkinter'],
-                     'includes': ['PyQt4.QtNetwork', 'PyQt4.QtWebKit'],
-                     'include_files': ['locale/', 'LICENSE', 'searchers.json']}
+                     'bin_excludes': [],
+                     'includes': ['PyQt4.QtNetwork', 'PyQt4.QtWebKit', 'PyQt4.Qsci'],
+                     'include_files': ['locale/', 'LICENSE', 'searchers.json'],
+                     'include_msvcr': False}
 
-# GUI applications require a different base on Windows (the default is for a console application).
 base = None
-if LOG_LEVEL != logging.DEBUG:
-    # Hide the console window in Windows
-    if sys.platform == 'win32':
+if sys.platform == 'win32':
+    # GUI applications require a different base on Windows (the default is for a console application).
+    if LOG_LEVEL != logging.DEBUG:
+        # Hide the console window in Windows
         base = 'Win32GUI'
+    build_exe_options['include_msvcr'] = True
+    target_name = 'fIDDLE.exe'
+elif sys.platform == 'darwin':
+    # exclude: libQsci.dylib
+    # the compiled file is copied from libQsci.dylib to Qsci.so during build process
+    # this leaves the original library name intact and cx_Freeze cannot detect this
+    # so to get this to build cleanly, need to exclude libQsci.dylib file
+    # Thanks to the RAFT project for this hint…
+    #build_exe_options['bin_excludes'].append('libQsci.dylib')
+    excludes = ['Qsci', 
+                'QtCore', 
+                'QtDeclarative', 
+                'QtDesigner', 
+                'QtGui', 
+                'QtHelp',
+                'QtMultimedia',
+            	'QtNetwork',
+            	'QtOpenGL',
+            	'QtScript',
+            	'QtScriptTools',
+            	'QtSql',
+            	'QtSvg',
+            	'QtTest',
+            	'QtWebKit',
+            	'QtXml',
+            	'QtXmlPatterns']
+    for e in excludes:
+    	build_exe_options['bin_excludes'].append('lib%s.dylib' % (e))
+    target_name = 'fIDDLE'
+else:
+    target_name = 'fiddle.py'
 
 
 # Update the module version based on:
@@ -81,6 +114,6 @@ setup(
     license='The MIT License (MIT)',
     windows=[{'script': 'fIDDLE.py'}],
     options={'build_exe': build_exe_options},
-    executables=[Executable('fIDDLE.py', base=base)],
+    executables=[Executable('fIDDLE.py', base=base, targetName=target_name)],
     cmdclass={'version': Version}
 )
