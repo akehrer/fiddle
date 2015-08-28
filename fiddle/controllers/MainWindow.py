@@ -3,7 +3,6 @@
 # (see fiddle/__init__.py for details)
 
 # Import standard library modules
-import logging
 import urllib.parse
 
 # Import Qt modules
@@ -23,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 class MainWindow(QtGui.QMainWindow):
-    def __init__(self, app=None):
+    def __init__(self, app=None, files=None):
         super(MainWindow, self).__init__()
 
         self.app = app
@@ -46,10 +45,10 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.helpPane.hide()
 
         # Hide the Find/Replace frame
-        self.ui.findReplace_Frame.hide()
+        self.ui.findPane.hide()
 
         # Initialize interpreters
-        self.current_interpreter = CONSOLE_PYTHON
+        self.current_interpreter = CONSOLE_PYTHON['path']
         self.current_interpreter_dir = CONSOLE_PYTHON_DIR
         self.interpreters = []
         self.init_interpreters()
@@ -80,12 +79,12 @@ class MainWindow(QtGui.QMainWindow):
         self.search_url = ''
         self.init_search_providers()
 
-        # Intialize recent files
+        # Initialize recent files
         self.recent_files = []
         self.init_open_recent()
 
-        # Add a blank file
-        self.new_file()
+        # Load any files/dirs passed on the command line
+        self.init_load_files(files)
 
     def stop(self):
         try:
@@ -105,6 +104,28 @@ class MainWindow(QtGui.QMainWindow):
             self.runscript_process.close()
         except AttributeError:
             pass
+
+    def init_load_files(self, paths):
+        """
+        Given a list of paths, open all the files found. If a path is a directory then open all the files in that
+        directory.
+
+        :param list paths:
+        :return:
+        """
+        if paths is not None and len(paths) > 0:
+            # Open all the files
+            for path in paths:
+                if os.path.isfile(path):
+                    self.open_filepath(path)
+                elif os.path.isdir(path):
+                    for item in os.listdir(path):
+                        ipath = os.path.join(path, item)
+                        if os.path.isfile(ipath):
+                            self.open_filepath(ipath)
+        else:
+            # Add a blank file
+            self.new_file()
 
     def init_actions(self):
         # File actions
@@ -130,6 +151,10 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.actionShow_Whitespace.triggered.connect(self.set_editors_whitespace)
         self.ui.actionShow_End_of_Line.triggered.connect(self.set_editors_eolchars)
 
+        # Code actions
+        self.ui.actionClean_Code.triggered.connect(self.clean_current_editor)
+        self.ui.actionCheck_Code.triggered.connect(self.check_current_editor)
+
         # Console actions
         self.ui.actionShow_Console.triggered.connect(self.toggle_console)
         self.ui.actionRestart_Console.triggered.connect(self.restart_pyconsole_process)
@@ -140,16 +165,17 @@ class MainWindow(QtGui.QMainWindow):
         # Help actions
         self.ui.actionShow_Help_Pane.triggered.connect(self.toggle_help_pane)
         self.ui.actionAbout_fIDDEL.triggered.connect(self.show_about_fiddle)
-        #self.ui.actionFIDDLE_Help.triggered.connect()  # TODO
+        #self.ui.actionFIDDLE_Help.triggered.connect()  # TODO: Create
 
     def init_search_providers(self):
         ag = QtGui.QActionGroup(self)
         ag.setExclusive(True)
         for item in HELP_WEB_SEARCH_SOURCES:
             a = QtGui.QAction(self)
+            a.setData(item)
             a.setText(item['name'])
             a.setCheckable(True)
-            a.triggered.connect(lambda x: self.set_search_provider(item['name'], item['query_tmpl']))
+            a.triggered.connect(self.set_search_provider)
             ag.addAction(a)
             self.ui.menuSearch_Provider.addAction(a)
             if item['name'] == HELP_WEB_SEARCH_SOURCES[0]['name']:
@@ -169,7 +195,10 @@ class MainWindow(QtGui.QMainWindow):
         # Set default interpreter
         a = QtGui.QAction(self)
         a.setData(CONSOLE_PYTHON)
-        a.setText('(Default) ' + self._elide_filepath(CONSOLE_PYTHON_DIR, threshold=30))
+        if PLATFORM == 'win32':
+            a.setText(self.tr('(Default) {0}'.format(os.path.dirname(CONSOLE_PYTHON['path']))))
+        else:
+            a.setText(self.tr('(Default) {0}'.format(CONSOLE_PYTHON['path'])))
         a.setCheckable(True)
         a.setChecked(True)
         a.triggered.connect(self.set_current_interpreter)
@@ -179,7 +208,13 @@ class MainWindow(QtGui.QMainWindow):
         for item in CONSOLE_PYTHON_INTERPRETERS:
             a = QtGui.QAction(self)
             a.setData(item)
-            a.setText(self._elide_filepath(os.path.dirname(item), threshold=50, margin=10))
+            if item['virtualenv']:
+                a.setText(self._elide_filepath(os.path.dirname(item['path']), threshold=50, margin=10))
+            else:
+                if PLATFORM == 'win32':
+                    a.setText(os.path.dirname(item['path']))
+                else:
+                    a.setText(item['path'])
             a.setCheckable(True)
             a.triggered.connect(self.set_current_interpreter)
             ag.addAction(a)
@@ -216,7 +251,7 @@ class MainWindow(QtGui.QMainWindow):
         self.lbl_encoding.setMargin(5)
         self.lbl_encoding.setToolTip(self.tr('File encoding'))
         self.ui.statusbar.insertPermanentWidget(0, self.lbl_encoding)
-        self.lbl_encoding.setText('utf-8')
+        self.lbl_encoding.setText('UTF-8')
 
         self.lbl_current_position = QtGui.QLabel()
         self.lbl_current_position.setMargin(5)
@@ -226,14 +261,16 @@ class MainWindow(QtGui.QMainWindow):
 
     def set_current_interpreter(self):
         action = self.sender()
-        path = action.data()
-        if os.path.exists(path):
-            self.current_interpreter = os.path.normpath(path)
+        item = action.data()
+        if os.path.exists(item['path']):
+            self.current_interpreter = os.path.normpath(item['path'])
             self.current_interpreter_dir = os.path.dirname(self.current_interpreter)
             self.restart_pyconsole_process()
             self.restart_pyconsole_help()
             idx = self.ui.documents_tabWidget.currentIndex()
             self.handle_tab_change(idx)
+        else:
+            self.ui.statusbar.showMessage(self.tr('No Python executable at {0}').format(item['path']), 5000)
 
     def start_pyconsole_process(self):
         # Create a shell process
@@ -315,6 +352,7 @@ class MainWindow(QtGui.QMainWindow):
         # Run the script in the process
         if not os.path.isfile(self.runscript_tab.filepath) or not self.runscript_tab.saved:
             self.runscript_tab.save()
+            self.set_current_run_command(self.runscript_tab)  # Update the command to the saved location
         command = self.ui.runScript_command.text()
         self.runscript_process.start(command)
 
@@ -374,17 +412,30 @@ class MainWindow(QtGui.QMainWindow):
             self.open_filepath(action.data())
 
     def update_recent_files(self, filepath):
-        # Save filepath to recent files, truncating to 10 files and removing duplicates
+        """
+        Save file path to recent files, truncating to 10 files and removing duplicates.
+
+        :param str filepath:
+        :return:
+        """
         try:
             self.recent_files.append(filepath)
         except AttributeError:
             self.recent_files = []
             self.recent_files.append(filepath)
+        # Remove duplicates
+        seen = []
+        filtered = []
+        for item in self.recent_files:
+            if item in seen:
+                continue
+            seen.append(item)
+            filtered.append(item)
         with open('.recent', 'w') as fp:
-            if len(self.recent_files) > 10:
-                fp.write('\n'.join(set(self.recent_files[-10:])))
+            if len(filtered) > 10:
+                fp.write('\n'.join(filtered[-10:]))
             else:
-                fp.write('\n'.join(set(self.recent_files)))
+                fp.write('\n'.join(filtered))
         self.create_recent_files_menu()
 
     def create_recent_files_menu(self):
@@ -455,26 +506,72 @@ class MainWindow(QtGui.QMainWindow):
             self.close_tab(0)
 
     def close_tab(self, idx):
-        # removing the tab doesn't get the widget, so we need to get that first
+        # removing the tab doesn't get the widget, so we need to get that first...
         widget = self.ui.documents_tabWidget.widget(idx)
         self.ui.documents_tabWidget.removeTab(idx)
-        # then delete it
+        # ...then delete it
         del widget
 
     def set_editors_wordwrap(self, state):
+        """
+        Set the display of the word wrap in all the editors.
+
+        :param bool state:
+        :return:
+
+        See QsiScinitilla.setWrapMode()
+        """
         for i in range(self.ui.documents_tabWidget.count()):
             tab = self.ui.documents_tabWidget.widget(i)
             tab.editor.wordwrap = state
 
     def set_editors_whitespace(self, state):
+        """
+        Set the display of the whitespace characters in all the editors.
+
+        :param bool state:
+        :return:
+
+        See QsiScinitilla.setEolVisibility()
+        """
         for i in range(self.ui.documents_tabWidget.count()):
             tab = self.ui.documents_tabWidget.widget(i)
             tab.editor.whitespace = state
 
     def set_editors_eolchars(self, state):
+        """
+        Set the display of the end-of-line characters in all the editors
+
+        :param bool state:
+        :return:
+
+        See QsiScinitilla.setWhitespaceVisibility()
+        """
         for i in range(self.ui.documents_tabWidget.count()):
             tab = self.ui.documents_tabWidget.widget(i)
             tab.editor.eolchars = state
+
+    def clean_current_editor(self):
+        """
+        Run the `clean_code` function in the currenly displayed editor widget.
+
+        :return:
+        """
+        self.app.setOverrideCursor(QtCore.Qt.WaitCursor)
+        tab = self.ui.documents_tabWidget.currentWidget()
+        tab.editor.clean_code()
+        self.app.restoreOverrideCursor()
+
+    def check_current_editor(self):
+        """
+        Run the `check_code` function in the currently displayed editor widget.
+
+        :return:
+        """
+        self.app.setOverrideCursor(QtCore.Qt.WaitCursor)
+        tab = self.ui.documents_tabWidget.currentWidget()
+        tab.editor.check_code(tab.filepath)
+        self.app.restoreOverrideCursor()
 
     def toggle_help_pane(self):
         if self.ui.helpBrowser.url().path() == 'blank':
@@ -488,14 +585,16 @@ class MainWindow(QtGui.QMainWindow):
             self.ui.helpSearch.setFocus()
 
     def toggle_console(self):
-        if self.ui.console_tabWidget.isHidden():
-            self.ui.console_tabWidget.show()
+        if self.ui.consolePane.isHidden():
+            self.ui.consolePane.show()
         else:
-            self.ui.console_tabWidget.hide()
+            self.ui.consolePane.hide()
 
-    def set_search_provider(self, provider, query_str):
-        self.search_url = query_str
-        self.ui.searchProvider_label.setText(provider)
+    def set_search_provider(self):
+        action = self.sender()
+        data = action.data()
+        self.search_url = data['query_tmpl']
+        self.ui.searchProvider_label.setText(data['name'])
 
     def show_about_fiddle(self):
         message_box = QtGui.QMessageBox()
@@ -507,6 +606,11 @@ class MainWindow(QtGui.QMainWindow):
         message_box.exec_()
 
     def show_manage_interpreters(self):
+        """
+        Display the Manage Interpreters dialog and save any changes if the Save button in clicked.
+
+        :return:
+        """
         dialog = ManageInterpretersDialog(self)
         ret = dialog.exec_()
         if ret == QtGui.QDialog.Accepted:
@@ -516,8 +620,8 @@ class MainWindow(QtGui.QMainWindow):
             self.init_interpreters()
 
     def find_in_file(self):
-        if self.ui.findReplace_Frame.isHidden():
-            self.ui.findReplace_Frame.show()
+        if self.ui.findPane.isHidden():
+            self.ui.findPane.show()
             
         self.ui.find_text_lineEdit.setFocus()
         self.ui.find_text_lineEdit.selectAll()
@@ -545,8 +649,8 @@ class MainWindow(QtGui.QMainWindow):
                                       forward=False)
 
     def replace_in_file(self):
-        if self.ui.findReplace_Frame.isHidden():
-            self.ui.findReplace_Frame.show()
+        if self.ui.findPane.isHidden():
+            self.ui.findPane.show()
             self.ui.find_text_lineEdit.setFocus()
 
         if self.ui.replace_text_lineEdit.text() != '':
@@ -564,12 +668,13 @@ class MainWindow(QtGui.QMainWindow):
         if self.ui.replace_text_lineEdit.text() != '':
             current_doc = self.ui.documents_tabWidget.currentWidget()
             if current_doc is not None:
-                current_doc.replace_all_text(self.ui.find_text_lineEdit.text(),
-                                             self.ui.replace_text_lineEdit.text(),
-                                             self.ui.find_re_checkBox.isChecked(),
-                                             self.ui.find_case_checkBox.isChecked(),
-                                             self.ui.find_word_checkBox.isChecked(),
-                                             self.ui.find_selection_checkBox.isChecked())
+                i = current_doc.replace_all_text(self.ui.find_text_lineEdit.text(),
+                                                 self.ui.replace_text_lineEdit.text(),
+                                                 self.ui.find_re_checkBox.isChecked(),
+                                                 self.ui.find_case_checkBox.isChecked(),
+                                                 self.ui.find_word_checkBox.isChecked(),
+                                                 self.ui.find_selection_checkBox.isChecked())
+                self.ui.statusbar.showMessage(self.tr('Replaced {0} instances').format(i), 5000)
 
     def update_tab_title(self):
         idx = self.ui.documents_tabWidget.currentIndex()
@@ -578,7 +683,24 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.documents_tabWidget.setTabText(idx, tabname)
 
     def update_cursor_position(self, line, idx):
+        """
+        Process cursor position changes from editors for display in statusbar.
+
+        :param int line:
+        :param int idx:
+        :return:
+        """
         self.lbl_current_position.setText('{0}:{1}'.format(line+1, idx+1))  # zero indexed
+
+    def set_current_run_command(self, tab):
+        # set the run script command
+        if PLATFORM == 'win32':
+            command = '{0} "{1}" '.format(self.current_interpreter, tab.filepath)
+        else:
+            command = '{0} {1} '.format(self.current_interpreter, tab.filepath)
+        self.ui.runScript_command.setText(command)
+        self.ui.runScript_command.setToolTip(command)
+        self.runscript_tab = tab
 
     def handle_tab_change(self, idx):
         if idx >= 0:
@@ -591,14 +713,7 @@ class MainWindow(QtGui.QMainWindow):
                 # don't update run command if checked
                 return
             else:
-                # set the run script command
-                if PLATFORM == 'win32':
-                    command = '{0} "{1}" '.format(self.current_interpreter, tab.filepath)
-                else:
-                    command = '{0} {1} '.format(self.current_interpreter, tab.filepath)
-                self.ui.runScript_command.setText(command)
-                self.ui.runScript_command.setToolTip(command)
-                self.runscript_tab = tab
+                self.set_current_run_command(tab)
         else:
             self.ui.runScript_command.setText('')
             self.runscript_tab = None
@@ -619,7 +734,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def send_pyconsole_command(self):
         command = self.pyconsole_input.text()
-        self.pyconsole_process.write('{0}\n'.format(command).encode('utf-8'))
+        self.pyconsole_process.write('{0}\n'.format(command))
         cursor = self.ui.pyConsole_output.textCursor()
         cursor.movePosition(QtGui.QTextCursor.End)
         cursor.insertText('{0}{1}'.format(command, os.linesep))
@@ -627,10 +742,38 @@ class MainWindow(QtGui.QMainWindow):
         self.pyconsole_input.setText("")
 
     def load_anchor(self, url):
+        """
+        This slot processes URLs for specific actions internal to the application or loads the URLs in the system
+        web browser.
+
+        :param QtCore.QUrl url:
+            The URL to process, it may have schemes beyond http(s)
+        :return bool:
+            Whether the function handled the signal or not
+
+        URLs may have schemes beyond http(s) that the application recognizes and processes for display by the
+        built-in browser widget.  They follow the standard format {scheme}://{query} where query is a standard URL
+        query (?item1=var1&item2=var2)
+        Schemes:
+        - help: load current interpreter's documentation for a specific Python object, often used to link to error
+                documentation in the console tracebacks
+            - Query items:
+                - object: the Python object to get docstring
+                - text: the full text that caused the link to the object (often an error), this is loaded in to the
+                        help search line widget
+        - goto: load a file in to an editor tab and move the cursor to the beginning of a specific line, often used to
+                show the user where in a file and error was raised in the console tracebacks
+            - Query items:
+                - filepath: the full path to the file to load
+                - linenum: the line number to move the cursor to
+        - http(s): load the full URL in the system browser
+        """
         scheme = url.scheme()
         ret = False
         if scheme == 'help':
             query = dict(url.queryItems())  # queryItems returns list of tuples
+            src = QtCore.QUrl('http://{0}:{1}/'.format(CONSOLE_HOST,
+                                                       CONSOLE_HELP_PORT))
             if self.pyconsole_pyversion[0] == 2:
                 if query['object'] in py2_exceptions:
                     src = QtCore.QUrl('http://{0}:{1}/exceptions.html#{2}'.format(CONSOLE_HOST,
@@ -639,11 +782,8 @@ class MainWindow(QtGui.QMainWindow):
             elif self.pyconsole_pyversion[0] == 3:
                 if query['object'] in py3_exceptions:
                     src = QtCore.QUrl('http://{0}:{1}/builtins.html#{2}'.format(CONSOLE_HOST,
-                                                                                  CONSOLE_HELP_PORT,
-                                                                                  query['object']))
-            else:
-                src = QtCore.QUrl('http://{0}:{1}/exceptions.html'.format(CONSOLE_HOST,
-                                                                          CONSOLE_HELP_PORT))
+                                                                                CONSOLE_HELP_PORT,
+                                                                                query['object']))
             try:
                 self.ui.helpBrowser.setUrl(src)
                 self.ui.helpSearch.setText(urllib.parse.unquote_plus(query['text']))
@@ -656,10 +796,11 @@ class MainWindow(QtGui.QMainWindow):
             filepath = urllib.parse.unquote_plus(query['filepath'])
             linenum = int(query['linenum']) - 1
             found = False
+            # Is the file already open?
             for i in range(self.ui.documents_tabWidget.count()):
                 tab = self.ui.documents_tabWidget.widget(i)
+                # Take care of slash discrepancies, ahem Windows
                 if os.path.normcase(tab.filepath) == os.path.normcase(filepath):
-                    # Take care of slash discrepancies, ahem Windows
                     self.ui.documents_tabWidget.setCurrentWidget(tab)
                     tab.editor.setCursorPosition(linenum, 0)
                     tab.editor.ensureLineVisible(linenum)
@@ -674,10 +815,16 @@ class MainWindow(QtGui.QMainWindow):
                     tab.editor.ensureLineVisible(linenum)
                     tab.editor.setFocus()
                 except AttributeError:
-                    # TODO: file doesn't exist error
-                    pass
+                    message_box = QtGui.QMessageBox()
+                    message_box.setWindowTitle(self.tr('File Error'))
+                    message_box.setText(self.tr('Cannot open file'))
+                    message_box.setInformativeText(self.tr('The file at {0} cannot be opened.').format(filepath))
+                    ok_btn = message_box.addButton(QtGui.QMessageBox.Ok)
+                    message_box.setDefaultButton(ok_btn)
+                    message_box.exec_()
             ret = True
         elif scheme == 'http' or scheme == 'https':
+            # Open URL in system browser
             ret = QtGui.QDesktopServices.openUrl(url)
 
         if not ret:
@@ -690,6 +837,12 @@ class MainWindow(QtGui.QMainWindow):
             message_box.exec_()
 
     def run_web_search(self):
+        """
+        Combine the search text from the search input with the current web search template and open it with the system
+        browser.
+
+        :return:
+        """
         query = self.ui.helpSearch.text()
         url = self.search_url.format(query=urllib.parse.quote_plus(query))
         qurl = QtCore.QUrl(url)
@@ -715,7 +868,18 @@ class MainWindow(QtGui.QMainWindow):
         cursor.movePosition(QtGui.QTextCursor.End)
         self.ui.runScript_output.ensureCursorVisible()
 
-    def process_traceback(self, lines, cursor):
+    def process_stderr_lines(self, lines, cursor):
+        """
+        Process lines from a Python interpreter stderr. For tracebacks additional information is added.
+
+        :param list lines:
+        :param QtGui.QTextCursor cursor:
+        :return:
+
+        Lines from stderr often contain traceback data. This function processes those lines and adds additional
+        information to help the user troubleshoot. For example links are created to error documentation and to lines
+        in source files where errors were raised. The output is entered on the text cursor provided by `cursor`.
+        """
         for line in lines:
             line = line + os.linesep  # Line separators were stripped off in the split, add them back
             ll = line.lower()
@@ -723,17 +887,26 @@ class MainWindow(QtGui.QMainWindow):
             lsl = ls.lower()
             if 'error' in ll and ll[0] != ' ':
                 # Information lines start with whitespace so they're not processed here
-                try:
-                    i = line.split(':')
-                    error = i[0]
-                    desc = os.linesep.join(i[1:])
-                    link = '<a href="help://?object={0}&text={1}">{2}</a>'.format(error,
-                                                                                  urllib.parse.quote_plus(ls),
-                                                                                  error)
-                    cursor.insertHtml(link)
-                    cursor.insertText(':{0}'.format(desc), self.error_format)
-                    cursor.insertText(os.linesep, self.base_format)
-                except ValueError:
+                m = CONSOLE_RE_ERROR.search(line)
+                if m:
+                    groups = m.groups()
+                    error = groups[0]
+                    try:
+                        desc = line.split(error)
+                        link = '<a href="help://?object={0}&text={1}">{2}</a>'.format(error,
+                                                                                      urllib.parse.quote_plus(ls),
+                                                                                      error)
+                        if len(desc) > 1:
+                            cursor.insertText(desc[0], self.error_format)
+                            cursor.insertHtml(link)
+                            cursor.insertText(''.join(desc[1:]), self.error_format)
+                        else:
+                            cursor.insertHtml(link)
+                            cursor.insertText(''.join(desc), self.error_format)
+                        cursor.insertText(os.linesep, self.base_format)
+                    except ValueError:
+                        cursor.insertText(line, self.error_format)
+                else:
                     cursor.insertText(line, self.error_format)
             elif 'file' in lsl:
                 m = CONSOLE_RE_LINENUM.search(line)
@@ -741,7 +914,6 @@ class MainWindow(QtGui.QMainWindow):
                     groups = m.groups()
                     filepath = groups[1]
                     linenum = groups[3]
-                    module = groups[5]
                     url_filepath = urllib.parse.quote_plus(filepath[1:-1])  # Strip leading and trailing quotes
                     if 'stdin' in filepath:
                         cursor.insertText(line, self.error_format)
@@ -769,6 +941,7 @@ class MainWindow(QtGui.QMainWindow):
         lines = data.data().decode().split(os.linesep)
         for line in lines:
             line = line + os.linesep  # Line separators were stripped off in the split, add them back
+            # Create clickable links
             m = CONSOLE_RE_HTTP.findall(line)
             if m:
                 linked = line
@@ -785,7 +958,7 @@ class MainWindow(QtGui.QMainWindow):
         lines = data.data().decode().split(os.linesep)
         cursor = self.ui.pyConsole_output.textCursor()
         cursor.movePosition(QtGui.QTextCursor.End)
-        self.process_traceback(lines, cursor)
+        self.process_stderr_lines(lines, cursor)
         cursor.movePosition(QtGui.QTextCursor.End)
         self.ui.pyConsole_output.ensureCursorVisible()
 
@@ -825,7 +998,7 @@ class MainWindow(QtGui.QMainWindow):
         lines = data.data().decode().split(os.linesep)
         cursor = self.ui.runScript_output.textCursor()
         cursor.movePosition(QtGui.QTextCursor.End)
-        self.process_traceback(lines, cursor)
+        self.process_stderr_lines(lines, cursor)
         cursor.movePosition(QtGui.QTextCursor.End)
         self.ui.runScript_output.ensureCursorVisible()
 
@@ -849,7 +1022,7 @@ class MainWindow(QtGui.QMainWindow):
         lines = data.data().decode().split(os.linesep)
         cursor = self.ui.runScript_output.textCursor()
         cursor.movePosition(QtGui.QTextCursor.End)
-        self.process_traceback(lines, cursor)
+        self.process_stderr_lines(lines, cursor)
         cursor.movePosition(QtGui.QTextCursor.End)
         self.ui.runScript_output.ensureCursorVisible()
 
@@ -864,6 +1037,16 @@ class MainWindow(QtGui.QMainWindow):
 
     @staticmethod
     def _elide_filepath(path, threshold=20, margin=5):
+        """
+        Shorten a file path string using '...' for easier display
+        :param str path:
+            The file path to shorten
+        :param int threshold:
+            Paths with lengths less than then will not be shortened
+        :param int margin:
+            This many characters will be kept before and after the '...'
+        :return str:
+        """
         basepath, filename = os.path.split(path)
         if len(basepath) > threshold:
             return '{0}...{1}{sep}{2}'.format(basepath[:margin], basepath[-margin:], filename, sep=os.sep)

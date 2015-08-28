@@ -1,2 +1,4 @@
 PyQt4
 chardet
+autopep8
+pyflakes

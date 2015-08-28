@@ -11,7 +11,7 @@ import chardet
 from PyQt4 import QtCore, QtGui
 
 from fiddle.controllers.Editors import *
-from fiddle.config import FILE_TYPES
+from fiddle.config import FILE_TYPES, PLATFORM
 
 # An iterator to update as the user creates new files
 new_file_iter = 1
@@ -44,6 +44,7 @@ class FiddleTabWidget(QtGui.QWidget):
         self.found_first = False
 
         self.filepath = filepath
+        self.watcher = None
 
     @property
     def filepath(self):
@@ -63,26 +64,25 @@ class FiddleTabWidget(QtGui.QWidget):
             self.encoding = chardet.detect(data)['encoding']
 
             if '.htm' in self.extension:
-                #self.editor = HTMLEditor()
                 self.insert_editor(HTMLEditor())
             elif self.extension == '.js':
-                #self.editor = JavascriptEditor()
                 self.insert_editor(JavascriptEditor())
             elif self.extension == '.css':
-                #self.editor = CSSEditor()
                 self.insert_editor(CSSEditor())
             elif self.extension == '.py':
-                #self.editor = PythonEditor()
                 self.insert_editor(PythonEditor())
             else:
-                #self.editor = BaseEditor()
                 self.insert_editor(BaseEditor())
 
-            self.editor.setText(data.decode(self.encoding))
+            try:
+                self.editor.setText(data.decode(self.encoding))
+            except TypeError:
+                self.editor.setText('')
             self._saved = True
         else:
             self.basepath = None
             self.filename = 'new_{}.py'.format(new_file_iter)
+            self.extension = '.py'
             self._filepath = os.path.join(os.path.expanduser('~'), self.filename)
             self.insert_editor(PythonEditor())
             new_file_iter += 1
@@ -185,17 +185,23 @@ class FiddleTabWidget(QtGui.QWidget):
             self.find_text(old_expr, re, cs, wo, wrap, in_select, forward, line, index, show, posix)
 
     def replace_all_text(self, old_expr, new_text, re, cs, wo, in_select=False):
+        i = 0
         if in_select:
             if self.editor.findFirstInSelection(old_expr, re, cs, wo, False):
                 self.editor.replace(new_text)
+                i = 1
                 while self.editor.findNext():
                     self.editor.replace(new_text)
+                    i += 1
         else:
             # Start from the beginning of the document and work to the end
             if self.editor.findFirst(old_expr, re, cs, wo, False, True, 0, 0):
                 self.editor.replace(new_text)
+                i = 1
                 while self.editor.findNext():
                     self.editor.replace(new_text)
+                    i += 1
+        return i
 
     def _write_file(self, filepath):
         with open(filepath, 'wb') as fp:
@@ -207,4 +213,3 @@ class FiddleTabWidget(QtGui.QWidget):
 
     def _cursor_position_changed(self, line, idx):
         self.cursor_changed.emit(line, idx)
-
