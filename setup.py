@@ -14,7 +14,8 @@ from fiddle import __version__
 # Dependencies are automatically detected, but it might need fine tuning.
 build_exe_options = {
     'packages': [],
-    'excludes': ['tkinter'],
+    'excludes': ['tkinter', 'lib2to3'],
+    'zip_includes': [],
     'bin_excludes': [],
     'includes': [
         'PyQt4.QtNetwork',
@@ -26,6 +27,15 @@ build_exe_options = {
         'searchers.json'],
     'include_msvcr': False}
 
+
+# ##### Missing includes #####
+# lib2to3 needs to load its Grammar files at run time, but cannot open them when they are included in the cx_Freeze
+# `library.zip` file.  The module is excluded in the options and then copied over here in the include_files.
+import lib2to3
+lib23_path = os.path.dirname(lib2to3.__file__)
+build_exe_options['include_files'].append(lib23_path)
+
+# ##### Platform Specific Parameters #####
 base = None
 if sys.platform == 'win32':
     # GUI applications require a different base on Windows (the default is for
@@ -66,6 +76,7 @@ else:
     target_name = 'fiddle.py'
 
 
+# ##### Version #####
 # Update the module version based on:
 # https://github.com/warner/python-ecdsa/blob/9e21c3388cc98ba90877a1e4dbc2aaf66c67d365/setup.py#L33
 VERSION = __version__
@@ -114,6 +125,7 @@ class Version(Command):
         print("Version is now", VERSION)
 
 
+# ##### Setup #####
 setup(
     name='fIDDLE',
     version=VERSION,
