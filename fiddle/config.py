@@ -49,27 +49,55 @@ if getattr(sys, 'frozen', False):
     APP_FROZEN = True
 
 
-# Window title prefix
-WINDOW_TITLE = 'fIDDLE'
-
 # App file types
-FILE_TYPES = ['All Files (*.*)',
+FILE_TYPES = ['fIDDLE Files (*.py *.html *.htm *.js *.css)',
               'Python Files (*.py)',
               'HTML Files (*.html *.htm)',
               'Javascript Files (*.js)',
-              'CSS Files (*.css)']
+              'CSS Files (*.css)',
+              'All Files (*.*)']
 
 # Editor configuration
 if PLATFORM == 'win32':
     EDITOR_FONT = 'Consolas'
+    EDITOR_FONT_SIZE = 10
 elif PLATFORM == 'darwin':
     EDITOR_FONT = 'Menlo'
+    EDITOR_FONT_SIZE = 12
 else:
     EDITOR_FONT = 'Courier'
-EDITOR_FONT_SIZE = 10
+    EDITOR_FONT_SIZE = 10
+
 EDITOR_MARGIN_COLOR = '#cccccc'
 EDITOR_EDGECOL_COLOR = '#dddddd'
 EDITOR_CARET_LINE_COLOR = '#ffffe0'
+
+# Window title prefix
+WINDOW_TITLE = 'fIDDLE'
+
+# MainWindow Stylesheet
+WINDOW_STYLE = """
+QMainWindow {
+    background-color: white;
+}
+
+QWidget {
+  /* Applies to all the widgets */
+  font-family: "Segoe UI", "Lucida Grande", sans-serif;
+  font-size: 15px;
+}
+
+QTextBrowser {
+  font-family: "Consolas", "Menlo", "Monaco", "DejaVu Sans Mono", monospace, fixed;
+  font-size: 17px;
+}
+
+QDockWidget::title {
+  text-align: left;
+  background: ghostwhite;
+  padding: 7px;
+}
+"""
 
 # Python Console Configuration
 CONSOLE_HOST = '127.0.0.1'

@@ -35,19 +35,19 @@ class BaseEditor(QsciScintilla):
         super(BaseEditor, self).__init__(parent)
 
         # Set the default font
-        self.font = QFont()
-        self.font.setFamily(EDITOR_FONT)
-        self.font.setFixedPitch(True)
-        self.font.setPointSize(EDITOR_FONT_SIZE)
-        self.setFont(self.font)
-        self.setMarginsFont(self.font)
+        self.editor_font = QFont()
+        self.editor_font.setFamily(EDITOR_FONT)
+        self.editor_font.setFixedPitch(True)
+        self.editor_font.setPointSize(EDITOR_FONT_SIZE)
+        self.setFont(self.editor_font)
+        self.setMarginsFont(self.editor_font)
 
         # Default to UTF-8 encoding
         self.setUtf8(True)
 
         # Margin is used for line numbers
-        fontmetrics = QFontMetrics(self.font)
-        self.setMarginsFont(self.font)
+        fontmetrics = QFontMetrics(self.editor_font)
+        self.setMarginsFont(self.editor_font)
         margin_width = '0' * (line_num_margin + 1)
         self.setMarginWidth(0, fontmetrics.width(margin_width))
         self.setMarginLineNumbers(0, True)
@@ -222,8 +222,8 @@ class PythonEditor(BaseEditor):
 
         # Set Python lexer
         self.lexer = QsciLexerPython(self)
-        self.lexer.setDefaultFont(self.font)
-        self.lexer.setFont(self.font, QsciLexerPython.Comment)
+        self.lexer.setDefaultFont(self.editor_font)
+        self.lexer.setFont(self.editor_font, QsciLexerPython.Comment)
         # Indentation warning ("The indentation is inconsistent when compared to the previous line")
         self.lexer.setIndentationWarning(QsciLexerPython.Inconsistent)
         # Set auto-completion
@@ -297,7 +297,7 @@ class HTMLEditor(BaseEditor):
 
         # Set HTML lexer
         self.lexer = QsciLexerHTML(self)
-        self.lexer.setDefaultFont(self.font)
+        self.lexer.setDefaultFont(self.editor_font)
         # Set auto-completion
         self.api = QsciAPIs(self.lexer)
         if autocomplete_list is not None:
@@ -316,7 +316,7 @@ class JavascriptEditor(BaseEditor):
 
         # Set HTML lexer
         self.lexer = QsciLexerJavaScript(self)
-        self.lexer.setDefaultFont(self.font)
+        self.lexer.setDefaultFont(self.editor_font)
         # Set auto-completion
         self.api = QsciAPIs(self.lexer)
         if autocomplete_list is not None:
@@ -335,7 +335,7 @@ class CSSEditor(BaseEditor):
 
         # Set HTML lexer
         self.lexer = QsciLexerCSS(self)
-        self.lexer.setDefaultFont(self.font)
+        self.lexer.setDefaultFont(self.editor_font)
         # Set auto-completion
         self.api = QsciAPIs(self.lexer)
         if autocomplete_list is not None:

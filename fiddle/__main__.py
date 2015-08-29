@@ -13,7 +13,7 @@ from PyQt4 import QtCore, QtGui
 
 # Import app modules
 from fiddle.controllers.MainWindow import MainWindow
-from fiddle.config import LOG_LEVEL
+from fiddle.config import *
 
 # Build the logger
 logging.basicConfig(filename='fIDDLE.log',
@@ -32,6 +32,7 @@ class App(QtGui.QApplication):
         pargs = parser.parse_args()
 
         self.main = MainWindow(self, files=pargs.files)
+        self.main.setStyleSheet(WINDOW_STYLE)
 
         self.aboutToQuit.connect(self.byebye)
         self.main.show()

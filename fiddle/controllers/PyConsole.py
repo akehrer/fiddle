@@ -3,6 +3,7 @@
 # (see fiddle/__init__.py for details)
 
 from PyQt4 import QtCore, QtGui
+from fiddle.config import EDITOR_FONT, EDITOR_FONT_SIZE
 
 
 class PyConsoleLineEdit(QtGui.QLineEdit):
@@ -15,8 +16,8 @@ class PyConsoleLineEdit(QtGui.QLineEdit):
         self.setFrame(False)
 
         courier_font = QtGui.QFont()
-        courier_font.setFamily("Courier")
-        courier_font.setPointSize(10)
+        courier_font.setFamily(EDITOR_FONT)
+        courier_font.setPointSize(EDITOR_FONT_SIZE)
         self.setFont(courier_font)
 
         self.history = []
@@ -51,19 +52,3 @@ class PyConsoleLineEdit(QtGui.QLineEdit):
                 return QtGui.QLineEdit.event(self, event)
 
         return QtGui.QLineEdit.event(self, event)
-
-
-class PyConsoleLineCombo(QtGui.QComboBox):
-    def __init__(self):
-        super(PyConsoleLineCombo, self).__init__()
-        self.setFrame(False)
-
-        courier_font = QtGui.QFont()
-        courier_font.setFamily("Courier")
-        courier_font.setPointSize(10)
-        self.setFont(courier_font)
-
-        self.setInsertPolicy(QtGui.QComboBox.InsertAtTop)
-        self.setEditable(True)
-        self.lineedit = PyConsoleLineEdit()
-        self.setLineEdit(self.lineedit)

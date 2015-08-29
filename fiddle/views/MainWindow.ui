@@ -59,7 +59,7 @@
          <enum>Qt::ElideRight</enum>
         </property>
         <property name="documentMode">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <property name="tabsClosable">
          <bool>true</bool>
@@ -86,7 +86,7 @@
            <number>5</number>
           </property>
           <property name="leftMargin">
-           <number>5</number>
+           <number>10</number>
           </property>
           <property name="topMargin">
            <number>0</number>
@@ -290,6 +290,9 @@
     <addaction name="actionClose_Tab"/>
     <addaction name="actionClose_All_Tabs"/>
     <addaction name="separator"/>
+    <addaction name="actionZoom_In"/>
+    <addaction name="actionZoom_Out"/>
+    <addaction name="separator"/>
     <addaction name="actionWord_Wrap"/>
     <addaction name="menuShow"/>
    </widget>
@@ -323,6 +326,9 @@
      <width>16</width>
      <height>16</height>
     </size>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonTextUnderIcon</enum>
    </property>
    <property name="floatable">
     <bool>false</bool>
@@ -456,22 +462,8 @@
              <iconset resource="resources.qrc">
               <normaloff>:/icons/icons/arrow_left.png</normaloff>:/icons/icons/arrow_left.png</iconset>
             </property>
-            <property name="autoRaise">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QToolButton" name="toolButton">
-            <property name="toolTip">
-             <string>Forward</string>
-            </property>
-            <property name="text">
-             <string>Forward</string>
-            </property>
-            <property name="icon">
-             <iconset resource="resources.qrc">
-              <normaloff>:/icons/icons/arrow_right.png</normaloff>:/icons/icons/arrow_right.png</iconset>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
             </property>
             <property name="autoRaise">
              <bool>true</bool>
@@ -490,6 +482,26 @@
              </size>
             </property>
            </spacer>
+          </item>
+          <item>
+           <widget class="QToolButton" name="toolButton">
+            <property name="toolTip">
+             <string>Forward</string>
+            </property>
+            <property name="text">
+             <string>Forward</string>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/icons/icons/arrow_right.png</normaloff>:/icons/icons/arrow_right.png</iconset>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+            <property name="autoRaise">
+             <bool>true</bool>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -526,6 +538,9 @@
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
    </property>
    <property name="features">
     <set>QDockWidget::DockWidgetClosable</set>
@@ -583,12 +598,6 @@
          </property>
          <item>
           <widget class="QTextBrowser" name="pyConsole_output">
-           <property name="font">
-            <font>
-             <family>Courier</family>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
            <property name="lineWrapMode">
             <enum>QTextEdit::NoWrap</enum>
            </property>
@@ -625,7 +634,6 @@
              <property name="font">
               <font>
                <family>Courier</family>
-               <pointsize>10</pointsize>
               </font>
              </property>
              <property name="styleSheet">
@@ -805,6 +813,9 @@
    <property name="text">
     <string>New</string>
    </property>
+   <property name="toolTip">
+    <string>New</string>
+   </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
    </property>
@@ -817,6 +828,9 @@
    <property name="text">
     <string>Open</string>
    </property>
+   <property name="toolTip">
+    <string>Open</string>
+   </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
    </property>
@@ -827,7 +841,10 @@
      <normaloff>:/icons/icons/disk.png</normaloff>:/icons/icons/disk.png</iconset>
    </property>
    <property name="text">
-    <string>Save File</string>
+    <string>Save</string>
+   </property>
+   <property name="toolTip">
+    <string>Save</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -835,7 +852,7 @@
   </action>
   <action name="actionSave_File_As">
    <property name="text">
-    <string>Save File As</string>
+    <string>Save As</string>
    </property>
   </action>
   <action name="actionPrint">
@@ -913,6 +930,9 @@
    <property name="text">
     <string>Find</string>
    </property>
+   <property name="toolTip">
+    <string>Find</string>
+   </property>
    <property name="shortcut">
     <string>Ctrl+F</string>
    </property>
@@ -923,6 +943,9 @@
      <normaloff>:/icons/icons/find_replace.png</normaloff>:/icons/icons/find_replace.png</iconset>
    </property>
    <property name="text">
+    <string>Find and Replace</string>
+   </property>
+   <property name="toolTip">
     <string>Find and Replace</string>
    </property>
    <property name="shortcut">
@@ -954,7 +977,10 @@
      <normaloff>:/icons/icons/play_green.png</normaloff>:/icons/icons/play_green.png</iconset>
    </property>
    <property name="text">
-    <string>Run Current Script</string>
+    <string>Run Script</string>
+   </property>
+   <property name="toolTip">
+    <string>Run Script</string>
    </property>
    <property name="shortcut">
     <string>F5</string>
@@ -966,10 +992,13 @@
      <normaloff>:/icons/icons/help.png</normaloff>:/icons/icons/help.png</iconset>
    </property>
    <property name="text">
-    <string>Show/Hide Help</string>
+    <string>Help</string>
+   </property>
+   <property name="toolTip">
+    <string>Help</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+H</string>
+    <string>Alt+H</string>
    </property>
   </action>
   <action name="actionShow_Console">
@@ -992,7 +1021,7 @@
      <normaloff>:/icons/icons/cross.png</normaloff>:/icons/icons/cross.png</iconset>
    </property>
    <property name="text">
-    <string>Halt Current Script</string>
+    <string>Halt Script</string>
    </property>
   </action>
   <action name="actionShow_Whitespace">
@@ -1035,6 +1064,22 @@
    </property>
    <property name="text">
     <string>Check Code</string>
+   </property>
+  </action>
+  <action name="actionZoom_In">
+   <property name="text">
+    <string>Zoom In</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl++</string>
+   </property>
+  </action>
+  <action name="actionZoom_Out">
+   <property name="text">
+    <string>Zoom Out</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+-</string>
    </property>
   </action>
  </widget>

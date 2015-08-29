@@ -12,7 +12,7 @@ from PyQt4 import QtCore, QtGui
 from fiddle import __version__
 from fiddle.views.MainWindow import Ui_MainWindow
 from fiddle.controllers.FiddleTabWidget import FiddleTabWidget
-from fiddle.controllers.PyConsole import PyConsoleLineEdit, PyConsoleLineCombo
+from fiddle.controllers.PyConsole import PyConsoleLineEdit
 from fiddle.controllers.ManageInterpretersDialog import ManageInterpretersDialog
 from fiddle.config import *
 from fiddle.helpers.builtins import *
@@ -147,6 +147,8 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.actionFind_and_Replace.triggered.connect(self.replace_in_file)
 
         # View actions
+        self.ui.actionZoom_In.triggered.connect(self.zoom_in_text)
+        self.ui.actionZoom_Out.triggered.connect(self.zoom_out_text)
         self.ui.actionWord_Wrap.triggered.connect(self.set_editors_wordwrap)
         self.ui.actionShow_Whitespace.triggered.connect(self.set_editors_whitespace)
         self.ui.actionShow_End_of_Line.triggered.connect(self.set_editors_eolchars)
@@ -511,6 +513,22 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.documents_tabWidget.removeTab(idx)
         # ...then delete it
         del widget
+
+    def zoom_in_text(self):
+        try:
+            cw = self.app.focusWidget()
+            if isinstance(cw, QtGui.QAbstractScrollArea):
+                cw.zoomIn(1)
+        except AttributeError:
+            pass
+
+    def zoom_out_text(self):
+        try:
+            cw = self.app.focusWidget()
+            if isinstance(cw, QtGui.QAbstractScrollArea):
+                cw.zoomOut(1)
+        except AttributeError:
+            pass
 
     def set_editors_wordwrap(self, state):
         """
