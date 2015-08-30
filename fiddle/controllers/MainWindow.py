@@ -87,23 +87,9 @@ class MainWindow(QtGui.QMainWindow):
         self.init_load_files(files)
 
     def stop(self):
-        try:
-            self.pyconsole_process.kill()
-            self.pyconsole_process.close()
-        except AttributeError:
-            pass
-
-        try:
-            self.help_process.kill()
-            self.help_process.close()
-        except AttributeError:
-            pass
-
-        try:
-            self.runscript_process.kill()
-            self.runscript_process.close()
-        except AttributeError:
-            pass
+        self.terminate_pyconsole_process(timeout=1000)
+        self.terminate_current_script(timeout=1000)
+        self.terminate_pyconsole_help(timeout=1000)
 
     def init_load_files(self, paths):
         """
@@ -300,14 +286,14 @@ class MainWindow(QtGui.QMainWindow):
         self.start_pyconsole_process()
         self.app.restoreOverrideCursor()
 
-    def terminate_pyconsole_process(self):
+    def terminate_pyconsole_process(self, timeout=5000):
         if self.pyconsole_process is not None:
             self.app.setOverrideCursor(QtCore.Qt.WaitCursor)
             self.print_data_to_pyconsole('\n', self.info_format)
             self.print_data_to_pyconsole(self.tr('Python console is teminating...'), self.info_format)
             self.ui.pyConsole_output.repaint()  # Force message to show
             self.pyconsole_process.terminate()
-            if not self.pyconsole_process.waitForFinished(5000):
+            if not self.pyconsole_process.waitForFinished(timeout):
                 self.pyconsole_process.kill()
             self.pyconsole_process.close()
             self.app.restoreOverrideCursor()
@@ -339,6 +325,18 @@ class MainWindow(QtGui.QMainWindow):
         self.start_pyconsole_help()
         self.app.restoreOverrideCursor()
 
+    def terminate_pyconsole_help(self, timeout=5000):
+        if self.help_process is not None:
+            self.app.setOverrideCursor(QtCore.Qt.WaitCursor)
+            self.print_data_to_pyconsole('\n', self.info_format)
+            self.print_data_to_pyconsole(self.tr('Python console is teminating...'), self.info_format)
+            self.ui.pyConsole_output.repaint()  # Force message to show
+            self.help_process.terminate()
+            if not self.help_process.waitForFinished(timeout):
+                self.help_process.kill()
+            self.help_process.close()
+            self.app.restoreOverrideCursor()
+
     def run_current_script(self):
         # Show the run tab
         self.ui.console_tabWidget.show()
@@ -358,14 +356,14 @@ class MainWindow(QtGui.QMainWindow):
         command = self.ui.runScript_command.text()
         self.runscript_process.start(command)
 
-    def terminate_current_script(self):
+    def terminate_current_script(self, timeout=2000):
         if self.runscript_process is not None:
             self.print_data_to_runconsole('\n', self.info_format)
             self.print_data_to_runconsole(self.tr('Script is terminating...'), self.info_format)
             self.ui.runScript_output.repaint()  # Force message to show
             self.app.setOverrideCursor(QtCore.Qt.WaitCursor)
             self.runscript_process.terminate()
-            if not self.runscript_process.waitForFinished(2000):
+            if not self.runscript_process.waitForFinished(timeout):
                 self.runscript_process.kill()
             self.app.restoreOverrideCursor()
 

@@ -68,7 +68,7 @@ elif PLATFORM == 'darwin':
     WINDOW_FONT_SIZE = 13
 else:
     EDITOR_FONT = 'Courier'
-    EDITOR_FONT_SIZE = 10
+    EDITOR_FONT_SIZE = 12
     WINDOW_FONT_SIZE = 15
 
 EDITOR_MARGIN_COLOR = '#cccccc'

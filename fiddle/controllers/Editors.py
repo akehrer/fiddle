@@ -73,6 +73,12 @@ class BaseEditor(QsciScintilla):
         # Ensure the width of the currently visible lines can be scrolled
         self.SendScintilla(QsciScintilla.SCI_SETSCROLLWIDTHTRACKING, 1)
 
+        # Lexer
+        self.lexer = None
+
+        # Autocomplete
+        self.api = None
+
         # Linter
         self.linter = None  # Linter program to run, should be in the system's path
         self.lint_data = {}
@@ -97,6 +103,10 @@ class BaseEditor(QsciScintilla):
 
     def __repr__(self):
         return "<%s instance at %s>" % (self.__class__.__name__, id(self))
+
+    def __del__(self):
+        if self._margin_popup_timer.isActive():
+            self._margin_popup_timer.stop()
 
     @property
     def encoding(self):
