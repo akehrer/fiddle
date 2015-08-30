@@ -13,7 +13,7 @@ from tests import FiddleTestFixture
 from tests.helpers import *
 
 
-class FiddleMainWindowTest(FiddleTestFixture):
+class FiddleConsolesTest(FiddleTestFixture):
     def test_no_console_restart(self):
         """
         Can the program handle trying to restart the Python console interpreter when one doesn't exist?
@@ -144,6 +144,37 @@ class FiddleMainWindowTest(FiddleTestFixture):
         self.assertIn(tab1.filepath, cmd3)
         self.assertNotEqual(cmd1, cmd2)
         self.assertEqual(cmd1, cmd3)
+
+    def test_halt_python_console(self):
+        """
+        Can the Python console be cleanly halted?
+        :return:
+        """
+        self.form.terminate_pyconsole_process()
+        self.assertEqual(self.form.pyconsole_process.state(), 0)
+
+    def test_halt_help(self):
+        """
+        Can the Python help be cleanly halted?
+        :return:
+        """
+        self.form.terminate_pyconsole_help()
+        self.assertEqual(self.form.help_process.state(), 0)
+
+    def test_halt_running_script(self):
+        """
+        Can a long running script be cleanly halted?
+        :return:
+        """
+        srcpath = os.path.join(self.data_dir, 'run_forever.py')
+        self.form.open_filepath(srcpath)
+        cmd = self.form.ui.runScript_command.text()
+        self.assertIn('run_forever.py', cmd)
+        self.form.ui.actionRun_Current_Script.trigger()
+        self.assertGreater(self.form.runscript_process.state(), 0)
+        QTest.qWait(200)
+        self.form.terminate_current_script()
+        self.assertEqual(self.form.runscript_process.state(), 0)
 
 
 if __name__ == "__main__":

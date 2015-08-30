@@ -9,7 +9,7 @@ projects.
 
 fIDDLE has been inspired by the [IDLE Reimagined](https://github.com/asweigart/idle-reimagined) project.
 
-![0.2dev](./media/fiddle_0.2dev_main.png)
+![0.2dev](./media/fiddle_0.3dev_main.png)
 
 ## Features
  - Interactive interpreter (Python shell)
@@ -28,7 +28,15 @@ fIDDLE has been inspired by the [IDLE Reimagined](https://github.com/asweigart/i
  - [pyflakes](https://pypi.python.org/pypi/pyflakes) - to check Python files for errors
 
 ## Status
-fIDDLE is currently in beta development so features may be removed or changed.
+fIDDLE is currently in beta development so features may be removed or changed and things will be rough around the
+edges.
+
+## Installation
+There are Windows builds available for each [release](https://github.com/akehrer/fiddle/wiki/Installation) in a ZIP
+archive. These were built use [cx_Freeze](http://cx-freeze.sourceforge.net/).
+
+If you want to run the source directly, installation instructions for the three major systems are available
+[here](https://github.com/akehrer/fiddle/wiki/Installation).
 
 ## License
 fIDDLE is released under the MIT License, see [LICENSE](./LICENSE) for more information.
