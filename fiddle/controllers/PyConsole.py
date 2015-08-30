@@ -13,12 +13,11 @@ class PyConsoleLineEdit(QtGui.QLineEdit):
     """
     def __init__(self):
         super(PyConsoleLineEdit, self).__init__()
-        self.setFrame(False)
 
-        courier_font = QtGui.QFont()
-        courier_font.setFamily(EDITOR_FONT)
-        courier_font.setPointSize(EDITOR_FONT_SIZE)
-        self.setFont(courier_font)
+        line_font = QtGui.QFont()
+        line_font.setFamily(EDITOR_FONT)
+        line_font.setPointSize(EDITOR_FONT_SIZE)
+        self.setFont(line_font)
 
         self.history = []
         self.history_idx = -1

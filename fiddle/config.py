@@ -61,12 +61,15 @@ FILE_TYPES = ['fIDDLE Files (*.py *.html *.htm *.js *.css)',
 if PLATFORM == 'win32':
     EDITOR_FONT = 'Consolas'
     EDITOR_FONT_SIZE = 10
+    WINDOW_FONT_SIZE = 15
 elif PLATFORM == 'darwin':
     EDITOR_FONT = 'Menlo'
     EDITOR_FONT_SIZE = 12
+    WINDOW_FONT_SIZE = 13
 else:
     EDITOR_FONT = 'Courier'
     EDITOR_FONT_SIZE = 10
+    WINDOW_FONT_SIZE = 15
 
 EDITOR_MARGIN_COLOR = '#cccccc'
 EDITOR_EDGECOL_COLOR = '#dddddd'
@@ -84,7 +87,7 @@ QMainWindow {
 QWidget {
   /* Applies to all the widgets */
   font-family: "Segoe UI", "Lucida Grande", sans-serif;
-  font-size: 13px;
+  font-size: %spx;
 }
 
 QFrame {
@@ -120,7 +123,7 @@ QDockWidget::close-button {
 QDockWidget QToolButton {
   background-color: white;
 }
-"""
+""" % WINDOW_FONT_SIZE
 
 # Python Console Configuration
 CONSOLE_HOST = '127.0.0.1'
