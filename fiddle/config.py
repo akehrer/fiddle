@@ -84,18 +84,41 @@ QMainWindow {
 QWidget {
   /* Applies to all the widgets */
   font-family: "Segoe UI", "Lucida Grande", sans-serif;
-  font-size: 15px;
+  font-size: 13px;
+}
+
+QFrame {
+  background-color: white;
 }
 
 QTextBrowser {
   font-family: "Consolas", "Menlo", "Monaco", "DejaVu Sans Mono", monospace, fixed;
-  font-size: 17px;
+}
+
+QFrame QToolButton {
+  background-color: white;
+}
+
+QTabWidget::pane {
+  background-color: white;
 }
 
 QDockWidget::title {
   text-align: left;
-  background: ghostwhite;
+  background: whitesmoke;
   padding: 7px;
+}
+
+QDockWidget::close-button {
+    subcontrol-position: top right;
+    subcontrol-origin: margin;
+    position: absolute;
+    top: 0px; right: 10px; bottom: 0px;
+    width: 14px;
+}
+
+QDockWidget QToolButton {
+  background-color: white;
 }
 """
 
