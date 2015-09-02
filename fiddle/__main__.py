@@ -48,6 +48,7 @@ def main():
     translator = QtCore.QTranslator()
     translator.load(QtCore.QLocale.system().name() + '.qm', 'locale')
     app.exec_()
+    del app
 
 if __name__ == "__main__":
     main()
