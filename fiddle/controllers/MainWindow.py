@@ -261,15 +261,12 @@ class MainWindow(QtGui.QMainWindow):
             self.ui.statusbar.showMessage(self.tr('No Python executable at {0}').format(item['path']), 5000)
 
     def start_pyconsole_process(self):
-        if self.pyconsole_process is None:
-            # Create a shell process
-            self.pyconsole_process = QtCore.QProcess(self)
-            self.pyconsole_process.setWorkingDirectory(self.current_interpreter_dir)
-            self.pyconsole_process.readyReadStandardError.connect(self.process_console_stderr)
-            self.pyconsole_process.readyReadStandardOutput.connect(self.process_console_stdout)
-            self.pyconsole_process.finished.connect(self.process_console_finished)
-        else:
-            self.terminate_pyconsole_process()
+        # Create a shell process
+        self.pyconsole_process = QtCore.QProcess(self)
+        self.pyconsole_process.setWorkingDirectory(self.current_interpreter_dir)
+        self.pyconsole_process.readyReadStandardError.connect(self.process_console_stderr)
+        self.pyconsole_process.readyReadStandardOutput.connect(self.process_console_stdout)
+        self.pyconsole_process.finished.connect(self.process_console_finished)
         # Clear any version information
         self.pyconsole_pyversion = None
         # Start the interactive console
@@ -287,7 +284,7 @@ class MainWindow(QtGui.QMainWindow):
             self.print_data_to_pyconsole('\n', self.info_format)
             self.print_data_to_pyconsole(self.tr('Python console is terminating...'), self.info_format)
             self.ui.pyConsole_output.repaint()  # Force message to show
-            self.pyconsole_process.write('quit()\n')
+            self.pyconsole_process.write('exit()\n')
             self.pyconsole_process.close()
             if PLATFORM == 'win32':
                 self.pyconsole_process.kill()
@@ -308,9 +305,6 @@ class MainWindow(QtGui.QMainWindow):
             self.terminate_pyconsole_help()
         # Start the pydoc help server
         self.help_process.start(self.current_interpreter, ['-m', 'pydoc', '-p', str(CONSOLE_HELP_PORT)])
-        # Load the main page in the help pane
-        src = QtCore.QUrl('http://{0}:{1}/'.format(CONSOLE_HOST, CONSOLE_HELP_PORT))
-        self.ui.helpBrowser.setUrl(src)
 
     def restart_pyconsole_help(self):
         self.app.setOverrideCursor(QtCore.Qt.WaitCursor)
@@ -334,20 +328,17 @@ class MainWindow(QtGui.QMainWindow):
                     self.help_process.kill()
 
     def run_current_script(self):
-        if self.runscript_process is None:
-            # Create a shell process
-            self.runscript_process = QtCore.QProcess(self)
-            self.runscript_process.setWorkingDirectory(self.runscript_tab.basepath)
-            self.runscript_process.readyReadStandardError.connect(self.process_runscript_stderr)
-            self.runscript_process.readyReadStandardOutput.connect(self.process_runscript_stdout)
-            self.runscript_process.finished.connect(self.process_runscript_finished)
-        else:
-            self.terminate_current_script()
         # Show the run tab
         self.ui.console_tabWidget.show()
         self.ui.console_tabWidget.setCurrentIndex(1)
         # Clear the output
         self.ui.runScript_output.clear()
+        # Create a shell process
+        self.runscript_process = QtCore.QProcess(self)
+        self.runscript_process.setWorkingDirectory(self.runscript_tab.basepath)
+        self.runscript_process.readyReadStandardError.connect(self.process_runscript_stderr)
+        self.runscript_process.readyReadStandardOutput.connect(self.process_runscript_stdout)
+        self.runscript_process.finished.connect(self.process_runscript_finished)
         # Run the script in the process
         if not os.path.isfile(self.runscript_tab.filepath) or not self.runscript_tab.saved:
             self.runscript_tab.save()
@@ -594,7 +585,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def toggle_help_pane(self):
         if self.ui.helpBrowser.url().path() == 'blank':
-            src = QtCore.QUrl('http://{0}:{1}/'.format(self.pyconsole_server.host, CONSOLE_HELP_PORT))
+            src = QtCore.QUrl('http://{0}:{1}/'.format(CONSOLE_HOST, CONSOLE_HELP_PORT))
             self.ui.helpBrowser.setUrl(src)
         if self.ui.helpPane.isVisible():
             self.ui.helpPane.hide()
