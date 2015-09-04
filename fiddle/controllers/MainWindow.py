@@ -609,7 +609,8 @@ class MainWindow(QtGui.QMainWindow):
     def show_about_fiddle(self):
         message_box = QtGui.QMessageBox()
         message_box.setWindowTitle(self.tr('About fIDDLE'))
-        message_box.setText('fIDDLE {0}'.format(__version__))
+        message_box.setIconPixmap(QtGui.QPixmap(":/logos/logos/fiddle_logo_64.png"))
+        message_box.setText('Version {0}'.format(__version__))
         message_box.setInformativeText(ABOUT_FIDDLE)
         ok_btn = message_box.addButton(QtGui.QMessageBox.Ok)
         message_box.setDefaultButton(ok_btn)

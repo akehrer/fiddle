@@ -20,6 +20,8 @@ Licensed under the terms of the MIT License
 Created using Python and PyQT
 
 Silk icons CC-BY Mark James
+
+See the LICENCE file for additional licence information
 """
 
 
@@ -50,7 +52,7 @@ if getattr(sys, 'frozen', False):
 
 
 # App file types
-FILE_TYPES = ['fIDDLE Files (*.py *.html *.htm *.js *.css)',
+FILE_TYPES = ['fiddle Files (*.py *.html *.htm *.js *.css)',
               'Python Files (*.py)',
               'HTML Files (*.html *.htm)',
               'Javascript Files (*.js)',
@@ -76,7 +78,7 @@ EDITOR_EDGECOL_COLOR = '#dddddd'
 EDITOR_CARET_LINE_COLOR = '#ffffe0'
 
 # Window title prefix
-WINDOW_TITLE = 'fIDDLE'
+WINDOW_TITLE = 'fiddle'
 
 # MainWindow Stylesheet
 WINDOW_STYLE = """

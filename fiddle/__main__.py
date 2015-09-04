@@ -16,7 +16,7 @@ from fiddle.controllers.MainWindow import MainWindow
 from fiddle.config import *
 
 # Build the logger
-logging.basicConfig(filename='fIDDLE.log',
+logging.basicConfig(filename='fiddle.log',
                     filemode='a',
                     format='%(asctime)s:%(levelname)s:%(message)s',
                     level=LOG_LEVEL)

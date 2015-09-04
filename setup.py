@@ -44,7 +44,7 @@ if sys.platform == 'win32':
         # Hide the console window in Windows
         base = 'Win32GUI'
     build_exe_options['include_msvcr'] = True
-    target_name = 'fIDDLE.exe'
+    target_name = 'fiddle.exe'
 elif sys.platform == 'darwin':
     # exclude: libQsci.dylib
     # the compiled file is copied from libQsci.dylib to Qsci.so during build process
@@ -71,7 +71,7 @@ elif sys.platform == 'darwin':
                 'QtXmlPatterns']
     for e in excludes:
         build_exe_options['bin_excludes'].append('lib%s.dylib' % (e))
-    target_name = 'fIDDLE'
+    target_name = 'fiddle'
 else:
     target_name = 'fiddle.py'
 
@@ -127,14 +127,14 @@ class Version(Command):
 
 # ##### Setup #####
 setup(
-    name='fIDDLE',
+    name='fiddle',
     version=VERSION,
     author='Aaron Kehrer',
     author_email='akehrer@gmail.com',
     url='https://github.com/akehrer/fiddle',
     license='The MIT License (MIT)',
-    windows=[{'script': 'fIDDLE.py'}],
+    windows=[{'script': 'fiddle.py'}],
     options={'build_exe': build_exe_options},
-    executables=[Executable('fIDDLE.py', base=base, targetName=target_name)],
+    executables=[Executable('fiddle.py', base=base, targetName=target_name)],
     cmdclass={'version': Version}
 )

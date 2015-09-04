@@ -1,13 +1,14 @@
-# fIDDLE
+# ![logo](./media/fiddle_logo_128.png)
+
 ```python
 from __future__ import idle
 ```
 
-fIDDLE is a Python code editor designed as an alternate to Python's default IDLE development environment. It is aimed
-at beginning Python programmers and experience Python developers that may not require a full blown IDE for simpler
-projects.
+fiddle is a Python code editor designed as an alternate to Python's default IDLE development environment. It is aimed
+at both beginning Python programmers just learning the language and experience Python developers that may not require a
+full IDE for simpler projects.
 
-fIDDLE has been inspired by the [IDLE Reimagined](https://github.com/asweigart/idle-reimagined) project.
+fiddle has been inspired by the [IDLE Reimagined](https://github.com/asweigart/idle-reimagined) project.
 
 ![0.2dev](./media/fiddle_0.3dev_main.png)
 
@@ -20,15 +21,8 @@ fIDDLE has been inspired by the [IDLE Reimagined](https://github.com/asweigart/i
  - One touch code cleaner and code checker
  - Easily switch between interpreters (including virtual environments)
 
-## Requirements
- - [Python 3.4](https://www.python.org/downloads/)
- - [PyQt4](https://www.riverbankcomputing.com/software/pyqt/download)
- - [chardet](https://pypi.python.org/pypi/chardet) - to guess file encodings
- - [autopep8](https://pypi.python.org/pypi/autopep8) - to clean Python files formatting
- - [pyflakes](https://pypi.python.org/pypi/pyflakes) - to check Python files for errors
-
 ## Status
-fIDDLE is currently in beta development so features may be removed or changed and things will be rough around the
+fiddle is currently in beta development so features may be removed or changed and things will be rough around the
 edges.
 
 ## Installation
@@ -38,7 +32,15 @@ archive. These were built use [cx_Freeze](http://cx-freeze.sourceforge.net/).
 If you want to run the source directly, installation instructions for the three major systems are available
 [here](https://github.com/akehrer/fiddle/wiki/Installation).
 
+## Requirements
+ - [Python 3.4](https://www.python.org/downloads/)
+ - [PyQt4](https://www.riverbankcomputing.com/software/pyqt/download)
+ - [chardet](https://pypi.python.org/pypi/chardet) - to guess file encodings
+ - [autopep8](https://pypi.python.org/pypi/autopep8) - to clean Python files formatting
+ - [pyflakes](https://pypi.python.org/pypi/pyflakes) - to check Python files for errors
+
+
 ## License
-fIDDLE is released under the MIT License, see [LICENSE](./LICENSE) for more information.
+fiddle is released under the MIT License, see [LICENSE](./LICENSE) for more information.
 
 Copyright (c) 2015 Aaron Kehrer

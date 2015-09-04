@@ -64,15 +64,15 @@ class FiddleTabWidget(QtGui.QWidget):
             self.encoding = chardet.detect(data)['encoding']
 
             if '.htm' in self.extension:
-                self.insert_editor(HTMLEditor())
+                self.insert_editor(HTMLEditor(parent=self))
             elif self.extension == '.js':
-                self.insert_editor(JavascriptEditor())
+                self.insert_editor(JavascriptEditor(parent=self))
             elif self.extension == '.css':
-                self.insert_editor(CSSEditor())
+                self.insert_editor(CSSEditor(parent=self))
             elif self.extension == '.py':
-                self.insert_editor(PythonEditor())
+                self.insert_editor(PythonEditor(parent=self))
             else:
-                self.insert_editor(BaseEditor())
+                self.insert_editor(BaseEditor(parent=self))
 
             try:
                 self.editor.setText(data.decode(self.encoding))
@@ -84,7 +84,7 @@ class FiddleTabWidget(QtGui.QWidget):
             self.filename = 'new_{}.py'.format(new_file_iter)
             self.extension = '.py'
             self._filepath = os.path.join(os.path.expanduser('~'), self.filename)
-            self.insert_editor(PythonEditor())
+            self.insert_editor(PythonEditor(parent=self))
             new_file_iter += 1
             self._saved = False
 
@@ -100,6 +100,8 @@ class FiddleTabWidget(QtGui.QWidget):
     def insert_editor(self, editor):
         if self.editor is not None and self.layout().indexOf(self.editor) >= 0:
             self.layout().removeWidget(self.editor)
+            self.editor.deleteLater()
+            self.editor = None
         self.editor = editor
         self.editor.textChanged.connect(self._set_text_changed)
         self.editor.cursorPositionChanged.connect(self._cursor_position_changed)

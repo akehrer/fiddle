@@ -21,4 +21,8 @@
     <file>icons/folder.png</file>
     <file>icons/page_white.png</file>
   </qresource>
+  <qresource prefix="logos">
+    <file>logos/fiddle_logo_64.png</file>
+    <file>logos/fiddle_icon_light.png</file>
+  </qresource>
 </RCC>
