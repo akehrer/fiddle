@@ -37,14 +37,14 @@ build_exe_options['include_files'].append(lib23_path)
 
 # ##### Platform Specific Parameters #####
 base = None
+icon = None
 if sys.platform == 'win32':
-    # GUI applications require a different base on Windows (the default is for
-    # a console application).
-    if LOG_LEVEL != logging.DEBUG:
-        # Hide the console window in Windows
-        base = 'Win32GUI'
+    # GUI applications require a different base on Windows (the default is for a console application).
+    # Hide the console window in Windows
+    base = 'Win32GUI'
     build_exe_options['include_msvcr'] = True
     target_name = 'fiddle.exe'
+    icon = os.path.join('.', 'media', 'icons', 'fiddle_icon_light.ico')
 elif sys.platform == 'darwin':
     # exclude: libQsci.dylib
     # the compiled file is copied from libQsci.dylib to Qsci.so during build process
@@ -72,6 +72,7 @@ elif sys.platform == 'darwin':
     for e in excludes:
         build_exe_options['bin_excludes'].append('lib%s.dylib' % (e))
     target_name = 'fiddle'
+    icon = os.path.join('.', 'media', 'icons', 'fiddle_icon_light.hqx')
 else:
     target_name = 'fiddle.py'
 
@@ -135,6 +136,6 @@ setup(
     license='The MIT License (MIT)',
     windows=[{'script': 'fiddle.py'}],
     options={'build_exe': build_exe_options},
-    executables=[Executable('fiddle.py', base=base, targetName=target_name)],
+    executables=[Executable('fiddle.py', base=base, targetName=target_name, icon=icon)],
     cmdclass={'version': Version}
 )

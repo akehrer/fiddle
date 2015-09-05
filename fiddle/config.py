@@ -21,7 +21,7 @@ Created using Python and PyQT
 
 Silk icons CC-BY Mark James
 
-See the LICENCE file for additional licence information
+See the LICENSE file for additional license information
 """
 
 
