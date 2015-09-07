@@ -600,32 +600,13 @@
         <attribute name="title">
          <string>Python Console</string>
         </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout">
+        <layout class="QVBoxLayout" name="pyConsoleLayout">
          <property name="spacing">
           <number>0</number>
          </property>
          <property name="margin">
           <number>0</number>
          </property>
-         <item>
-          <widget class="QTextBrowser" name="pyConsole_output">
-           <property name="lineWrapMode">
-            <enum>QTextEdit::NoWrap</enum>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-           <property name="textInteractionFlags">
-            <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse|Qt::TextBrowserInteraction|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-           </property>
-           <property name="openExternalLinks">
-            <bool>false</bool>
-           </property>
-           <property name="openLinks">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
          <item>
           <layout class="QHBoxLayout" name="pyconsole_prompt_layout" stretch="0,0,0">
            <property name="spacing">
@@ -635,34 +616,17 @@
             <enum>QLayout::SetDefaultConstraint</enum>
            </property>
            <item>
-            <widget class="QLabel" name="pyConsole_prompt">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
+            <spacer name="horizontalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
              </property>
-             <property name="font">
-              <font>
-               <family>Courier</family>
-              </font>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
              </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: white;</string>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::NoFrame</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Plain</enum>
-             </property>
-             <property name="text">
-              <string>&gt;&gt;&gt;</string>
-             </property>
-             <property name="textFormat">
-              <enum>Qt::PlainText</enum>
-             </property>
-            </widget>
+            </spacer>
            </item>
            <item>
             <widget class="QToolButton" name="pyconsole_restart_Button">
@@ -712,7 +676,7 @@
         <attribute name="title">
          <string>Run Script</string>
         </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_4">
+        <layout class="QVBoxLayout" name="runScriptLayout">
          <property name="leftMargin">
           <number>5</number>
          </property>
@@ -792,22 +756,6 @@
             </widget>
            </item>
           </layout>
-         </item>
-         <item>
-          <widget class="QTextBrowser" name="runScript_output">
-           <property name="font">
-            <font>
-             <family>Courier</family>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
-           <property name="textInteractionFlags">
-            <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse|Qt::TextBrowserInteraction|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-           </property>
-           <property name="openLinks">
-            <bool>false</bool>
-           </property>
-          </widget>
          </item>
         </layout>
        </widget>
@@ -1288,8 +1236,8 @@
    <slot>run_web_search()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1303</x>
-     <y>115</y>
+     <x>1359</x>
+     <y>146</y>
     </hint>
     <hint type="destinationlabel">
      <x>1328</x>
@@ -1352,12 +1300,12 @@
    <slot>back()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>823</x>
-     <y>160</y>
+     <x>853</x>
+     <y>214</y>
     </hint>
     <hint type="destinationlabel">
-     <x>900</x>
-     <y>195</y>
+     <x>1360</x>
+     <y>392</y>
     </hint>
    </hints>
   </connection>
@@ -1368,12 +1316,12 @@
    <slot>forward()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>854</x>
-     <y>168</y>
+     <x>1359</x>
+     <y>214</y>
     </hint>
     <hint type="destinationlabel">
-     <x>971</x>
-     <y>183</y>
+     <x>1360</x>
+     <y>380</y>
     </hint>
    </hints>
   </connection>
