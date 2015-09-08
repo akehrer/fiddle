@@ -65,7 +65,7 @@ class FiddleConsolesTest(FiddleTestFixture):
         test_strs = [ascii_letters, digits, punctuation]
         # Load the history
         for ts in test_strs:
-            QTest.keyClicks(self.form.pyconsole_output, "i = '{0}'".format(ts), delay=100)
+            QTest.keyClicks(self.form.pyconsole_output, "i = '{0}'".format(ts), delay=50)
             QTest.keyClick(self.form.pyconsole_output, Qt.Key_Return, delay=200)
 
     def test_console_NameError_link(self):

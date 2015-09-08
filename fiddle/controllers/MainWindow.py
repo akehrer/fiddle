@@ -184,10 +184,7 @@ class MainWindow(QtGui.QMainWindow):
         # Set default interpreter
         a = QtGui.QAction(self)
         a.setData(CONSOLE_PYTHON)
-        if PLATFORM == 'win32':
-            a.setText(self.tr('(Default) {0}'.format(os.path.dirname(CONSOLE_PYTHON['path']))))
-        else:
-            a.setText(self.tr('(Default) {0}'.format(CONSOLE_PYTHON['path'])))
+        a.setText(self.tr('(Default) {0}'.format(CONSOLE_PYTHON['path'])))
         a.setCheckable(True)
         a.setChecked(True)
         a.triggered.connect(self.set_current_interpreter)
@@ -264,7 +261,7 @@ class MainWindow(QtGui.QMainWindow):
     def start_pyconsole_process(self):
         if self.pyconsole_process is None:
             # Create a shell process
-            self.pyconsole_process = QtCore.QProcess(self)
+            self.pyconsole_process = QtCore.QProcess(self.app)
             self.pyconsole_process.setWorkingDirectory(self.current_interpreter_dir)
             self.pyconsole_process.readyReadStandardError.connect(self.process_console_stderr)
             self.pyconsole_process.readyReadStandardOutput.connect(self.process_console_stdout)
@@ -301,7 +298,7 @@ class MainWindow(QtGui.QMainWindow):
     def start_pyconsole_help(self):
         if self.help_process is None:
             # Create a shell process
-            self.help_process = QtCore.QProcess(self)
+            self.help_process = QtCore.QProcess(self.app)
             self.help_process.setWorkingDirectory(self.current_interpreter_dir)
             self.help_process.readyReadStandardError.connect(self.process_help_stderr)
             self.help_process.readyReadStandardOutput.connect(self.process_help_stdout)
@@ -332,18 +329,21 @@ class MainWindow(QtGui.QMainWindow):
                     self.help_process.kill()
 
     def run_current_script(self):
+        if self.runscript_process is None:
+            # Create a shell process
+            self.runscript_process = QtCore.QProcess(self.app)
+            self.runscript_process.setWorkingDirectory(self.runscript_tab.basepath)
+            self.runscript_process.readyReadStandardError.connect(self.process_runscript_stderr)
+            self.runscript_process.readyReadStandardOutput.connect(self.process_runscript_stdout)
+            self.runscript_process.finished.connect(self.process_runscript_finished)
+            self.runscript_console.process = self.runscript_process
+        else:
+            self.terminate_current_script()
         # Show the run tab
         self.ui.console_tabWidget.show()
         self.ui.console_tabWidget.setCurrentIndex(1)
         # Clear the output
         self.runscript_console.clear()
-        # Create a shell process
-        self.runscript_process = QtCore.QProcess(self)
-        self.runscript_process.setWorkingDirectory(self.runscript_tab.basepath)
-        self.runscript_process.readyReadStandardError.connect(self.process_runscript_stderr)
-        self.runscript_process.readyReadStandardOutput.connect(self.process_runscript_stdout)
-        self.runscript_process.finished.connect(self.process_runscript_finished)
-        self.runscript_console.process = self.runscript_process
         # Run the script in the process
         if not os.path.isfile(self.runscript_tab.filepath) or not self.runscript_tab.saved:
             self.runscript_tab.save()

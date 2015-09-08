@@ -43,7 +43,7 @@ class ManageInterpretersDialog(QtGui.QDialog):
 
     def init_default_interpreter(self):
         # Add system interpreter
-        self.ui.defaultInterpreterPath_label.setText('(Default) ' + CONSOLE_PYTHON)
+        self.ui.defaultInterpreterPath_label.setText('(Default) ' + CONSOLE_PYTHON['path'])
 
     def init_elements(self):
         # Add user interpreters
@@ -61,7 +61,7 @@ class ManageInterpretersDialog(QtGui.QDialog):
         filepath = QtGui.QFileDialog.getOpenFileName(None,
                                                      None,
                                                      '/',
-                                                     'python.exe' if PLATFORM == 'win32' else 'python*')
+                                                     'Python Interpreters (python* ipython*);;All Files (*.*)')
         if filepath != '':
             # Check for executable
             if os.path.isfile(filepath) and os.access(filepath, os.X_OK):
