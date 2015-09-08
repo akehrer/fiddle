@@ -61,7 +61,8 @@ class FiddleTabWidget(QtGui.QWidget):
 
             with open(path, 'rb') as fp:
                 data = fp.read()
-            self.encoding = chardet.detect(data)['encoding']
+            enc = chardet.detect(data)['encoding']
+            self.encoding = enc if enc is not None else 'utf-8'
 
             if '.htm' in self.extension:
                 self.insert_editor(HTMLEditor(parent=self))

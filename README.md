@@ -26,7 +26,7 @@ fiddle is currently in beta development so features may be removed or changed an
 edges.
 
 ## Installation
-There are Windows builds available for each [release](https://github.com/akehrer/fiddle/wiki/Installation) in a ZIP
+There are Windows builds available for each [release](https://github.com/akehrer/fiddle/releases) in a ZIP
 archive. These were built use [cx_Freeze](http://cx-freeze.sourceforge.net/).
 
 If you want to run the source directly, installation instructions for the three major systems are available

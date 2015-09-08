@@ -94,6 +94,7 @@ class BaseEditor(QsciScintilla):
 
         # Margin popup
         self._margin_popup = QWidget(self)
+        self._margin_popup.setObjectName('Margin popup for %s' % self.__class__.__name__)
         self._margin_popup_lbl = QLabel(self._margin_popup)
         self._init_margin_popup()
         self._margin_popup_timer = QtCore.QTimer()

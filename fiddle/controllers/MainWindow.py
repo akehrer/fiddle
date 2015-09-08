@@ -87,10 +87,16 @@ class MainWindow(QtGui.QMainWindow):
         # Load any files/dirs passed on the command line
         self.init_load_files(files)
 
+    def closeEvent(self, event):
+        event.ignore()
+        if self.close_all_tabs():
+            event.accept()
+            self.terminate_pyconsole_process(timeout=1000)
+            self.terminate_current_script(timeout=1000)
+            self.terminate_pyconsole_help(timeout=1000)
+
     def stop(self):
-        self.terminate_pyconsole_process(timeout=1000)
-        self.terminate_current_script(timeout=1000)
-        self.terminate_pyconsole_help(timeout=1000)
+        pass
 
     def init_load_files(self, paths):
         """
@@ -498,18 +504,27 @@ class MainWindow(QtGui.QMainWindow):
 
     def close_current_tab(self):
         idx = self.ui.documents_tabWidget.currentIndex()
-        self.close_tab(idx)
+        return self.close_tab(idx)
 
     def close_all_tabs(self):
         for i in range(self.ui.documents_tabWidget.count()):
-            self.close_tab(0)
+            if not self.close_tab(0):
+                return False
+        return True
 
     def close_tab(self, idx):
         # removing the tab doesn't get the widget, so we need to get that first...
         widget = self.ui.documents_tabWidget.widget(idx)
+        # needs saving?
+        if not widget.saved and widget.basepath is not None:
+            if not self._save_tab_dialog(widget):
+                # User canceled close action
+                return False
+        # remove it
         self.ui.documents_tabWidget.removeTab(idx)
         # ...then delete it
-        del widget
+        widget.deleteLater()
+        return True
 
     def zoom_in_text(self):
         try:
@@ -612,7 +627,7 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.searchProvider_label.setText(data['name'])
 
     def show_about_fiddle(self):
-        message_box = QtGui.QMessageBox()
+        message_box = QtGui.QMessageBox(self)
         message_box.setWindowTitle(self.tr('About fIDDLE'))
         message_box.setIconPixmap(QtGui.QPixmap(":/logos/logos/fiddle_logo_64.png"))
         message_box.setText('Version {0}'.format(__version__))
@@ -822,7 +837,7 @@ class MainWindow(QtGui.QMainWindow):
                     tab.editor.ensureLineVisible(linenum)
                     tab.editor.setFocus()
                 except AttributeError:
-                    message_box = QtGui.QMessageBox()
+                    message_box = QtGui.QMessageBox(self)
                     message_box.setWindowTitle(self.tr('File Error'))
                     message_box.setText(self.tr('Cannot open file'))
                     message_box.setInformativeText(self.tr('The file at {0} cannot be opened.').format(filepath))
@@ -835,7 +850,7 @@ class MainWindow(QtGui.QMainWindow):
             ret = QtGui.QDesktopServices.openUrl(url)
 
         if not ret:
-            message_box = QtGui.QMessageBox()
+            message_box = QtGui.QMessageBox(self)
             message_box.setWindowTitle(self.tr('Link Error'))
             message_box.setText(self.tr('Cannot open link'))
             message_box.setInformativeText(self.tr('The link at {0} cannot be opened.').format(url.path()))
@@ -1039,6 +1054,29 @@ class MainWindow(QtGui.QMainWindow):
         cursor.movePosition(QtGui.QTextCursor.End)
         self.runscript_console.ensureCursorVisible()
         self.help_process.close()
+
+    def _save_tab_dialog(self, tab):
+        """
+        Document in tab has not been saved does the user want to save it before deleting
+        :param tab:
+        :return bool: whether the tab should be deleted
+        """
+        message_box = QtGui.QMessageBox(self)
+        message_box.setWindowTitle(tab.filename)
+        message_box.setText(self.tr('Do you want to save changes to {0} before closing?'.format(tab.filename)))
+        message_box.setInformativeText(tab.filepath)
+        save_btn = message_box.addButton(QtGui.QMessageBox.Save)
+        message_box.addButton(QtGui.QMessageBox.Discard)
+        message_box.addButton(QtGui.QMessageBox.Cancel)
+        message_box.setDefaultButton(save_btn)
+        res = message_box.exec_()
+        if res == QtGui.QMessageBox.Save:
+            tab.save()
+            return True
+        elif res == QtGui.QMessageBox.Discard:
+            return True
+        else:
+            return False
 
     @staticmethod
     def _elide_filepath(path, threshold=20, margin=5):

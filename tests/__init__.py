@@ -5,10 +5,12 @@
 import os
 import sys
 import unittest
+import sip
 from PyQt4.QtGui import QApplication
 
 from fiddle.controllers.MainWindow import MainWindow
 
+sip.setdestroyonexit(False)
 app = QApplication(sys.argv)
 
 

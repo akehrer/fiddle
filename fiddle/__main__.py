@@ -9,6 +9,7 @@ import os
 import sys
 
 # Import Qt modules
+import sip
 from PyQt4 import QtCore, QtGui
 
 # Import app modules
@@ -44,11 +45,11 @@ class App(QtGui.QApplication):
 
 
 def main():
+    sip.setdestroyonexit(False)  # fix for occasional crashes on exit
     app = App(sys.argv)
     translator = QtCore.QTranslator()
     translator.load(QtCore.QLocale.system().name() + '.qm', 'locale')
     app.exec_()
-    del app
 
 if __name__ == "__main__":
     main()
