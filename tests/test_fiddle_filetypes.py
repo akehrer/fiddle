@@ -7,22 +7,12 @@ import unittest
 from PyQt4.QtTest import QTest
 from PyQt4.QtCore import Qt
 
-from fiddle.controllers.MainWindow import MainWindow
 from fiddle.controllers.Editors import *
-from tests import app
+from tests import FiddleTestFixture
 from tests.helpers import *
 
 
-class FiddleFiletypesTest(unittest.TestCase):
-    def setUp(self):
-        self.app = app
-        self.form = MainWindow(app=app)
-        self.this_dir = os.path.dirname(__file__)
-        self.data_dir = os.path.join(self.this_dir, 'data')
-
-    def tearDown(self):
-        self.form.stop()
-
+class FiddleFiletypesTest(FiddleTestFixture):
     def test_unicode_open_saveas(self):
         srcpath = os.path.join(self.data_dir, 'utf8_test.txt')
         destpath = os.path.join(self.this_dir, 'utf8_test_temp.txt')
