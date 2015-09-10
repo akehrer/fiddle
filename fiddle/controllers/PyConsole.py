@@ -31,47 +31,49 @@ class PyConsoleTextBrowser(QtGui.QTextBrowser):
 
     def keyPressEvent(self, event):
         if self.process is not None:
-            # Get the insert cursor and make sure it's at the end of the console
-            cursor = self.textCursor()
-            cursor.movePosition(QtGui.QTextCursor.End)
-            if self._input_insert_pos < 0:
-                self._input_insert_pos = cursor.position()
+            # Skip keys modified with Ctrl or Alt
+            if event.modifiers() != QtCore.Qt.ControlModifier and event.modifiers() != QtCore.Qt.AltModifier:
+                # Get the insert cursor and make sure it's at the end of the console
+                cursor = self.textCursor()
+                cursor.movePosition(QtGui.QTextCursor.End)
+                if self._input_insert_pos < 0:
+                    self._input_insert_pos = cursor.position()
 
-            # Scroll view to end of console
-            self.setTextCursor(cursor)
-            self.ensureCursorVisible()
+                # Scroll view to end of console
+                self.setTextCursor(cursor)
+                self.ensureCursorVisible()
 
-            # Process the key event
-            if event.key() == QtCore.Qt.Key_Up:
-                # Clear any previous input
-                self._clear_insert_line(cursor)
-                # Get the history
-                if len(self.history) > 0:
-                    self.history_idx -= 1
-                    try:
-                        cursor.insertText(self.history[self.history_idx])
-                    except IndexError:
-                        self.history_idx += 1
-                        cursor.insertText('')
-            elif event.key() == QtCore.Qt.Key_Down:
-                # Clear any previous input
-                self._clear_insert_line(cursor)
-                # Get the history
-                if len(self.history) > 0 >= self.history_idx:
-                    self.history_idx += 1
-                    try:
-                        cursor.insertText(self.history[self.history_idx])
-                    except IndexError:
+                # Process the key event
+                if event.key() == QtCore.Qt.Key_Up:
+                    # Clear any previous input
+                    self._clear_insert_line(cursor)
+                    # Get the history
+                    if len(self.history) > 0:
                         self.history_idx -= 1
-                        cursor.insertText('')
-            elif event.key() == QtCore.Qt.Key_Return:
-                txt = self._select_insert_line(cursor)
-                self.process.write('{0}\n'.format(txt).encode('utf-8'))
-                # Reset the insert position
-                self._input_insert_pos = -1
-                # Update the history
-                self.history.append(txt)
-                self.history_idx = 0
+                        try:
+                            cursor.insertText(self.history[self.history_idx])
+                        except IndexError:
+                            self.history_idx += 1
+                            cursor.insertText('')
+                elif event.key() == QtCore.Qt.Key_Down:
+                    # Clear any previous input
+                    self._clear_insert_line(cursor)
+                    # Get the history
+                    if len(self.history) > 0 >= self.history_idx:
+                        self.history_idx += 1
+                        try:
+                            cursor.insertText(self.history[self.history_idx])
+                        except IndexError:
+                            self.history_idx -= 1
+                            cursor.insertText('')
+                elif event.key() == QtCore.Qt.Key_Return:
+                    txt = self._select_insert_line(cursor)
+                    self.process.write('{0}\n'.format(txt).encode('utf-8'))
+                    # Reset the insert position
+                    self._input_insert_pos = -1
+                    # Update the history
+                    self.history.append(txt)
+                    self.history_idx = 0
         # Pass the event on to the parent for handling
         return QtGui.QTextBrowser.keyPressEvent(self, event)
 
