@@ -12,9 +12,14 @@ from tests.helpers import *
 
 class FiddleMainWindowTest(FiddleTestFixture):
     def test_close_tab_discard(self):
-        dh = DiscardHelper()
+        """
+        Test closing a tab with unsaved data. The changes are discarded.
+        Note: Modal will flash...
+        :return:
+        """
         # Open the file
         srcpath = os.path.join(self.data_dir, 'lorem.txt')
+        srchash = sha_hash_file(srcpath)
         self.form.open_filepath(srcpath)
         tab = self.form.ui.documents_tabWidget.currentWidget()
         self.assertTrue(tab.saved)
@@ -24,17 +29,22 @@ class FiddleMainWindowTest(FiddleTestFixture):
         self.assertFalse(tab.saved)
         # Close the tab and discard the changes
         pre_cnt = self.form.ui.documents_tabWidget.count()
-        QTimer.singleShot(200, dh.click_discard)
+        QTimer.singleShot(200, self._discard_dialog)
         self.form.close_tab(1)
         post_cnt = self.form.ui.documents_tabWidget.count()
         self.assertNotEqual(pre_cnt, post_cnt)
+        self.assertEqual(srchash, sha_hash_file(srcpath))
 
+    def _discard_dialog(self):
+        """
+        Click the 'Discard' button on a modal dialog.
+        This function is usually called by a QTimer that starts before the
+        function that creates the dialog.
 
-class DiscardHelper(QWidget):
-    def __init__(self):
-        super(DiscardHelper, self).__init__()
+            QTimer.singleShot(200, self._discard_dialog)
 
-    def click_discard(self):
+        :return:
+        """
         widgets = app.topLevelWidgets()
         for w in widgets:
             if type(w) is QMessageBox:
