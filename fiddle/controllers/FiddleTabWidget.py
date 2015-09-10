@@ -20,6 +20,7 @@ new_file_iter = 1
 class FiddleTabWidget(QtGui.QWidget):
     editor_changed = QtCore.pyqtSignal()
     cursor_changed = QtCore.pyqtSignal(int, int)
+    find_wrapped = QtCore.pyqtSignal()
 
     def __init__(self, parent=None, filepath=None):
         super(FiddleTabWidget, self).__init__(parent)
@@ -42,6 +43,7 @@ class FiddleTabWidget(QtGui.QWidget):
         self.find_expr = ''
         self.find_forward = False
         self.found_first = False
+        self.first_found = (0, 0)  # line, col
 
         self.filepath = filepath
         self.watcher = None
@@ -159,11 +161,18 @@ class FiddleTabWidget(QtGui.QWidget):
             self.found_first = False
 
         if self.found_first:
-            return self.editor.findNext()
+            f = self.editor.findNext()
+            c = self.editor.getCursorPosition()
+            if c[0] <= self.first_found[0] and forward:
+                self.find_wrapped.emit()
+            elif c[0] >= self.first_found[0] and not forward:
+                self.find_wrapped.emit()
+            return f
         elif in_select:
             res = self.editor.findFirstInSelection(expr, re, cs, wo, forward, show, posix)
             if res:
                 self.found_first = True
+                self.first_found = self.editor.getCursorPosition()
                 return True
             else:
                 self.found_first = False
@@ -172,6 +181,7 @@ class FiddleTabWidget(QtGui.QWidget):
             res = self.editor.findFirst(expr, re, cs, wo, wrap, forward, line, index, show, posix)
             if res:
                 self.found_first = True
+                self.first_found = self.editor.getCursorPosition()
                 return True
             else:
                 self.found_first = False

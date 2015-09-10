@@ -376,6 +376,7 @@ class MainWindow(QtGui.QMainWindow):
         tab = FiddleTabWidget(parent=self.ui.documents_tabWidget, filepath=filepath)
         tab.editor_changed.connect(self.update_tab_title)
         tab.cursor_changed.connect(self.update_cursor_position)
+        tab.find_wrapped.connect(self.handle_find_wrapped)
         return tab
 
     def new_file(self):
@@ -657,42 +658,47 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.find_text_lineEdit.setFocus()
         self.ui.find_text_lineEdit.selectAll()
 
-        if self.ui.find_text_lineEdit.text() != '':
-            current_doc = self.ui.documents_tabWidget.currentWidget()
-            if current_doc is not None:
-                current_doc.find_text(self.ui.find_text_lineEdit.text(),
-                                      self.ui.find_re_checkBox.isChecked(),
-                                      self.ui.find_case_checkBox.isChecked(),
-                                      self.ui.find_word_checkBox.isChecked(),
-                                      True,  # Always wrap
-                                      self.ui.find_selection_checkBox.isChecked())
+        current_doc = self.ui.documents_tabWidget.currentWidget()
+        if self.ui.find_text_lineEdit.text() == '':
+            self.ui.find_text_lineEdit.setText(current_doc.editor.selectedText())
+        if current_doc is not None:
+            current_doc.find_text(self.ui.find_text_lineEdit.text(),
+                                  self.ui.find_re_checkBox.isChecked(),
+                                  self.ui.find_case_checkBox.isChecked(),
+                                  self.ui.find_word_checkBox.isChecked(),
+                                  self.ui.find_wrap_checkBox.isChecked(),
+                                  self.ui.find_selection_checkBox.isChecked())
 
     def find_in_file_previous(self):
-        if self.ui.find_text_lineEdit.text() != '':
-            current_doc = self.ui.documents_tabWidget.currentWidget()
-            if current_doc is not None:
-                current_doc.find_text(self.ui.find_text_lineEdit.text(),
-                                      self.ui.find_re_checkBox.isChecked(),
-                                      self.ui.find_case_checkBox.isChecked(),
-                                      self.ui.find_word_checkBox.isChecked(),
-                                      True,  # Always wrap
-                                      self.ui.find_selection_checkBox.isChecked(),
-                                      forward=False)
+        current_doc = self.ui.documents_tabWidget.currentWidget()
+        if self.ui.find_text_lineEdit.text() == '':
+            self.ui.find_text_lineEdit.setText(current_doc.editor.selectedText())
+        if current_doc is not None:
+            current_doc.find_text(self.ui.find_text_lineEdit.text(),
+                                  self.ui.find_re_checkBox.isChecked(),
+                                  self.ui.find_case_checkBox.isChecked(),
+                                  self.ui.find_word_checkBox.isChecked(),
+                                  self.ui.find_wrap_checkBox.isChecked(),
+                                  self.ui.find_selection_checkBox.isChecked(),
+                                  forward=False)
 
     def replace_in_file(self):
         if self.ui.findPane.isHidden():
             self.ui.findPane.show()
             self.ui.find_text_lineEdit.setFocus()
 
+        current_doc = self.ui.documents_tabWidget.currentWidget()
+        if self.ui.find_text_lineEdit.text() == '':
+            self.ui.find_text_lineEdit.setText(current_doc.editor.selectedText())
+
         if self.ui.replace_text_lineEdit.text() != '':
-            current_doc = self.ui.documents_tabWidget.currentWidget()
             if current_doc is not None:
                 current_doc.replace_text(self.ui.find_text_lineEdit.text(),
                                          self.ui.replace_text_lineEdit.text(),
                                          self.ui.find_re_checkBox.isChecked(),
                                          self.ui.find_case_checkBox.isChecked(),
                                          self.ui.find_word_checkBox.isChecked(),
-                                         True,  # Always wrap
+                                         self.ui.find_wrap_checkBox.isChecked(),
                                          self.ui.find_selection_checkBox.isChecked())
 
     def replace_all_in_file(self):
@@ -762,6 +768,9 @@ class MainWindow(QtGui.QMainWindow):
                 self.ui.runScript_command.setToolTip(command)
             else:
                 self.ui.runScript_command.setText('')
+
+    def handle_find_wrapped(self):
+        self.ui.statusbar.showMessage(self.tr('Find wrapped end of file'), 2000)
 
     def load_anchor(self, url):
         """

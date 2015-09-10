@@ -68,10 +68,18 @@ class BaseEditor(QsciScintilla):
         self.setCaretLineVisible(True)
         self.setCaretLineBackgroundColor(QColor(EDITOR_CARET_LINE_COLOR))
 
+        # Indentation
+        self.setIndentationWidth(4)
+        self.setBackspaceUnindents(True)
+
         # Use raw messages to Scintilla here
         # (all messages are documented here: http://www.scintilla.org/ScintillaDoc.html)
         # Ensure the width of the currently visible lines can be scrolled
         self.SendScintilla(QsciScintilla.SCI_SETSCROLLWIDTHTRACKING, 1)
+        # Multiple cursor support
+        self.SendScintilla(QsciScintilla.SCI_SETMULTIPLESELECTION, True)
+        self.SendScintilla(QsciScintilla.SCI_SETMULTIPASTE, 1)
+        self.SendScintilla(QsciScintilla.SCI_SETADDITIONALSELECTIONTYPING, True)
 
         # Lexer
         self.lexer = None
@@ -245,12 +253,12 @@ class PythonEditor(BaseEditor):
                 self.api.add(i)
         self.api.prepare()
         self.setAutoCompletionThreshold(3)
-        self.setAutoCompletionSource(QsciScintilla.AcsAPIs)
+        self.setAutoCompletionSource(QsciScintilla.AcsAll)
+        self.setAutoCompletionUseSingle(QsciScintilla.AcusExplicit)
         self.setLexer(self.lexer)
 
         # PEP8 tabs
         self.setIndentationsUseTabs(False)
-        self.setIndentationWidth(4)
         self.setAutoIndent(True)
         self.setIndentationGuides(True)
         
@@ -318,6 +326,7 @@ class HTMLEditor(BaseEditor):
         self.api.prepare()
         self.setAutoCompletionThreshold(3)
         self.setAutoCompletionSource(QsciScintilla.AcsAPIs)
+        self.setAutoCompletionUseSingle(QsciScintilla.AcusExplicit)
         self.setLexer(self.lexer)
 
 
@@ -337,6 +346,7 @@ class JavascriptEditor(BaseEditor):
         self.api.prepare()
         self.setAutoCompletionThreshold(3)
         self.setAutoCompletionSource(QsciScintilla.AcsAPIs)
+        self.setAutoCompletionUseSingle(QsciScintilla.AcusExplicit)
         self.setLexer(self.lexer)
 
 
@@ -356,4 +366,5 @@ class CSSEditor(BaseEditor):
         self.api.prepare()
         self.setAutoCompletionThreshold(3)
         self.setAutoCompletionSource(QsciScintilla.AcsAPIs)
+        self.setAutoCompletionUseSingle(QsciScintilla.AcusExplicit)
         self.setLexer(self.lexer)
