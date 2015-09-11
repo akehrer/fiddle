@@ -384,6 +384,12 @@ class MainWindow(QtGui.QMainWindow):
         tabname = tab.filename if tab.saved else tab.filename + ' *'
         idx = self.ui.documents_tabWidget.addTab(tab, tabname)
         self.ui.documents_tabWidget.setCurrentIndex(idx)
+        if self.ui.actionWord_Wrap.isChecked():
+            tab.editor.wordwrap =True
+        if self.ui.actionShow_End_of_Line.isChecked():
+            tab.editor.eolchars = True
+        if self.ui.actionShow_Whitespace.isChecked():
+            tab.editor.whitespace = True
 
     def open_file(self):
         tab = self.ui.documents_tabWidget.currentWidget()
@@ -408,6 +414,12 @@ class MainWindow(QtGui.QMainWindow):
             idx = self.ui.documents_tabWidget.addTab(tab, tab.filename)
             self.ui.documents_tabWidget.setCurrentIndex(idx)
             self.ui.documents_tabWidget.setTabToolTip(idx, filepath)
+            if self.ui.actionWord_Wrap.isChecked():
+                tab.editor.wordwrap =True
+            if self.ui.actionShow_End_of_Line.isChecked():
+                tab.editor.eolchars = True
+            if self.ui.actionShow_Whitespace.isChecked():
+                tab.editor.whitespace = True
             return tab
         else:
             return None

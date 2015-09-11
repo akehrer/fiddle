@@ -465,7 +465,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QToolButton" name="toolButton_2">
+           <widget class="QToolButton" name="browser_back_Button">
             <property name="toolTip">
              <string>Back</string>
             </property>
@@ -498,7 +498,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QToolButton" name="toolButton">
+           <widget class="QToolButton" name="browser_forward_Button">
             <property name="toolTip">
              <string>Forward</string>
             </property>
@@ -1059,6 +1059,32 @@
    <header>QtWebKit/QWebView</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>documents_tabWidget</tabstop>
+  <tabstop>find_re_checkBox</tabstop>
+  <tabstop>find_case_checkBox</tabstop>
+  <tabstop>find_word_checkBox</tabstop>
+  <tabstop>find_selection_checkBox</tabstop>
+  <tabstop>find_wrap_checkBox</tabstop>
+  <tabstop>find_text_lineEdit</tabstop>
+  <tabstop>replace_text_lineEdit</tabstop>
+  <tabstop>find_next_Button</tabstop>
+  <tabstop>find_previous_Button</tabstop>
+  <tabstop>replace_Button</tabstop>
+  <tabstop>replace_all_Button</tabstop>
+  <tabstop>console_tabWidget</tabstop>
+  <tabstop>pyconsole_restart_Button</tabstop>
+  <tabstop>pyconsole_halt_Button</tabstop>
+  <tabstop>runScript_command</tabstop>
+  <tabstop>run_remember_checkBox</tabstop>
+  <tabstop>run_script_Button</tabstop>
+  <tabstop>halt_script_Button</tabstop>
+  <tabstop>helpSearch</tabstop>
+  <tabstop>web_search_Button</tabstop>
+  <tabstop>browser_back_Button</tabstop>
+  <tabstop>browser_forward_Button</tabstop>
+  <tabstop>helpBrowser</tabstop>
+ </tabstops>
  <resources>
   <include location="resources.qrc"/>
  </resources>
@@ -1304,7 +1330,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>toolButton_2</sender>
+   <sender>browser_back_Button</sender>
    <signal>clicked()</signal>
    <receiver>helpBrowser</receiver>
    <slot>back()</slot>
@@ -1320,7 +1346,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>toolButton</sender>
+   <sender>browser_forward_Button</sender>
    <signal>clicked()</signal>
    <receiver>helpBrowser</receiver>
    <slot>forward()</slot>
