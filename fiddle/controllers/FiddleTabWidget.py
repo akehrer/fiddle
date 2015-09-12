@@ -17,13 +17,71 @@ from fiddle.config import FILE_TYPES, PLATFORM
 new_file_iter = 1
 
 
-class FiddleTabWidget(QtGui.QWidget):
+class FiddleTabWidget(QtGui.QTabWidget):
+    def __init__(self, parent=None):
+        super(FiddleTabWidget, self).__init__(parent)
+
+        self.parent = parent
+
+        self.setAcceptDrops(True)
+        self.setTabsClosable(True)
+        self.setMovable(True)
+        self.setElideMode(QtCore.Qt.ElideRight)
+        self.setMinimumSize(QtCore.QSize(800, 300))
+        self.setDocumentMode(False)
+        self.setAutoFillBackground(False)
+        self.setTabShape(QtGui.QTabWidget.Rounded)
+        self.setCurrentIndex(-1)
+
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(5)
+        sizePolicy.setVerticalStretch(3)
+        sizePolicy.setHeightForWidth(self.sizePolicy().hasHeightForWidth())
+        self.setSizePolicy(sizePolicy)
+
+    def dragEnterEvent(self, e):
+        """
+        For drag-and-drop we need to accept drag enter events
+        """
+        e.accept()
+
+    def dragMoveEvent(self, e):
+        """
+        For drag-and-drop we need to accept drag move events
+        http://qt-project.org/forums/viewthread/3093
+        """
+        e.accept()
+
+    def dropEvent(self, e):
+        """
+        Handle the drop
+        http://qt-project.org/wiki/Drag_and_Drop_of_files
+        """
+        # dropped files are file:// urls
+        if e.mimeData().hasUrls():
+            self._insert_list_of_files(e.mimeData().urls())
+
+    def _insert_list_of_files(self, file_list):
+        for filepath in file_list:
+            if filepath.isLocalFile():
+                if 'win32' in PLATFORM:
+                # mimedata path includes a leading slash that confuses copyfile on windows
+                # http://stackoverflow.com/questions/2144748/is-it-safe-to-use-sys-platform-win32-check-on-64-bit-python
+                    fpath = filepath.path()[1:]
+                else:
+                    # not windows
+                    fpath = filepath.path()
+
+                self.parent.open_filepath(fpath)
+
+
+class FiddleTabFile(QtGui.QWidget):
     editor_changed = QtCore.pyqtSignal()
     cursor_changed = QtCore.pyqtSignal(int, int)
     find_wrapped = QtCore.pyqtSignal()
 
     def __init__(self, parent=None, filepath=None):
-        super(FiddleTabWidget, self).__init__(parent)
+        super(FiddleTabFile, self).__init__(parent)
 
         self._filepath = None
         self._saved = True
@@ -32,6 +90,7 @@ class FiddleTabWidget(QtGui.QWidget):
         self.filename = None
         self.extension = None
         self.encoding = 'utf-8'  # Default to UTF-8 encoding
+
 
         # Set the layout and insert the editor
         self.editor = None

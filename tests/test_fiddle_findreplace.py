@@ -20,7 +20,7 @@ class FiddleFindReplaceTest(FiddleTestFixture):
         """
         srcpath = os.path.join(self.data_dir, 'lorem.txt')
         self.form.open_filepath(srcpath)
-        tab = self.form.ui.documents_tabWidget.currentWidget()
+        tab = self.form.documents_tabWidget.currentWidget()
         self.form.ui.findPane.show()
         self.form.ui.find_text_lineEdit.setText(self.findtext)
         QTest.keyClick(self.form.ui.find_text_lineEdit, Qt.Key_Return)
@@ -42,7 +42,7 @@ class FiddleFindReplaceTest(FiddleTestFixture):
         """
         srcpath = os.path.join(self.data_dir, 'lorem.txt')
         self.form.open_filepath(srcpath)
-        tab = self.form.ui.documents_tabWidget.currentWidget()
+        tab = self.form.documents_tabWidget.currentWidget()
         self.form.ui.findPane.show()
         self.form.ui.find_text_lineEdit.setText(self.findtext)
         QTest.mouseClick(self.form.ui.find_next_Button, Qt.LeftButton)
@@ -65,7 +65,7 @@ class FiddleFindReplaceTest(FiddleTestFixture):
         """
         srcpath = os.path.join(self.data_dir, 'lorem.txt')
         self.form.open_filepath(srcpath)
-        tab = self.form.ui.documents_tabWidget.currentWidget()
+        tab = self.form.documents_tabWidget.currentWidget()
         self.form.ui.findPane.show()
         self.form.ui.find_text_lineEdit.setText(self.findtext)
         # Wrap...
@@ -88,7 +88,7 @@ class FiddleFindReplaceTest(FiddleTestFixture):
         """
         srcpath = os.path.join(self.data_dir, 'lorem.txt')
         self.form.open_filepath(srcpath)
-        tab = self.form.ui.documents_tabWidget.currentWidget()
+        tab = self.form.documents_tabWidget.currentWidget()
         self.form.ui.findPane.show()
         self.form.ui.find_text_lineEdit.setText(self.findtext)
         self.form.ui.replace_text_lineEdit.setText(self.replacetext)
@@ -114,7 +114,7 @@ class FiddleFindReplaceTest(FiddleTestFixture):
         """
         srcpath = os.path.join(self.data_dir, 'lorem.txt')
         self.form.open_filepath(srcpath)
-        tab = self.form.ui.documents_tabWidget.currentWidget()
+        tab = self.form.documents_tabWidget.currentWidget()
         self.form.ui.findPane.show()
         self.form.ui.find_text_lineEdit.setText(self.findtext)
         self.form.ui.replace_text_lineEdit.setText(self.replacetext)

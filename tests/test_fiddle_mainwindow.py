@@ -21,17 +21,17 @@ class FiddleMainWindowTest(FiddleTestFixture):
         srcpath = os.path.join(self.data_dir, 'lorem.txt')
         srchash = sha_hash_file(srcpath)
         self.form.open_filepath(srcpath)
-        tab = self.form.ui.documents_tabWidget.currentWidget()
+        tab = self.form.documents_tabWidget.currentWidget()
         self.assertTrue(tab.saved)
         # Modify the file
         QTest.keyClick(tab.editor, Qt.Key_Return)
         QTest.keyClick(tab.editor, Qt.Key_Return)
         self.assertFalse(tab.saved)
         # Close the tab and discard the changes
-        pre_cnt = self.form.ui.documents_tabWidget.count()
+        pre_cnt = self.form.documents_tabWidget.count()
         QTimer.singleShot(200, self._discard_dialog)
         self.form.close_tab(1)
-        post_cnt = self.form.ui.documents_tabWidget.count()
+        post_cnt = self.form.documents_tabWidget.count()
         self.assertNotEqual(pre_cnt, post_cnt)
         self.assertEqual(srchash, sha_hash_file(srcpath))
 

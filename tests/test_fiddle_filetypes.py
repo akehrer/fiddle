@@ -18,7 +18,7 @@ class FiddleFiletypesTest(FiddleTestFixture):
         destpath = os.path.join(self.this_dir, 'utf8_test_temp.txt')
         srchash = sha_hash_file(srcpath)
         self.form.open_filepath(srcpath)
-        tab = self.form.ui.documents_tabWidget.currentWidget()
+        tab = self.form.documents_tabWidget.currentWidget()
         tab._write_file(destpath)
         desthash = sha_hash_file(destpath)
         self.assertEqual(srchash, desthash)
@@ -29,7 +29,7 @@ class FiddleFiletypesTest(FiddleTestFixture):
         destpath = os.path.join(self.this_dir, 'win1252_test_temp.txt')
         srchash = sha_hash_file(srcpath)
         self.form.open_filepath(srcpath)
-        tab = self.form.ui.documents_tabWidget.currentWidget()
+        tab = self.form.documents_tabWidget.currentWidget()
         tab._write_file(destpath)
         desthash = sha_hash_file(destpath)
         self.assertEqual(srchash, desthash)
@@ -38,25 +38,25 @@ class FiddleFiletypesTest(FiddleTestFixture):
     def test_pyfile_open(self):
         srcpath = os.path.join(self.data_dir, 'server.py')
         self.form.open_filepath(srcpath)
-        tab = self.form.ui.documents_tabWidget.currentWidget()
+        tab = self.form.documents_tabWidget.currentWidget()
         self.assertIsInstance(tab.editor, PythonEditor)
 
     def test_jsfile_open(self):
         srcpath = os.path.join(self.data_dir, 'main.js')
         self.form.open_filepath(srcpath)
-        tab = self.form.ui.documents_tabWidget.currentWidget()
+        tab = self.form.documents_tabWidget.currentWidget()
         self.assertIsInstance(tab.editor, JavascriptEditor)
 
     def test_htmlfile_open(self):
         srcpath = os.path.join(self.data_dir, 'index.html')
         self.form.open_filepath(srcpath)
-        tab = self.form.ui.documents_tabWidget.currentWidget()
+        tab = self.form.documents_tabWidget.currentWidget()
         self.assertIsInstance(tab.editor, HTMLEditor)
 
     def test_cssfile_open(self):
         srcpath = os.path.join(self.data_dir, 'main.css')
         self.form.open_filepath(srcpath)
-        tab = self.form.ui.documents_tabWidget.currentWidget()
+        tab = self.form.documents_tabWidget.currentWidget()
         self.assertIsInstance(tab.editor, CSSEditor)
 
 

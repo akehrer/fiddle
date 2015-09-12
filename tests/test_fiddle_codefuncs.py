@@ -19,7 +19,7 @@ class FiddleMainWindowTest(FiddleTestFixture):
         with open(cleanpath, 'rb') as fp:
             clean_data = fp.read().decode()
         self.form.open_filepath(srcpath)
-        tab = self.form.ui.documents_tabWidget.currentWidget()
+        tab = self.form.documents_tabWidget.currentWidget()
         self.assertNotEqual(tab.editor.text(), clean_data)
         self.form.ui.actionClean_Code.trigger()
         self.assertEqual(tab.editor.text(), clean_data)
@@ -31,7 +31,7 @@ class FiddleMainWindowTest(FiddleTestFixture):
         """
         srcpath = os.path.join(self.data_dir, 'unlinted.py')
         self.form.open_filepath(srcpath)
-        tab = self.form.ui.documents_tabWidget.currentWidget()
+        tab = self.form.documents_tabWidget.currentWidget()
         self.form.ui.actionCheck_Code.trigger()
         QTest.qWait(200)
         next_marker = tab.editor.markerFindNext(0,-1)

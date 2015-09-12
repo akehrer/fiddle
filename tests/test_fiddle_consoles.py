@@ -87,7 +87,7 @@ class FiddleConsolesTest(FiddleTestFixture):
         Does the run script command contain the current interpreter and tab script path?
         :return:
         """
-        tab = self.form.ui.documents_tabWidget.currentWidget()
+        tab = self.form.documents_tabWidget.currentWidget()
         cmd = self.form.ui.runScript_command.text()
         self.assertIn(self.form.current_interpreter, cmd)
         self.assertIn(tab.filepath, cmd)
@@ -97,13 +97,13 @@ class FiddleConsolesTest(FiddleTestFixture):
         Does opening a new .py file change the run script command?
         :return:
         """
-        tab1 = self.form.ui.documents_tabWidget.currentWidget()
+        tab1 = self.form.documents_tabWidget.currentWidget()
         cmd1 = self.form.ui.runScript_command.text()
         self.assertIn(tab1.filepath, cmd1)
         # Load file
         srcpath = os.path.join(self.data_dir, 'server.py')
         self.form.open_filepath(srcpath)
-        tab2 = self.form.ui.documents_tabWidget.currentWidget()
+        tab2 = self.form.documents_tabWidget.currentWidget()
         cmd2 = self.form.ui.runScript_command.text()
         self.assertIn(tab2.filepath, cmd2)
         self.assertNotEqual(cmd1, cmd2)
@@ -113,17 +113,17 @@ class FiddleConsolesTest(FiddleTestFixture):
         Does changing the tab change the run script command?
         :return:
         """
-        tab1 = self.form.ui.documents_tabWidget.currentWidget()
+        tab1 = self.form.documents_tabWidget.currentWidget()
         cmd1 = self.form.ui.runScript_command.text()
         self.assertIn(tab1.filepath, cmd1)
         # Load file
         srcpath = os.path.join(self.data_dir, 'server.py')
         self.form.open_filepath(srcpath)
-        tab2 = self.form.ui.documents_tabWidget.currentWidget()
+        tab2 = self.form.documents_tabWidget.currentWidget()
         cmd2 = self.form.ui.runScript_command.text()
         self.assertIn(tab2.filepath, cmd2)
         # Change tab
-        self.form.ui.documents_tabWidget.setCurrentWidget(tab1)
+        self.form.documents_tabWidget.setCurrentWidget(tab1)
         cmd3 = self.form.ui.runScript_command.text()
         self.assertIn(tab1.filepath, cmd3)
         self.assertNotEqual(cmd1, cmd2)

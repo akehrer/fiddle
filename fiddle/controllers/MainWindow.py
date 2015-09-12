@@ -11,8 +11,8 @@ from PyQt4 import QtCore, QtGui
 # Import application modules
 from fiddle import __version__
 from fiddle.views.MainWindow import Ui_MainWindow
-from fiddle.controllers.FiddleTabWidget import FiddleTabWidget
-from fiddle.controllers.PyConsole import PyConsoleLineEdit, PyConsoleTextBrowser
+from fiddle.controllers.FiddleTabWidget import FiddleTabWidget, FiddleTabFile
+from fiddle.controllers.PyConsole import PyConsoleTextBrowser
 from fiddle.controllers.ManageInterpretersDialog import ManageInterpretersDialog
 from fiddle.config import *
 from fiddle.helpers.builtins import *
@@ -79,6 +79,12 @@ class MainWindow(QtGui.QMainWindow):
         # Initialize the search providers
         self.search_url = ''
         self.init_search_providers()
+
+        # Initialize the TabWidget
+        self.documents_tabWidget = FiddleTabWidget(self)
+        self.ui.centralLayout.insertWidget(0, self.documents_tabWidget)
+        self.documents_tabWidget.tabCloseRequested.connect(self.close_tab)
+        self.documents_tabWidget.currentChanged.connect(self.handle_tab_change)
 
         # Initialize recent files
         self.recent_files = []
@@ -259,7 +265,7 @@ class MainWindow(QtGui.QMainWindow):
             self.current_interpreter_dir = os.path.dirname(self.current_interpreter)
             self.restart_pyconsole_process()
             self.restart_pyconsole_help()
-            idx = self.ui.documents_tabWidget.currentIndex()
+            idx = self.documents_tabWidget.currentIndex()
             self.handle_tab_change(idx)
         else:
             self.ui.statusbar.showMessage(self.tr('No Python executable at {0}').format(item['path']), 5000)
@@ -373,7 +379,7 @@ class MainWindow(QtGui.QMainWindow):
             self.app.restoreOverrideCursor()
 
     def create_tab(self, filepath=None):
-        tab = FiddleTabWidget(parent=self.ui.documents_tabWidget, filepath=filepath)
+        tab = FiddleTabFile(parent=self.documents_tabWidget, filepath=filepath)
         tab.editor_changed.connect(self.update_tab_title)
         tab.cursor_changed.connect(self.update_cursor_position)
         tab.find_wrapped.connect(self.handle_find_wrapped)
@@ -382,8 +388,8 @@ class MainWindow(QtGui.QMainWindow):
     def new_file(self):
         tab = self.create_tab()
         tabname = tab.filename if tab.saved else tab.filename + ' *'
-        idx = self.ui.documents_tabWidget.addTab(tab, tabname)
-        self.ui.documents_tabWidget.setCurrentIndex(idx)
+        idx = self.documents_tabWidget.addTab(tab, tabname)
+        self.documents_tabWidget.setCurrentIndex(idx)
         if self.ui.actionWord_Wrap.isChecked():
             tab.editor.wordwrap =True
         if self.ui.actionShow_End_of_Line.isChecked():
@@ -392,7 +398,7 @@ class MainWindow(QtGui.QMainWindow):
             tab.editor.whitespace = True
 
     def open_file(self):
-        tab = self.ui.documents_tabWidget.currentWidget()
+        tab = self.documents_tabWidget.currentWidget()
         filepath = QtGui.QFileDialog.getOpenFileName(None,
                                                      None,
                                                      os.path.expanduser('~') if tab is None else tab.basepath,
@@ -411,9 +417,9 @@ class MainWindow(QtGui.QMainWindow):
             if os.path.normcase(CONSOLE_PYTHON_DIR) in os.path.normcase(filepath):
                 # Give users a hint they may be editing a system file by changing background color
                 tab.editor.lexer.setPaper(QtGui.QColor(EDITOR_CARET_LINE_COLOR))
-            idx = self.ui.documents_tabWidget.addTab(tab, tab.filename)
-            self.ui.documents_tabWidget.setCurrentIndex(idx)
-            self.ui.documents_tabWidget.setTabToolTip(idx, filepath)
+            idx = self.documents_tabWidget.addTab(tab, tab.filename)
+            self.documents_tabWidget.setCurrentIndex(idx)
+            self.documents_tabWidget.setTabToolTip(idx, filepath)
             if self.ui.actionWord_Wrap.isChecked():
                 tab.editor.wordwrap =True
             if self.ui.actionShow_End_of_Line.isChecked():
@@ -468,17 +474,17 @@ class MainWindow(QtGui.QMainWindow):
                 self.ui.menuOpen_Recent.addAction(a)
 
     def save_file(self):
-        idx = self.ui.documents_tabWidget.currentIndex()
-        tab = self.ui.documents_tabWidget.widget(idx)
+        idx = self.documents_tabWidget.currentIndex()
+        tab = self.documents_tabWidget.widget(idx)
         tab.save()
-        self.ui.documents_tabWidget.setTabToolTip(idx, tab.filepath)
+        self.documents_tabWidget.setTabToolTip(idx, tab.filepath)
         self.handle_tab_change(idx)
 
     def save_file_as(self):
-        idx = self.ui.documents_tabWidget.currentIndex()
-        tab = self.ui.documents_tabWidget.widget(idx)
+        idx = self.documents_tabWidget.currentIndex()
+        tab = self.documents_tabWidget.widget(idx)
         tab.save_as()
-        self.ui.documents_tabWidget.setTabToolTip(idx, tab.filepath)
+        self.documents_tabWidget.setTabToolTip(idx, tab.filepath)
         self.handle_tab_change(idx)
 
     def print_file(self):
@@ -516,25 +522,25 @@ class MainWindow(QtGui.QMainWindow):
             pass
 
     def close_current_tab(self):
-        idx = self.ui.documents_tabWidget.currentIndex()
+        idx = self.documents_tabWidget.currentIndex()
         return self.close_tab(idx)
 
     def close_all_tabs(self):
-        for i in range(self.ui.documents_tabWidget.count()):
+        for i in range(self.documents_tabWidget.count()):
             if not self.close_tab(0):
                 return False
         return True
 
     def close_tab(self, idx):
         # removing the tab doesn't get the widget, so we need to get that first...
-        widget = self.ui.documents_tabWidget.widget(idx)
+        widget = self.documents_tabWidget.widget(idx)
         # needs saving?
         if not widget.saved and widget.basepath is not None:
             if not self._save_tab_dialog(widget):
                 # User canceled close action
                 return False
         # remove it
-        self.ui.documents_tabWidget.removeTab(idx)
+        self.documents_tabWidget.removeTab(idx)
         # ...then delete it
         widget.deleteLater()
         return True
@@ -564,8 +570,8 @@ class MainWindow(QtGui.QMainWindow):
 
         See QsiScinitilla.setWrapMode()
         """
-        for i in range(self.ui.documents_tabWidget.count()):
-            tab = self.ui.documents_tabWidget.widget(i)
+        for i in range(self.documents_tabWidget.count()):
+            tab = self.documents_tabWidget.widget(i)
             tab.editor.wordwrap = state
 
     def set_editors_whitespace(self, state):
@@ -577,8 +583,8 @@ class MainWindow(QtGui.QMainWindow):
 
         See QsiScinitilla.setEolVisibility()
         """
-        for i in range(self.ui.documents_tabWidget.count()):
-            tab = self.ui.documents_tabWidget.widget(i)
+        for i in range(self.documents_tabWidget.count()):
+            tab = self.documents_tabWidget.widget(i)
             tab.editor.whitespace = state
 
     def set_editors_eolchars(self, state):
@@ -590,8 +596,8 @@ class MainWindow(QtGui.QMainWindow):
 
         See QsiScinitilla.setWhitespaceVisibility()
         """
-        for i in range(self.ui.documents_tabWidget.count()):
-            tab = self.ui.documents_tabWidget.widget(i)
+        for i in range(self.documents_tabWidget.count()):
+            tab = self.documents_tabWidget.widget(i)
             tab.editor.eolchars = state
 
     def clean_current_editor(self):
@@ -601,7 +607,7 @@ class MainWindow(QtGui.QMainWindow):
         :return:
         """
         self.app.setOverrideCursor(QtCore.Qt.WaitCursor)
-        tab = self.ui.documents_tabWidget.currentWidget()
+        tab = self.documents_tabWidget.currentWidget()
         tab.editor.clean_code()
         self.app.restoreOverrideCursor()
 
@@ -612,7 +618,7 @@ class MainWindow(QtGui.QMainWindow):
         :return:
         """
         self.app.setOverrideCursor(QtCore.Qt.WaitCursor)
-        tab = self.ui.documents_tabWidget.currentWidget()
+        tab = self.documents_tabWidget.currentWidget()
         tab.editor.check_code(tab.filepath)
         self.app.restoreOverrideCursor()
 
@@ -670,7 +676,7 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.find_text_lineEdit.setFocus()
         self.ui.find_text_lineEdit.selectAll()
 
-        current_doc = self.ui.documents_tabWidget.currentWidget()
+        current_doc = self.documents_tabWidget.currentWidget()
         if self.ui.find_text_lineEdit.text() == '':
             self.ui.find_text_lineEdit.setText(current_doc.editor.selectedText())
         if current_doc is not None:
@@ -682,7 +688,7 @@ class MainWindow(QtGui.QMainWindow):
                                   self.ui.find_selection_checkBox.isChecked())
 
     def find_in_file_previous(self):
-        current_doc = self.ui.documents_tabWidget.currentWidget()
+        current_doc = self.documents_tabWidget.currentWidget()
         if self.ui.find_text_lineEdit.text() == '':
             self.ui.find_text_lineEdit.setText(current_doc.editor.selectedText())
         if current_doc is not None:
@@ -699,7 +705,7 @@ class MainWindow(QtGui.QMainWindow):
             self.ui.findPane.show()
             self.ui.find_text_lineEdit.setFocus()
 
-        current_doc = self.ui.documents_tabWidget.currentWidget()
+        current_doc = self.documents_tabWidget.currentWidget()
         if self.ui.find_text_lineEdit.text() == '':
             self.ui.find_text_lineEdit.setText(current_doc.editor.selectedText())
 
@@ -715,7 +721,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def replace_all_in_file(self):
         if self.ui.replace_text_lineEdit.text() != '':
-            current_doc = self.ui.documents_tabWidget.currentWidget()
+            current_doc = self.documents_tabWidget.currentWidget()
             if current_doc is not None:
                 i = current_doc.replace_all_text(self.ui.find_text_lineEdit.text(),
                                                  self.ui.replace_text_lineEdit.text(),
@@ -726,10 +732,10 @@ class MainWindow(QtGui.QMainWindow):
                 self.ui.statusbar.showMessage(self.tr('Replaced {0} instances').format(i), 5000)
 
     def update_tab_title(self):
-        idx = self.ui.documents_tabWidget.currentIndex()
-        tab = self.ui.documents_tabWidget.widget(idx)
+        idx = self.documents_tabWidget.currentIndex()
+        tab = self.documents_tabWidget.widget(idx)
         tabname = tab.filename if tab.saved else tab.filename + ' *'
-        self.ui.documents_tabWidget.setTabText(idx, tabname)
+        self.documents_tabWidget.setTabText(idx, tabname)
 
     def update_cursor_position(self, line, idx):
         """
@@ -753,7 +759,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def handle_tab_change(self, idx):
         if idx >= 0:
-            tab = self.ui.documents_tabWidget.widget(idx)
+            tab = self.documents_tabWidget.widget(idx)
             self.lbl_encoding.setText('{0}'.format(tab.encoding.upper()
                                                    if 'utf' or 'ascii' in tab.encoding.lower()
                                                    else tab.encoding))
@@ -769,7 +775,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def handle_run_remember(self, chk_state):
         if not chk_state:
-            tab = self.ui.documents_tabWidget.currentWidget()
+            tab = self.documents_tabWidget.currentWidget()
             if tab:
                 # set the run script command
                 if PLATFORM == 'win32':
@@ -786,7 +792,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def load_anchor(self, url):
         """
-        This slot processes URLs for specific actions internal to the application or loads the URLs in the system
+        Processes URLs for specific actions internal to the application or loads the URLs in the system
         web browser.
 
         :param QtCore.QUrl url:
@@ -840,11 +846,11 @@ class MainWindow(QtGui.QMainWindow):
             linenum = int(query['linenum']) - 1
             found = False
             # Is the file already open?
-            for i in range(self.ui.documents_tabWidget.count()):
-                tab = self.ui.documents_tabWidget.widget(i)
+            for i in range(self.documents_tabWidget.count()):
+                tab = self.documents_tabWidget.widget(i)
                 # Take care of slash discrepancies, ahem Windows
                 if os.path.normcase(tab.filepath) == os.path.normcase(filepath):
-                    self.ui.documents_tabWidget.setCurrentWidget(tab)
+                    self.documents_tabWidget.setCurrentWidget(tab)
                     tab.editor.setCursorPosition(linenum, 0)
                     tab.editor.ensureLineVisible(linenum)
                     tab.editor.setFocus()

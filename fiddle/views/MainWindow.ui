@@ -18,7 +18,7 @@
     <normaloff>:/logos/logos/fiddle_icon_light.png</normaloff>:/logos/logos/fiddle_icon_light.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_7">
+   <layout class="QVBoxLayout" name="centralLayout">
     <property name="spacing">
      <number>5</number>
     </property>
@@ -26,7 +26,7 @@
      <number>0</number>
     </property>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_5" stretch="0,0">
+     <layout class="QVBoxLayout" name="verticalLayout_5" stretch="0">
       <property name="spacing">
        <number>0</number>
       </property>
@@ -36,43 +36,6 @@
       <property name="leftMargin">
        <number>0</number>
       </property>
-      <item>
-       <widget class="QTabWidget" name="documents_tabWidget">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>5</horstretch>
-          <verstretch>3</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>800</width>
-          <height>300</height>
-         </size>
-        </property>
-        <property name="autoFillBackground">
-         <bool>false</bool>
-        </property>
-        <property name="tabShape">
-         <enum>QTabWidget::Rounded</enum>
-        </property>
-        <property name="currentIndex">
-         <number>-1</number>
-        </property>
-        <property name="elideMode">
-         <enum>Qt::ElideRight</enum>
-        </property>
-        <property name="documentMode">
-         <bool>false</bool>
-        </property>
-        <property name="tabsClosable">
-         <bool>true</bool>
-        </property>
-        <property name="movable">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
       <item>
        <widget class="QDockWidget" name="findPane">
         <property name="features">
@@ -1060,7 +1023,6 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>documents_tabWidget</tabstop>
   <tabstop>find_re_checkBox</tabstop>
   <tabstop>find_case_checkBox</tabstop>
   <tabstop>find_word_checkBox</tabstop>
@@ -1282,22 +1244,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>documents_tabWidget</sender>
-   <signal>tabCloseRequested(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>close_tab(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>530</x>
-     <y>271</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>529</x>
-     <y>834</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>replace_text_lineEdit</sender>
    <signal>returnPressed()</signal>
    <receiver>MainWindow</receiver>
@@ -1310,22 +1256,6 @@
     <hint type="destinationlabel">
      <x>336</x>
      <y>832</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>documents_tabWidget</sender>
-   <signal>currentChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>handle_tab_change(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>562</x>
-     <y>289</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>580</x>
-     <y>835</y>
     </hint>
    </hints>
   </connection>

@@ -317,6 +317,8 @@ class HTMLEditor(BaseEditor):
         # Set HTML lexer
         self.lexer = QsciLexerHTML(self)
         self.lexer.setDefaultFont(self.editor_font)
+        self.lexer.setFont(self.editor_font, QsciLexerHTML.Default)  # Text between tags
+        self.lexer.setFont(self.editor_font, QsciLexerHTML.JavaScriptWord)  # Text between script tags
         # Set auto-completion
         self.api = QsciAPIs(self.lexer)
         if autocomplete_list is not None:
