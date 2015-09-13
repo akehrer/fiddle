@@ -47,6 +47,9 @@ class MainWindow(QtGui.QMainWindow):
         # Hide the Find/Replace frame
         self.ui.findPane.hide()
 
+        # Initialize Find/Replace
+        self.init_find_replace_events()
+
         # Initialize interpreters
         self.current_interpreter = CONSOLE_PYTHON['path']
         self.current_interpreter_dir = CONSOLE_PYTHON_DIR
@@ -256,6 +259,16 @@ class MainWindow(QtGui.QMainWindow):
         self.lbl_current_position.setToolTip(self.tr('Line no.:Column no.'))
         self.ui.statusbar.insertPermanentWidget(0, self.lbl_current_position)
         self.lbl_current_position.setText('0:0')
+
+    def init_find_replace_events(self):
+        # http://stackoverflow.com/questions/23076698/pyside-select-all-text-when-qlineedit-gets-focus
+        # Focusing on the widgets selects all the text (e.g. tabbing in)
+        self.ui.find_text_lineEdit.focusInEvent = lambda _: self.ui.find_text_lineEdit.selectAll()
+        self.ui.replace_text_lineEdit.focusInEvent = lambda _: self.ui.replace_text_lineEdit.selectAll()
+
+        # Clicking on the widgets select all the text
+        self.ui.find_text_lineEdit.mousePressEvent = lambda _: self.ui.find_text_lineEdit.selectAll()
+        self.ui.replace_text_lineEdit.mousePressEvent = lambda _: self.ui.replace_text_lineEdit.selectAll()
 
     def set_current_interpreter(self):
         action = self.sender()
