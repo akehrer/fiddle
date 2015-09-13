@@ -3,8 +3,8 @@
 # (see fiddle/__init__.py for details)
 
 from PyQt4.QtTest import QTest
-from PyQt4.QtCore import Qt, QTimer
-from PyQt4.QtGui import QWidget, QMessageBox, QPushButton
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 
 from tests import app, FiddleTestFixture
 from tests.helpers import *
@@ -34,6 +34,33 @@ class FiddleMainWindowTest(FiddleTestFixture):
         post_cnt = self.form.documents_tabWidget.count()
         self.assertNotEqual(pre_cnt, post_cnt)
         self.assertEqual(srchash, sha_hash_file(srcpath))
+
+    def test_drag_drop_file(self):
+        """
+        Test dropping multiple files on the tab widget.
+        :return:
+
+        http://stackoverflow.com/questions/11500844/qtest-its-possible-to-test-dragdrop
+        http://wiki.qt.io/Drag_and_Drop_of_files
+        """
+        #
+        pre_cnt = self.form.documents_tabWidget.count()
+        # D&D events take MIME data and for files need URLs
+        mime_files = QMimeData()
+        files = [QUrl('file://../data/lorem.txt'),
+                 QUrl('file://../data/utf8_text.txt')]
+        mime_files.setUrls(files)
+        # Drag the files
+        action = Qt.MoveAction
+        target = self.form.documents_tabWidget.rect().center()
+        drag_drop = QDropEvent(target, action, mime_files, Qt.LeftButton, Qt.NoModifier)
+        drag_drop.acceptProposedAction()
+        # Drop the files
+        self.form.documents_tabWidget.dropEvent(drag_drop)
+        QTest.qWait(200)  # Give the GUI time to load the data
+        # Check the number of tabs
+        post_cnt = self.form.documents_tabWidget.count()
+        self.assertGreater(post_cnt, pre_cnt)
 
     def _discard_dialog(self):
         """
