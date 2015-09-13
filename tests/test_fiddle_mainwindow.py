@@ -47,8 +47,8 @@ class FiddleMainWindowTest(FiddleTestFixture):
         pre_cnt = self.form.documents_tabWidget.count()
         # D&D events take MIME data and for files need URLs
         mime_files = QMimeData()
-        files = [QUrl('file://../data/lorem.txt'),
-                 QUrl('file://../data/utf8_text.txt')]
+        files = [QUrl().fromLocalFile(os.path.join(self.data_dir, 'lorem.txt')),
+                 QUrl().fromLocalFile(os.path.join(self.data_dir, 'utf8_test.txt'))]
         mime_files.setUrls(files)
         # Drag the files
         action = Qt.MoveAction
@@ -58,9 +58,11 @@ class FiddleMainWindowTest(FiddleTestFixture):
         # Drop the files
         self.form.documents_tabWidget.dropEvent(drag_drop)
         QTest.qWait(200)  # Give the GUI time to load the data
-        # Check the number of tabs
+        # Check the new tabs
         post_cnt = self.form.documents_tabWidget.count()
-        self.assertGreater(post_cnt, pre_cnt)
+        self.assertEqual(post_cnt, pre_cnt + len(files))
+        self.assertEqual(self.form.documents_tabWidget.widget(1).filename, 'lorem.txt')
+        self.assertEqual(self.form.documents_tabWidget.widget(2).filename, 'utf8_test.txt')
 
     def _discard_dialog(self):
         """
