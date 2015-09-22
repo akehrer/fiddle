@@ -2,10 +2,6 @@
 # Licensed under the terms of the MIT License
 # (see fiddle/__init__.py for details)
 
-import os
-import unicodedata
-from io import StringIO
-
 from PyQt4 import QtCore, QtGui
 from fiddle.config import EDITOR_FONT, EDITOR_FONT_SIZE
 
@@ -30,14 +26,17 @@ class PyConsoleTextBrowser(QtGui.QTextBrowser):
         self.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse | QtCore.Qt.TextEditorInteraction)
 
     def keyPressEvent(self, event):
+        pass_on = True
         if self.process is not None:
             # Skip keys modified with Ctrl or Alt
             if event.modifiers() != QtCore.Qt.ControlModifier and event.modifiers() != QtCore.Qt.AltModifier:
                 # Get the insert cursor and make sure it's at the end of the console
                 cursor = self.textCursor()
-                cursor.movePosition(QtGui.QTextCursor.End)
                 if self._input_insert_pos < 0:
                     self._input_insert_pos = cursor.position()
+                if cursor.position() < self._input_insert_pos:
+                    # Handle left/right arrows
+                    cursor.movePosition(QtGui.QTextCursor.End)
 
                 # Scroll view to end of console
                 self.setTextCursor(cursor)
@@ -45,6 +44,7 @@ class PyConsoleTextBrowser(QtGui.QTextBrowser):
 
                 # Process the key event
                 if event.key() == QtCore.Qt.Key_Up:
+                    pass_on = False
                     # Clear any previous input
                     self._clear_insert_line(cursor)
                     # Get the history
@@ -67,6 +67,10 @@ class PyConsoleTextBrowser(QtGui.QTextBrowser):
                             self.history_idx -= 1
                             cursor.insertText('')
                 elif event.key() == QtCore.Qt.Key_Return:
+                    if not cursor.atEnd():
+                        # User pressed return while in the middle of the line
+                        cursor.movePosition(QtGui.QTextCursor.End)
+                        self.setTextCursor(cursor)
                     txt = self._select_insert_line(cursor)
                     self.process.write('{0}\n'.format(txt).encode('utf-8'))
                     # Reset the insert position
@@ -74,8 +78,9 @@ class PyConsoleTextBrowser(QtGui.QTextBrowser):
                     # Update the history
                     self.history.append(txt)
                     self.history_idx = 0
-        # Pass the event on to the parent for handling
-        return QtGui.QTextBrowser.keyPressEvent(self, event)
+        if pass_on:
+            # Pass the event on to the parent for handling
+            return QtGui.QTextBrowser.keyPressEvent(self, event)
 
     def _clear_insert_line(self, cursor):
         """
