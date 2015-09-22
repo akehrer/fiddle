@@ -16,9 +16,25 @@ from PyQt4.QtGui import *
 from PyQt4.Qsci import QsciScintilla, QsciAPIs, QsciLexerPython, QsciLexerHTML, QsciLexerJavaScript, QsciLexerCSS
 
 from fiddle.helpers import linter
+from fiddle.helpers.builtins import *
 
 from fiddle.config import EDITOR_CARET_LINE_COLOR, EDITOR_FONT, EDITOR_FONT_SIZE, \
-    EDITOR_MARGIN_COLOR, EDITOR_EDGECOL_COLOR
+    EDITOR_MARGIN_COLOR, EDITOR_EDGECOL_COLOR, APP_DIR
+
+
+class PythonLexer(QsciLexerPython):
+    def __init__(self, *args, **kwargs):
+        super(PythonLexer, self).__init__(*args, **kwargs)
+        # Sub-identifiers defined in keyword set 2 will not be highlighted (e.g. open in foo.open)
+        self.setHighlightSubidentifiers(False)
+
+    def keywords(self, kw_set):
+        if kw_set == 1:
+            return ' '.join(python_all_keywords)
+        elif kw_set == 2:
+            return ' '.join(python_all_builtins)
+        else:
+            return None
 
 
 class BaseEditor(QsciScintilla):
@@ -75,17 +91,17 @@ class BaseEditor(QsciScintilla):
         # Use raw messages to Scintilla here
         # (all messages are documented here: http://www.scintilla.org/ScintillaDoc.html)
         # Ensure the width of the currently visible lines can be scrolled
-        self.SendScintilla(QsciScintilla.SCI_SETSCROLLWIDTHTRACKING, 1)
+        self.SendScintilla(self.SCI_SETSCROLLWIDTHTRACKING, 1)
         # Multiple cursor support
-        self.SendScintilla(QsciScintilla.SCI_SETMULTIPLESELECTION, True)
-        self.SendScintilla(QsciScintilla.SCI_SETMULTIPASTE, 1)
-        self.SendScintilla(QsciScintilla.SCI_SETADDITIONALSELECTIONTYPING, True)
+        self.SendScintilla(self.SCI_SETMULTIPLESELECTION, True)
+        self.SendScintilla(self.SCI_SETMULTIPASTE, 1)
+        self.SendScintilla(self.SCI_SETADDITIONALSELECTIONTYPING, True)
 
         # Lexer
         self.lexer = None
 
         # Autocomplete
-        self.api = None
+        self._api = None
 
         # Linter
         self.linter = None  # Linter program to run, should be in the system's path
@@ -116,6 +132,22 @@ class BaseEditor(QsciScintilla):
     def __del__(self):
         if self._margin_popup_timer.isActive():
             self._margin_popup_timer.stop()
+
+    @property
+    def api(self):
+        return self._api
+
+    @api.setter
+    def api(self, api_list):
+        if self.lexer is not None:
+            if self._api is None:
+                self._api = QsciAPIs(self.lexer)
+            if api_list is not None:
+                self._api.clear()
+                # Add API completion strings
+                for i in api_list:
+                    self._api.add(i)
+            self._api.prepare()
 
     @property
     def encoding(self):
@@ -240,18 +272,13 @@ class PythonEditor(BaseEditor):
         super(PythonEditor, self).__init__(parent, line_num_margin, autocomplete_list)
 
         # Set Python lexer
-        self.lexer = QsciLexerPython(self)
+        self.lexer = PythonLexer(self)  # QsciLexerPython(self)
         self.lexer.setDefaultFont(self.editor_font)
         self.lexer.setFont(self.editor_font, QsciLexerPython.Comment)
         # Indentation warning ("The indentation is inconsistent when compared to the previous line")
         self.lexer.setIndentationWarning(QsciLexerPython.Inconsistent)
         # Set auto-completion
-        self.api = QsciAPIs(self.lexer)
-        if autocomplete_list is not None:
-            # Add additional completion strings
-            for i in autocomplete_list:
-                self.api.add(i)
-        self.api.prepare()
+        self.api = autocomplete_list
         self.setAutoCompletionThreshold(3)
         self.setAutoCompletionSource(QsciScintilla.AcsAll)
         self.setAutoCompletionUseSingle(QsciScintilla.AcusExplicit)
@@ -267,6 +294,17 @@ class PythonEditor(BaseEditor):
 
         # Linters
         self.linter = 'internal'
+
+    def keyPressEvent(self, event):
+        """ Special key event handling for the Python editor
+        :param event:
+        :return:
+        """
+        if event.key() == QtCore.Qt.Key_Return:
+            # Instead of setting the autocomplete value, close the autocomplete when the user presses Enter
+            self.SendScintilla(self.SCI_AUTOCCANCEL)
+        # Pass the event on to the parent for further handling
+        return QsciScintilla.keyPressEvent(self, event)
 
     def clean_code(self):
         self.setText(autopep8.fix_code(self.text(), options={'aggressive': 2}))
@@ -320,12 +358,7 @@ class HTMLEditor(BaseEditor):
         self.lexer.setFont(self.editor_font, QsciLexerHTML.Default)  # Text between tags
         self.lexer.setFont(self.editor_font, QsciLexerHTML.JavaScriptWord)  # Text between script tags
         # Set auto-completion
-        self.api = QsciAPIs(self.lexer)
-        if autocomplete_list is not None:
-            # Add additional completion strings
-            for i in autocomplete_list:
-                self.api.add(i)
-        self.api.prepare()
+        self.api = autocomplete_list
         self.setAutoCompletionThreshold(3)
         self.setAutoCompletionSource(QsciScintilla.AcsAPIs)
         self.setAutoCompletionUseSingle(QsciScintilla.AcusExplicit)
@@ -340,12 +373,7 @@ class JavascriptEditor(BaseEditor):
         self.lexer = QsciLexerJavaScript(self)
         self.lexer.setDefaultFont(self.editor_font)
         # Set auto-completion
-        self.api = QsciAPIs(self.lexer)
-        if autocomplete_list is not None:
-            # Add additional completion strings
-            for i in autocomplete_list:
-                self.api.add(i)
-        self.api.prepare()
+        self.api = autocomplete_list
         self.setAutoCompletionThreshold(3)
         self.setAutoCompletionSource(QsciScintilla.AcsAPIs)
         self.setAutoCompletionUseSingle(QsciScintilla.AcusExplicit)
@@ -360,12 +388,7 @@ class CSSEditor(BaseEditor):
         self.lexer = QsciLexerCSS(self)
         self.lexer.setDefaultFont(self.editor_font)
         # Set auto-completion
-        self.api = QsciAPIs(self.lexer)
-        if autocomplete_list is not None:
-            # Add additional completion strings
-            for i in autocomplete_list:
-                self.api.add(i)
-        self.api.prepare()
+        self.api = autocomplete_list
         self.setAutoCompletionThreshold(3)
         self.setAutoCompletionSource(QsciScintilla.AcsAPIs)
         self.setAutoCompletionUseSingle(QsciScintilla.AcusExplicit)

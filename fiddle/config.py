@@ -69,7 +69,7 @@ elif PLATFORM == 'darwin':
     EDITOR_FONT_SIZE = 12
     WINDOW_FONT_SIZE = 13
 else:
-    EDITOR_FONT = 'Courier'
+    EDITOR_FONT = 'DejaVu Sans Mono'
     EDITOR_FONT_SIZE = 12
     WINDOW_FONT_SIZE = 15
 

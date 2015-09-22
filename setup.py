@@ -23,6 +23,7 @@ build_exe_options = {
         'PyQt4.Qsci'],
     'include_files': [
         'locale/',
+        ('fiddle/apis/', 'apis/'),
         'LICENSE',
         'searchers.json'],
     'include_msvcr': False}

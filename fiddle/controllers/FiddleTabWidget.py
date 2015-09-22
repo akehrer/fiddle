@@ -80,10 +80,11 @@ class FiddleTabFile(QtGui.QWidget):
     cursor_changed = QtCore.pyqtSignal(int, int)
     find_wrapped = QtCore.pyqtSignal()
 
-    def __init__(self, parent=None, filepath=None):
+    def __init__(self, parent=None, filepath=None, apifile=None):
         super(FiddleTabFile, self).__init__(parent)
 
         self._filepath = None
+        self._apifile = apifile
         self._saved = True
 
         self.basepath = None
@@ -126,13 +127,13 @@ class FiddleTabFile(QtGui.QWidget):
             self.encoding = enc if enc is not None else 'utf-8'
 
             if '.htm' in self.extension:
-                self.insert_editor(HTMLEditor(parent=self))
+                self.insert_editor(HTMLEditor(parent=self, autocomplete_list=self.apilist))
             elif self.extension == '.js':
-                self.insert_editor(JavascriptEditor(parent=self))
+                self.insert_editor(JavascriptEditor(parent=self, autocomplete_list=self.apilist))
             elif self.extension == '.css':
-                self.insert_editor(CSSEditor(parent=self))
+                self.insert_editor(CSSEditor(parent=self, autocomplete_list=self.apilist))
             elif self.extension == '.py':
-                self.insert_editor(PythonEditor(parent=self))
+                self.insert_editor(PythonEditor(parent=self, autocomplete_list=self.apilist))
             else:
                 self.insert_editor(BaseEditor(parent=self))
 
@@ -146,7 +147,7 @@ class FiddleTabFile(QtGui.QWidget):
             self.filename = 'new_{}.py'.format(new_file_iter)
             self.extension = '.py'
             self._filepath = os.path.join(os.path.expanduser('~'), self.filename)
-            self.insert_editor(PythonEditor(parent=self))
+            self.insert_editor(PythonEditor(parent=self, autocomplete_list=self.apilist))
             new_file_iter += 1
             self._saved = False
 
@@ -158,6 +159,15 @@ class FiddleTabFile(QtGui.QWidget):
     def saved(self, state):
         self._saved = state
         self.editor_changed.emit()
+
+    @property
+    def apilist(self):
+        if self._apifile is not None:
+            with open(os.path.join(APP_DIR, 'apis', self._apifile), 'r') as fp:
+                api = fp.readlines()
+            return api
+        else:
+            return []
 
     def insert_editor(self, editor):
         if self.editor is not None and self.layout().indexOf(self.editor) >= 0:

@@ -2,6 +2,21 @@
 # Licensed under the terms of the MIT License
 # (see fiddle/__init__.py for details)
 
+py3_keywords = ['False', 'None', 'True', 'and', 'as', 'assert', 'break', 'class', 'continue', 'def', 'del', 'elif',
+                'else', 'except', 'finally', 'for', 'from', 'global', 'if', 'import', 'in', 'is', 'lambda', 'nonlocal',
+                'not', 'or', 'pass', 'raise', 'return', 'try', 'while', 'with', 'yield'] + ['self', 'cls']
+
+
+py2_keywords = ['and', 'as', 'assert', 'break', 'class', 'continue', 'def', 'del', 'elif', 'else', 'except', 'exec',
+                'finally', 'for', 'from', 'global', 'if', 'import', 'in', 'is', 'lambda', 'not', 'or', 'pass', 'print',
+                'raise', 'return', 'try', 'while', 'with', 'yield'] + ['self', 'cls']
+
+# All Python keywords between 2 and 3
+python_all_keywords = ['global', 'not', 'print', 'def', 'return', 'for', 'as', 'del', 'or', 'class', 'and', 'else',
+                       'exec', 'raise', 'elif', 'self', 'pass', 'if', 'try', 'from', 'import', 'with', 'while', 'yield',
+                       'break', 'lambda', 'assert', 'in', 'is', 'except', 'cls', 'continue', 'finally']
+
+
 py3_builtins = ['ArithmeticError', 'AssertionError', 'AttributeError', 'BaseException', 'BlockingIOError',
                 'BrokenPipeError', 'BufferError', 'BytesWarning', 'ChildProcessError', 'ConnectionAbortedError',
                 'ConnectionError', 'ConnectionRefusedError', 'ConnectionResetError', 'DeprecationWarning', 'EOFError',
@@ -66,3 +81,28 @@ py2_exceptions = ['ArithmeticError', 'AssertionError', 'AttributeError', 'BaseEx
                   'SystemError', 'SystemExit', 'TabError', 'TypeError', 'UnboundLocalError', 'UnicodeDecodeError',
                   'UnicodeEncodeError', 'UnicodeError', 'UnicodeTranslateError', 'UnicodeWarning', 'UserWarning',
                   'ValueError', 'Warning', 'WindowsError', 'ZeroDivisionError']
+
+
+# All Python __builtins__ between 2 and 3
+python_all_builtins = ['BrokenPipeError', 'round', 'bytes', 'staticmethod', 'IndentationError', 'dir', 'open', 'hex',
+                       'ConnectionResetError', '__debug__', 'set', 'None', 'UnicodeTranslateError', 'compile',
+                       'BytesWarning', 'RuntimeError', 'float', 'id', 'ZeroDivisionError', 'oct', 'EnvironmentError',
+                       '__import__', 'IOError', 'sorted', 'dict', 'iter', 'locals', 'complex', 'format', 'divmod',
+                       'zip', 'RuntimeWarning', 'copyright', 'delattr', 'tuple', 'FloatingPointError', 'frozenset',
+                       'globals', 'SyntaxWarning', 'IndexError', 'runfile', 'ValueError', 'FutureWarning', 'bin',
+                       'classmethod', 'EOFError', 'memoryview', 'issubclass', 'WindowsError', 'ImportWarning', 'abs',
+                       'next', 'UnicodeDecodeError', 'hash', 'ascii', 'ReferenceError', 'pow', 'FileExistsError', 'any',
+                       'getattr', 'sum', 'ProcessLookupError', 'MemoryError', 'help', 'slice', 'ConnectionAbortedError',
+                       'map', 'exit', '_', '__build_class__', '__loader__', 'filter', 'NameError', 'GeneratorExit',
+                       'max', 'NotImplemented', 'PermissionError', 'UnicodeWarning', 'property', '__spec__', 'all',
+                       'super', 'UnicodeError', 'ord', 'BaseException', 'Ellipsis', 'str', 'AttributeError',
+                       'ImportError', 'KeyboardInterrupt', 'UnicodeEncodeError', 'int', 'True', 'reversed', 'quit',
+                       'FileNotFoundError', 'SystemError', 'UnboundLocalError', 'StopIteration', 'False', 'KeyError',
+                       'OSError', 'len', 'vars', 'hasattr', 'input', 'object', '__doc__', 'LookupError', 'callable',
+                       'ArithmeticError', 'NotADirectoryError', 'ChildProcessError', 'bytearray', 'list', 'type',
+                       'TabError', 'execfile', 'isinstance', 'print', 'ResourceWarning', 'ConnectionRefusedError',
+                       'credits', 'setattr', 'repr', 'AssertionError', 'SyntaxError', 'Exception', 'ConnectionError',
+                       '__package__', 'UserWarning', 'exec', 'IsADirectoryError', 'NotImplementedError', 'SystemExit',
+                       'enumerate', 'eval', 'InterruptedError', 'DeprecationWarning', 'range', '__name__', 'TypeError',
+                       'PendingDeprecationWarning', 'min', 'BlockingIOError', 'BufferError', 'TimeoutError', 'Warning',
+                       'license', 'OverflowError', 'bool', 'chr']

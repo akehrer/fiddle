@@ -62,7 +62,7 @@ class MainWindow(QtGui.QMainWindow):
         self.pyconsole_output.anchorClicked.connect(self.load_anchor)
         self.pyconsole_process = None
         self.help_process = None
-        self.pyconsole_pyversion = None  # stores a tuple of the system Python's version
+        self.pyconsole_pyversion = ('3', '4','0')  # stores a tuple of the system Python's version
         self.start_pyconsole_process()
         self.start_pyconsole_help()
 
@@ -295,7 +295,7 @@ class MainWindow(QtGui.QMainWindow):
         else:
             self.terminate_pyconsole_process()
         # Clear any version information
-        self.pyconsole_pyversion = None
+        self.pyconsole_pyversion = ('3', '4','0')
         # Start the interactive console
         self.pyconsole_process.start(self.current_interpreter,  ['-i'])  # -i makes sure InteractiveConsole is started
 
@@ -392,7 +392,16 @@ class MainWindow(QtGui.QMainWindow):
             self.app.restoreOverrideCursor()
 
     def create_tab(self, filepath=None):
-        tab = FiddleTabFile(parent=self.documents_tabWidget, filepath=filepath)
+        if filepath is not None:
+            _, ext = os.path.splitext(filepath)
+        else:
+            # Defaults to Python files
+            ext = '.py'
+        if ext == '.py':
+            apifile = 'Python-{0}.{1}.api'.format(*self.pyconsole_pyversion)
+        else:
+            apifile = None
+        tab = FiddleTabFile(parent=self.documents_tabWidget, filepath=filepath, apifile=apifile)
         tab.editor_changed.connect(self.update_tab_title)
         tab.cursor_changed.connect(self.update_cursor_position)
         tab.find_wrapped.connect(self.handle_find_wrapped)
