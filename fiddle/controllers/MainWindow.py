@@ -12,7 +12,7 @@ from PyQt4 import QtCore, QtGui
 from fiddle import __version__
 from fiddle.views.MainWindow import Ui_MainWindow
 from fiddle.controllers.FiddleTabWidget import FiddleTabWidget, FiddleTabFile
-from fiddle.controllers.PyConsole import PyConsoleTextBrowser
+from fiddle.controllers.PyConsole import PyConsoleProcessBrowser
 from fiddle.controllers.ManageInterpretersDialog import ManageInterpretersDialog
 from fiddle.config import *
 from fiddle.helpers.builtins import *
@@ -57,26 +57,35 @@ class MainWindow(QtGui.QMainWindow):
         self.init_interpreters()
 
         # Initialize Python console
-        self.pyconsole_output = PyConsoleTextBrowser(self)
-        self.ui.pyConsoleLayout.insertWidget(0, self.pyconsole_output)
-        self.pyconsole_output.anchorClicked.connect(self.load_anchor)
-        self.pyconsole_process = None
+        # self.pyconsole_output = PyConsoleTextBrowser(self)
+        # self.ui.pyConsoleLayout.insertWidget(0, self.pyconsole_output)
+        # self.pyconsole_output.anchorClicked.connect(self.load_anchor)
+        # self.pyconsole_process = None
+        # self.pyconsole_pyversion = ''  # stores a tuple of the system Python's version
+        # self.start_pyconsole_process()
         self.help_process = None
-        self.pyconsole_pyversion = ('3', '4','0')  # stores a tuple of the system Python's version
-        self.start_pyconsole_process()
         self.start_pyconsole_help()
+
+        self.pyconsole = PyConsoleProcessBrowser(self, CONSOLE_PYTHON['path'], ['-i'])
+        self.ui.pyConsoleLayout.insertWidget(0, self.pyconsole)
+        self.pyconsole.anchorClicked.connect(self.load_anchor)
+        self.pyconsole_pyversion = self.pyconsole.py_version.split('.')
+        self.pyconsole.run()
 
         # Console text formats
         self.base_format = None
         self.error_format = None
         self.info_format = None
-        self.init_console_text_formats()
+        #self.init_console_text_formats()
 
         # Initialize run script console
-        self.runscript_console = PyConsoleTextBrowser(self)
+        # self.runscript_console = PyConsoleTextBrowser(self)
+        # self.ui.runScriptLayout.insertWidget(1, self.runscript_console)
+        # self.runscript_console.anchorClicked.connect(self.load_anchor)
+        # self.runscript_process = None
+        self.runscript_console = PyConsoleProcessBrowser(self)
         self.ui.runScriptLayout.insertWidget(1, self.runscript_console)
         self.runscript_console.anchorClicked.connect(self.load_anchor)
-        self.runscript_process = None
         self.runscript_tab = None
 
         # Initialize the search providers
@@ -283,50 +292,23 @@ class MainWindow(QtGui.QMainWindow):
         else:
             self.ui.statusbar.showMessage(self.tr('No Python executable at {0}').format(item['path']), 5000)
 
-    def start_pyconsole_process(self):
-        if self.pyconsole_process is None:
-            # Create a shell process
-            self.pyconsole_process = QtCore.QProcess(self.app)
-            self.pyconsole_process.setWorkingDirectory(self.current_interpreter_dir)
-            self.pyconsole_process.readyReadStandardError.connect(self.process_console_stderr)
-            self.pyconsole_process.readyReadStandardOutput.connect(self.process_console_stdout)
-            self.pyconsole_process.finished.connect(self.process_console_finished)
-            self.pyconsole_output.process = self.pyconsole_process
-        else:
-            self.terminate_pyconsole_process()
-        # Clear any version information
-        self.pyconsole_pyversion = ('3', '4','0')
-        # Start the interactive console
-        self.pyconsole_process.start(self.current_interpreter,  ['-i'])  # -i makes sure InteractiveConsole is started
-
     def restart_pyconsole_process(self):
         self.app.setOverrideCursor(QtCore.Qt.WaitCursor)
-        self.terminate_pyconsole_process()
-        self.pyconsole_output.clear()
-        self.start_pyconsole_process()
+        self.pyconsole.command = self.current_interpreter
+        self.pyconsole.args = ['-i']
+        self.pyconsole.restart()
         self.app.restoreOverrideCursor()
 
     def terminate_pyconsole_process(self, timeout=5000):
-        if self.pyconsole_process is not None and self.pyconsole_process.state() > 0:
-            self.print_data_to_pyconsole('\n', self.info_format)
-            self.print_data_to_pyconsole(self.tr('Python console is terminating...'), self.info_format)
-            self.pyconsole_output.repaint()  # Force message to show
-            self.pyconsole_process.write('exit()\n')
-            self.pyconsole_process.close()
-            if PLATFORM == 'win32':
-                self.pyconsole_process.kill()
-            else:
-                self.pyconsole_process.terminate()
-                if not self.pyconsole_process.waitForFinished(timeout):
-                    self.pyconsole_process.kill()
+        self.pyconsole.terminate(timeout=timeout)
 
     def start_pyconsole_help(self):
         if self.help_process is None:
             # Create a shell process
             self.help_process = QtCore.QProcess(self.app)
             self.help_process.setWorkingDirectory(self.current_interpreter_dir)
-            self.help_process.readyReadStandardError.connect(self.process_help_stderr)
-            self.help_process.readyReadStandardOutput.connect(self.process_help_stdout)
+            # self.help_process.readyReadStandardError.connect(self.process_help_stderr)
+            # self.help_process.readyReadStandardOutput.connect(self.process_help_stdout)
             self.help_process.finished.connect(self.process_help_finished)
         else:
             self.terminate_pyconsole_help()
@@ -342,9 +324,9 @@ class MainWindow(QtGui.QMainWindow):
 
     def terminate_pyconsole_help(self, timeout=5000):
         if self.help_process is not None and self.help_process.state() > 0:
-            self.print_data_to_runconsole('\n', self.info_format)
-            self.print_data_to_runconsole(self.tr('Python console is terminating...'), self.info_format)
-            self.runscript_console.repaint()  # Force message to show
+            # self.print_data_to_runconsole('\n', self.info_format)
+            # self.print_data_to_runconsole(self.tr('Python console is terminating...'), self.info_format)
+            # self.runscript_console.repaint()  # Force message to show
             self.help_process.close()
             if PLATFORM == 'win32':
                 self.help_process.kill()
@@ -354,16 +336,6 @@ class MainWindow(QtGui.QMainWindow):
                     self.help_process.kill()
 
     def run_current_script(self):
-        if self.runscript_process is None:
-            # Create a shell process
-            self.runscript_process = QtCore.QProcess(self.app)
-            self.runscript_process.setWorkingDirectory(self.runscript_tab.basepath)
-            self.runscript_process.readyReadStandardError.connect(self.process_runscript_stderr)
-            self.runscript_process.readyReadStandardOutput.connect(self.process_runscript_stdout)
-            self.runscript_process.finished.connect(self.process_runscript_finished)
-            self.runscript_console.process = self.runscript_process
-        else:
-            self.terminate_current_script()
         # Show the run tab
         self.ui.console_tabWidget.show()
         self.ui.console_tabWidget.setCurrentIndex(1)
@@ -374,22 +346,11 @@ class MainWindow(QtGui.QMainWindow):
             self.runscript_tab.save()
             self.set_current_run_command(self.runscript_tab)  # Update the command to the saved location
         command = self.ui.runScript_command.text()
-        self.runscript_process.start(command)
+        self.runscript_console.working_dir = self.runscript_tab.basepath
+        self.runscript_console.start(command)
 
     def terminate_current_script(self, timeout=2000):
-        if self.runscript_process is not None and self.runscript_process.state() > 0:
-            self.print_data_to_runconsole('\n', self.info_format)
-            self.print_data_to_runconsole(self.tr('Script is terminating...'), self.info_format)
-            self.runscript_console.repaint()  # Force message to show
-            self.app.setOverrideCursor(QtCore.Qt.WaitCursor)
-            self.runscript_process.close()
-            if PLATFORM == 'win32':
-                self.runscript_process.kill()
-            else:
-                self.runscript_process.terminate()
-                if not self.runscript_process.waitForFinished(timeout):
-                    self.runscript_process.kill()
-            self.app.restoreOverrideCursor()
+        self.runscript_console.terminate(timeout=timeout)
 
     def create_tab(self, filepath=None):
         if filepath is not None:
@@ -919,163 +880,6 @@ class MainWindow(QtGui.QMainWindow):
         qurl = QtCore.QUrl(url)
         QtGui.QDesktopServices.openUrl(qurl)
 
-    def print_data_to_pyconsole(self, data, fmt, html=False):
-        cursor = self.pyconsole_output.textCursor()
-        cursor.movePosition(QtGui.QTextCursor.End)
-        if html:
-            cursor.insertHtml(data)
-        else:
-            cursor.insertText(data, fmt)
-        cursor.movePosition(QtGui.QTextCursor.End)
-        self.pyconsole_output.ensureCursorVisible()
-
-    def print_data_to_runconsole(self, data, fmt, html=False):
-        cursor = self.runscript_console.textCursor()
-        cursor.movePosition(QtGui.QTextCursor.End)
-        if html:
-            cursor.insertHtml(data)
-        else:
-            cursor.insertText(data, fmt)
-        cursor.movePosition(QtGui.QTextCursor.End)
-        self.runscript_console.ensureCursorVisible()
-
-    def process_stderr_lines(self, lines, cursor):
-        """
-        Process lines from a Python interpreter stderr. For tracebacks additional information is added.
-
-        :param list lines:
-        :param QtGui.QTextCursor cursor:
-        :return:
-
-        Lines from stderr often contain traceback data. This function processes those lines and adds additional
-        information to help the user troubleshoot. For example links are created to error documentation and to lines
-        in source files where errors were raised. The output is entered on the text cursor provided by `cursor`.
-        """
-        for line in lines:
-            line = line + os.linesep  # Line separators were stripped off in the split, add them back
-            ll = line.lower()
-            ls = line.strip()
-            lsl = ls.lower()
-            if 'error' in ll and ll[0] != ' ':
-                # Information lines start with whitespace so they're not processed here
-                m = CONSOLE_RE_ERROR.search(line)
-                if m:
-                    groups = m.groups()
-                    error = groups[0]
-                    try:
-                        desc = line.split(error)
-                        link = '<a href="help://?object={0}&text={1}">{2}</a>'.format(error,
-                                                                                      urllib.parse.quote_plus(ls),
-                                                                                      error)
-                        if len(desc) > 1:
-                            cursor.insertText(desc[0], self.error_format)
-                            cursor.insertHtml(link)
-                            cursor.insertText(''.join(desc[1:]), self.error_format)
-                        else:
-                            cursor.insertHtml(link)
-                            cursor.insertText(''.join(desc), self.error_format)
-                        cursor.insertText(os.linesep, self.base_format)
-                    except ValueError:
-                        cursor.insertText(line, self.error_format)
-                else:
-                    cursor.insertText(line, self.error_format)
-            elif 'file' in lsl:
-                m = CONSOLE_RE_LINENUM.search(line)
-                if m:
-                    groups = m.groups()
-                    filepath = groups[1]
-                    linenum = groups[3]
-                    url_filepath = urllib.parse.quote_plus(filepath[1:-1])  # Strip leading and trailing quotes
-                    if 'stdin' in filepath:
-                        cursor.insertText(line, self.error_format)
-                    else:
-                        link = '<a href="goto://?filepath={0}&linenum={1}">{2}</a>&nbsp'.format(url_filepath,
-                                                                                                int(linenum),
-                                                                                                filepath)
-                        cursor.insertText(groups[0], self.error_format)
-                        cursor.insertHtml(link)
-                        cursor.insertText(''.join(groups[2:]), self.error_format)
-                else:
-                    cursor.insertText(line, self.error_format)
-            elif CONSOLE_PS1 in line:
-                cursor.insertText(ls + ' ', self.base_format)
-            elif CONSOLE_PS2 in line:
-                cursor.insertText(ls + ' ', self.base_format)
-            else:
-                cursor.insertText(line, self.error_format)
-
-    def process_console_stdout(self):
-        self.pyconsole_process.setReadChannel(QtCore.QProcess.StandardOutput)
-        data = self.pyconsole_process.readAll()
-        lines = data.data().decode().split(os.linesep)
-        for line in lines:
-            line = line + os.linesep  # Line separators were stripped off in the split, add them back
-            # Create clickable links
-            m = CONSOLE_RE_HTTP.findall(line)
-            if m:
-                linked = line
-                for g in m:
-                    linked = linked.replace(g, '<a href={0}>{0}</a>'.format(g))
-                self.print_data_to_pyconsole(linked, self.base_format, html=True)
-                self.print_data_to_pyconsole(os.linesep, self.base_format)
-            else:
-                self.print_data_to_pyconsole(line, self.base_format)
-
-    def process_console_stderr(self):
-        self.pyconsole_process.setReadChannel(QtCore.QProcess.StandardError)
-        data = self.pyconsole_process.readAll()
-        lines = data.data().decode().split(os.linesep)
-        cursor = self.pyconsole_output.textCursor()
-        cursor.movePosition(QtGui.QTextCursor.End)
-        self.process_stderr_lines(lines, cursor)
-        cursor.movePosition(QtGui.QTextCursor.End)
-        self.pyconsole_output.ensureCursorVisible()
-
-        # Get the version of Python running on the console
-        if self.pyconsole_pyversion is None:
-            banner = self.pyconsole_output.toPlainText().split(os.linesep)[0]
-            match = CONSOLE_RE_PYVER.search(banner)
-            if match:
-                self.pyconsole_pyversion = (int(match.group(1)), int(match.group(2)), int(match.group(3)))
-                self.lbl_pyversion.setText('Python {0}.{1}.{2}'.format(*self.pyconsole_pyversion))
-
-    def process_console_finished(self, code):
-        self.pyconsole_output.insertPlainText(os.linesep)
-        self.pyconsole_output.insertPlainText(self.tr('Exited with code {0}').format(code))
-        self.runscript_console.ensureCursorVisible()
-        self.pyconsole_process.close()
-
-    def process_runscript_stdout(self):
-        self.runscript_process.setReadChannel(QtCore.QProcess.StandardOutput)
-        data = self.runscript_process.readAll()
-        lines = data.data().decode().split(os.linesep)
-        for line in lines:
-            line = line + os.linesep  # Line separators were stripped off in the split, add them back
-            m = CONSOLE_RE_HTTP.findall(line)
-            if m:
-                linked = line
-                for g in m:
-                    linked = linked.replace(g, '<a href={0}>{0}</a>'.format(g))
-                self.print_data_to_runconsole(linked, self.base_format, html=True)
-                self.print_data_to_runconsole(os.linesep, self.base_format)
-            else:
-                self.print_data_to_runconsole(line, self.base_format)
-
-    def process_runscript_stderr(self):
-        self.runscript_process.setReadChannel(QtCore.QProcess.StandardError)
-        data = self.runscript_process.readAll()
-        lines = data.data().decode().split(os.linesep)
-        cursor = self.runscript_console.textCursor()
-        cursor.movePosition(QtGui.QTextCursor.End)
-        self.process_stderr_lines(lines, cursor)
-        cursor.movePosition(QtGui.QTextCursor.End)
-        self.runscript_console.ensureCursorVisible()
-
-    def process_runscript_finished(self, code):
-        self.print_data_to_runconsole(os.linesep, self.info_format)
-        self.print_data_to_runconsole(self.tr('Exited with code {0}').format(code), self.info_format)
-        self.runscript_process.close()
-
     def process_help_stdout(self):
         self.help_process.setReadChannel(QtCore.QProcess.StandardOutput)
         data = self.help_process.readAll()
@@ -1096,12 +900,6 @@ class MainWindow(QtGui.QMainWindow):
         self.runscript_console.ensureCursorVisible()
 
     def process_help_finished(self, code):
-        cursor = self.runscript_console.textCursor()
-        cursor.movePosition(QtGui.QTextCursor.End)
-        cursor.insertText(os.linesep, self.info_format)
-        cursor.insertText(self.tr('HELP: Exited with code {0}').format(code), self.info_format)
-        cursor.movePosition(QtGui.QTextCursor.End)
-        self.runscript_console.ensureCursorVisible()
         self.help_process.close()
 
     def _save_tab_dialog(self, tab):

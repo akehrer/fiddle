@@ -24,7 +24,7 @@ class FiddleConsolesTest(FiddleTestFixture):
         self.form.current_interpreter = ''
         self.form.current_interpreter_dir = ''
         self.form.restart_pyconsole_process()
-        self.assertEqual('', self.form.pyconsole_output.toPlainText())
+        self.assertEqual('', self.form.pyconsole.toPlainText())
         self.form.current_interpreter = old_int
         self.form.current_interpreter_dir = old_int_dir
 
@@ -47,13 +47,13 @@ class FiddleConsolesTest(FiddleTestFixture):
         Can ASCII text be sent to the Python console from the input widget?
         :return:
         """
-        self.form.pyconsole_output.clear()
-        console_pre_txt = self.form.pyconsole_output.toPlainText()
+        self.form.pyconsole.clear()
+        console_pre_txt = self.form.pyconsole.toPlainText()
         test_str = ascii_letters + digits + punctuation
-        QTest.keyClicks(self.form.pyconsole_output, "i = '{0}'".format(test_str))
-        QTest.keyClick(self.form.pyconsole_output, Qt.Key_Return)
+        QTest.keyClicks(self.form.pyconsole, "i = '{0}'".format(test_str))
+        QTest.keyClick(self.form.pyconsole, Qt.Key_Return)
 
-        console_post_txt = self.form.pyconsole_output.toPlainText()
+        console_post_txt = self.form.pyconsole.toPlainText()
         self.assertNotEqual(console_pre_txt, console_post_txt)
         self.assertTrue(test_str in console_post_txt)
 
@@ -65,20 +65,20 @@ class FiddleConsolesTest(FiddleTestFixture):
         test_strs = [ascii_letters, digits, punctuation]
         # Load the history
         for ts in test_strs:
-            QTest.keyClicks(self.form.pyconsole_output, "i = '{0}'".format(ts), delay=50)
-            QTest.keyClick(self.form.pyconsole_output, Qt.Key_Return, delay=200)
+            QTest.keyClicks(self.form.pyconsole, "i = '{0}'".format(ts), delay=50)
+            QTest.keyClick(self.form.pyconsole, Qt.Key_Return, delay=200)
 
     def test_console_NameError_link(self):
         """
         Does causing a NameError on the Python console result in a help//: link
         :return:
         """
-        self.form.pyconsole_output.clear()
-        console_pre_txt = self.form.pyconsole_output.toPlainText()
-        QTest.keyClick(self.form.pyconsole_output, Qt.Key_I, delay=100)
-        QTest.keyClick(self.form.pyconsole_output, Qt.Key_Return, delay=200)
-        console_post_txt = self.form.pyconsole_output.toPlainText()
-        console_post_html = self.form.pyconsole_output.toHtml()
+        self.form.pyconsole.clear()
+        console_pre_txt = self.form.pyconsole.toPlainText()
+        QTest.keyClick(self.form.pyconsole, Qt.Key_I, delay=100)
+        QTest.keyClick(self.form.pyconsole, Qt.Key_Return, delay=200)
+        console_post_txt = self.form.pyconsole.toPlainText()
+        console_post_html = self.form.pyconsole.toHtml()
         self.assertNotEqual(console_pre_txt, console_post_txt)
         self.assertTrue('href="help://?object=NameError' in console_post_html)
 
@@ -135,7 +135,7 @@ class FiddleConsolesTest(FiddleTestFixture):
         :return:
         """
         self.form.terminate_pyconsole_process()
-        self.assertEqual(self.form.pyconsole_process.state(), 0)
+        self.assertEqual(self.form.pyconsole.process.state(), 0)
 
     def test_halt_help(self):
         """
@@ -155,10 +155,10 @@ class FiddleConsolesTest(FiddleTestFixture):
         cmd = self.form.ui.runScript_command.text()
         self.assertIn('run_forever.py', cmd)
         self.form.ui.actionRun_Current_Script.trigger()
-        self.assertGreater(self.form.runscript_process.state(), 0)
+        self.assertGreater(self.form.runscript_console.process.state(), 0)
         QTest.qWait(200)
         self.form.terminate_current_script()
-        self.assertEqual(self.form.runscript_process.state(), 0)
+        self.assertEqual(self.form.runscript_console.process.state(), 0)
 
 
 if __name__ == "__main__":
