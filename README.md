@@ -39,6 +39,13 @@ If you want to run the source directly, installation instructions for the three 
  - [autopep8](https://pypi.python.org/pypi/autopep8) - to clean Python files formatting
  - [pyflakes](https://pypi.python.org/pypi/pyflakes) - to check Python files for errors
 
+## Contribute
+Contirbutions to the development of fiddle are welcome from anyone. Here are a few ways to help out:
+
+  - There is an open mailing list at [fiddle-discuss](https://groups.google.com/forum/#!forum/fiddle-discuss) where we talk about all things related to fiddle.
+  - If you have found a bug please submit an [issue](https://github.com/akehrer/fiddle/issues)
+  - If you would like to contribute code please base your feature branch off of `master` and make sure all tests pass before submitting a pull request
+
 
 ## License
 fiddle is released under the MIT License, see [LICENSE](./LICENSE) for more information.
