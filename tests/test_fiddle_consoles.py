@@ -35,7 +35,7 @@ class FiddleConsolesTest(FiddleTestFixture):
         """
         old_int = self.form.current_interpreter
         old_int_dir = self.form.current_interpreter_dir
-        self.form.current_interpreter = ''
+        self.form.current_interpreter = {'path': ''}  # Interpreter with empty path
         self.form.current_interpreter_dir = ''
         self.form.restart_pyconsole_help()
         self.assertEqual('', self.form.ui.helpBrowser.page().mainFrame().toPlainText())
@@ -89,7 +89,7 @@ class FiddleConsolesTest(FiddleTestFixture):
         """
         tab = self.form.documents_tabWidget.currentWidget()
         cmd = self.form.ui.runScript_command.text()
-        self.assertIn(self.form.current_interpreter, cmd)
+        self.assertIn(self.form.current_interpreter['path'], cmd)
         self.assertIn(tab.filepath, cmd)
 
     def test_runscript_command_openfile(self):

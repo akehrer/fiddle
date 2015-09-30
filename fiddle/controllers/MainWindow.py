@@ -35,12 +35,6 @@ class MainWindow(QtGui.QMainWindow):
         # Initialize actions
         self.init_actions()
 
-        # Initialize statusbar
-        self.lbl_pyversion = None
-        self.lbl_current_position = None
-        self.lbl_encoding = None
-        self.init_statusbar()
-
         # Hide the help pane
         self.ui.helpPane.hide()
 
@@ -51,38 +45,23 @@ class MainWindow(QtGui.QMainWindow):
         self.init_find_replace_events()
 
         # Initialize interpreters
-        self.current_interpreter = CONSOLE_PYTHON['path']
+        self.current_interpreter = CONSOLE_PYTHON
         self.current_interpreter_dir = CONSOLE_PYTHON_DIR
-        self.interpreters = []
+        self.interpreters = CONSOLE_PYTHON_INTERPRETERS
         self.init_interpreters()
 
-        # Initialize Python console
-        # self.pyconsole_output = PyConsoleTextBrowser(self)
-        # self.ui.pyConsoleLayout.insertWidget(0, self.pyconsole_output)
-        # self.pyconsole_output.anchorClicked.connect(self.load_anchor)
-        # self.pyconsole_process = None
-        # self.pyconsole_pyversion = ''  # stores a tuple of the system Python's version
-        # self.start_pyconsole_process()
+        # Initialize Python help console
         self.help_process = None
         self.start_pyconsole_help()
 
-        self.pyconsole = PyConsoleProcessBrowser(self, CONSOLE_PYTHON['path'], ['-i'])
+        # Initialize Python console (REPL)
+        self.pyconsole = PyConsoleProcessBrowser(self, CONSOLE_PYTHON, ['-i'])
         self.ui.pyConsoleLayout.insertWidget(0, self.pyconsole)
         self.pyconsole.anchorClicked.connect(self.load_anchor)
-        self.pyconsole_pyversion = self.pyconsole.py_version.split('.')
+        self.pyconsole_pyversion = CONSOLE_PYTHON['version']
         self.pyconsole.run()
 
-        # Console text formats
-        self.base_format = None
-        self.error_format = None
-        self.info_format = None
-        #self.init_console_text_formats()
-
         # Initialize run script console
-        # self.runscript_console = PyConsoleTextBrowser(self)
-        # self.ui.runScriptLayout.insertWidget(1, self.runscript_console)
-        # self.runscript_console.anchorClicked.connect(self.load_anchor)
-        # self.runscript_process = None
         self.runscript_console = PyConsoleProcessBrowser(self)
         self.ui.runScriptLayout.insertWidget(1, self.runscript_console)
         self.runscript_console.anchorClicked.connect(self.load_anchor)
@@ -91,6 +70,15 @@ class MainWindow(QtGui.QMainWindow):
         # Initialize the search providers
         self.search_url = ''
         self.init_search_providers()
+
+        # Initialize statusbar
+        self.lbl_pytype = None
+        self.lbl_pyversion = None
+        self.lbl_current_position = None
+        self.lbl_encoding = None
+        self.pyicon = QtGui.QPixmap(":/icons/icons/python_twosnakes.png").scaledToHeight(16, QtCore.Qt.SmoothTransformation)
+        self.pyicon_venv = QtGui.QPixmap(":/icons/icons/python_twosnakes_v.png").scaledToHeight(16, QtCore.Qt.SmoothTransformation)
+        self.init_statusbar()
 
         # Initialize the TabWidget
         self.documents_tabWidget = FiddleTabWidget(self)
@@ -215,13 +203,13 @@ class MainWindow(QtGui.QMainWindow):
         ag.addAction(a)
         self.ui.menuPython_Interpreter.addAction(a)
         # Add additional interpreters
-        for item in CONSOLE_PYTHON_INTERPRETERS:
+        for item in self.interpreters:
             a = QtGui.QAction(self)
             a.setData(item)
             if item['virtualenv']:
                 a.setText(self._elide_filepath(os.path.dirname(item['path']), threshold=50, margin=10))
             else:
-                if PLATFORM == 'win32':
+                if sys.platform == 'win32':
                     a.setText(os.path.dirname(item['path']))
                 else:
                     a.setText(item['path'])
@@ -236,26 +224,18 @@ class MainWindow(QtGui.QMainWindow):
                 self.recent_files = fp.readlines()
         self.create_recent_files_menu()
 
-    def init_console_text_formats(self):
-        # Base format (defined in Qt Designer)
-        self.base_format = self.pyconsole_output.currentCharFormat()
-        self.base_format.setForeground(QtGui.QColor(CONSOLE_COLOR_BASE))
-
-        # Error format for data on stderr
-        self.error_format = QtGui.QTextCharFormat(self.base_format)
-        self.error_format.setForeground(QtGui.QColor(CONSOLE_COLOR_ERROR))
-
-        # Info format for data
-        self.info_format = QtGui.QTextCharFormat(self.base_format)
-        self.info_format.setForeground(QtGui.QColor(CONSOLE_COLOR_INFO))
-
     def init_statusbar(self):
         # Statusbar
         # you can't add widgets to status bar in Qt Designer, so do it here
+        self.lbl_pytype = QtGui.QLabel()
+        self.lbl_pytype.setMargin(5)
+        self.ui.statusbar.addPermanentWidget(self.lbl_pytype)
+        self.lbl_pytype.setPixmap(self.pyicon)
+
         self.lbl_pyversion = QtGui.QLabel()
         self.lbl_pyversion.setMargin(5)
         self.ui.statusbar.addPermanentWidget(self.lbl_pyversion)
-        self.lbl_pyversion.setText("")
+        self.lbl_pyversion.setText('.'.join(self.current_interpreter['version']))
 
         self.lbl_encoding = QtGui.QLabel()
         self.lbl_encoding.setMargin(5)
@@ -283,20 +263,26 @@ class MainWindow(QtGui.QMainWindow):
         action = self.sender()
         item = action.data()
         if os.path.exists(item['path']):
-            self.current_interpreter = os.path.normpath(item['path'])
-            self.current_interpreter_dir = os.path.dirname(self.current_interpreter)
+            self.current_interpreter = item
+            self.current_interpreter_dir = os.path.dirname(self.current_interpreter['path'])
             self.restart_pyconsole_process()
             self.restart_pyconsole_help()
             idx = self.documents_tabWidget.currentIndex()
             self.handle_tab_change(idx)
+            self.lbl_pyversion.setText('.'.join(self.current_interpreter['version']))
+            if self.current_interpreter['virtualenv']:
+                self.lbl_pytype.setPixmap(self.pyicon_venv)
+            else:
+                self.lbl_pytype.setPixmap(self.pyicon)
         else:
             self.ui.statusbar.showMessage(self.tr('No Python executable at {0}').format(item['path']), 5000)
 
     def restart_pyconsole_process(self):
         self.app.setOverrideCursor(QtCore.Qt.WaitCursor)
-        self.pyconsole.command = self.current_interpreter
+        self.pyconsole.interpreter = self.current_interpreter
         self.pyconsole.args = ['-i']
         self.pyconsole.restart()
+        self.pyconsole_pyversion = self.pyconsole.py_version
         self.app.restoreOverrideCursor()
 
     def terminate_pyconsole_process(self, timeout=5000):
@@ -307,13 +293,11 @@ class MainWindow(QtGui.QMainWindow):
             # Create a shell process
             self.help_process = QtCore.QProcess(self.app)
             self.help_process.setWorkingDirectory(self.current_interpreter_dir)
-            # self.help_process.readyReadStandardError.connect(self.process_help_stderr)
-            # self.help_process.readyReadStandardOutput.connect(self.process_help_stdout)
             self.help_process.finished.connect(self.process_help_finished)
         else:
             self.terminate_pyconsole_help()
         # Start the pydoc help server
-        self.help_process.start(self.current_interpreter, ['-m', 'pydoc', '-p', str(CONSOLE_HELP_PORT)])
+        self.help_process.start(self.current_interpreter['path'], ['-m', 'pydoc', '-p', str(CONSOLE_HELP_PORT)])
 
     def restart_pyconsole_help(self):
         self.app.setOverrideCursor(QtCore.Qt.WaitCursor)
@@ -324,11 +308,8 @@ class MainWindow(QtGui.QMainWindow):
 
     def terminate_pyconsole_help(self, timeout=5000):
         if self.help_process is not None and self.help_process.state() > 0:
-            # self.print_data_to_runconsole('\n', self.info_format)
-            # self.print_data_to_runconsole(self.tr('Python console is terminating...'), self.info_format)
-            # self.runscript_console.repaint()  # Force message to show
             self.help_process.close()
-            if PLATFORM == 'win32':
+            if sys.platform == 'win32':
                 self.help_process.kill()
             else:
                 self.help_process.terminate()
@@ -644,12 +625,12 @@ class MainWindow(QtGui.QMainWindow):
 
         :return:
         """
-        dialog = ManageInterpretersDialog(self)
+        dialog = ManageInterpretersDialog(self, self.interpreters)
         ret = dialog.exec_()
-        if ret == QtGui.QDialog.Accepted:
+        if ret == dialog.Accepted:
             with open('interpreters.json', 'w') as fp:
-                CONSOLE_PYTHON_INTERPRETERS = dialog.temp_interpreters
-                json.dump(CONSOLE_PYTHON_INTERPRETERS, fp)
+                self.interpreters = dialog.temp_interpreters
+                json.dump(self.interpreters, fp)
             self.init_interpreters()
 
     def find_in_file(self):
@@ -732,10 +713,10 @@ class MainWindow(QtGui.QMainWindow):
 
     def set_current_run_command(self, tab):
         # set the run script command
-        if PLATFORM == 'win32':
-            command = '{0} "{1}" '.format(self.current_interpreter, tab.filepath)
+        if sys.platform == 'win32':
+            command = '{0} "{1}" '.format(self.current_interpreter['path'], tab.filepath)
         else:
-            command = '{0} {1} '.format(self.current_interpreter, tab.filepath)
+            command = '{0} {1} '.format(self.current_interpreter['path'], tab.filepath)
         self.ui.runScript_command.setText(command)
         self.ui.runScript_command.setToolTip(command)
         self.runscript_tab = tab
@@ -761,7 +742,7 @@ class MainWindow(QtGui.QMainWindow):
             tab = self.documents_tabWidget.currentWidget()
             if tab:
                 # set the run script command
-                if PLATFORM == 'win32':
+                if sys.platform == 'win32':
                     command = '{0} "{1}" '.format(self.current_interpreter, tab.filepath)
                 else:
                     command = '{0} {1} '.format(self.current_interpreter, tab.filepath)

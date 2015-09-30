@@ -7,10 +7,13 @@ import json
 import logging
 import os
 import re
-import subprocess
 import sys
 
-PLATFORM = sys.platform
+# Import Qt modules
+from PyQt4 import QtGui
+
+from fiddle.helpers import find_python_exe, check_virtualenv, get_python_version
+
 LOG_LEVEL = logging.DEBUG
 
 ABOUT_FIDDLE = """
@@ -23,21 +26,6 @@ Silk icons CC-BY Mark James
 
 See the LICENSE file for additional license information
 """
-
-
-def find_python_exe():
-    """
-    Find the path to the system's Python executable
-    :return: str
-    """
-    try:
-        if PLATFORM == 'win32':
-            p = subprocess.check_output(['where', 'python'])
-        else:
-            p = subprocess.check_output(['which', 'python'])
-        return p.strip().decode('utf8')
-    except subprocess.CalledProcessError:
-        return ''
 
 
 # Determine if application is a script file or frozen exe
@@ -60,11 +48,11 @@ FILE_TYPES = ['fiddle Files (*.py *.html *.htm *.js *.css)',
               'All Files (*.*)']
 
 # Editor configuration
-if PLATFORM == 'win32':
+if sys.platform == 'win32':
     EDITOR_FONT = 'Consolas'
     EDITOR_FONT_SIZE = 10
     WINDOW_FONT_SIZE = 15
-elif PLATFORM == 'darwin':
+elif sys.platform == 'darwin':
     EDITOR_FONT = 'Menlo'
     EDITOR_FONT_SIZE = 12
     WINDOW_FONT_SIZE = 13
@@ -128,8 +116,11 @@ QDockWidget QToolButton {
 """ % WINDOW_FONT_SIZE
 
 # Python Console Configuration
+_sys_python = find_python_exe()
 CONSOLE_HOST = '127.0.0.1'
-CONSOLE_PYTHON = {'path': find_python_exe(), 'virtualenv': False}
+CONSOLE_PYTHON = {'path': _sys_python,
+                  'virtualenv': check_virtualenv(_sys_python),
+                  'version': get_python_version(_sys_python)}
 CONSOLE_PYTHON_DIR = os.path.dirname(CONSOLE_PYTHON['path'])
 CONSOLE_PS1 = getattr(sys, "ps1", ">>> ")
 CONSOLE_PS2 = getattr(sys, "ps2", "... ")
@@ -154,7 +145,10 @@ except (ValueError, FileNotFoundError):
     HELP_WEB_SEARCH_SOURCES = [{'name': 'Google',
                                 'query_tmpl': 'https://www.google.com/search?q={query}'}]
 
-# Python Interpreters Configuration
+# Python Interpreters are a dict containing:
+#   path -> string with path to executable
+#   virtualenv -> boolean for whether or not the interpreter is in a virtual environment
+#   version -> list containing [major, minor, patch] version of the executable
 try:
     with open('interpreters.json') as fp:
         CONSOLE_PYTHON_INTERPRETERS = json.load(fp)

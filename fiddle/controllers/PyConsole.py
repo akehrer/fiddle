@@ -11,18 +11,20 @@ from fiddle.config import *
 
 
 class PyConsoleProcessBrowser(QtGui.QTextBrowser):
-    def __init__(self, parent=None, command='', args=None):
+    def __init__(self, parent=None, interpreter=None, args=None):
         super(PyConsoleProcessBrowser, self).__init__(parent)
         self.parent = parent
 
         # QProcess parameters
         self.process = QtCore.QProcess()
+        self._interperter = None
         self._command = ''
         self._command_dir = ''
-        self._py_version = ''
         self._working_dir = ''
         self.args = [] if args is None else args
-        self.command = command
+        self.interpreter = interpreter
+        self.py_version = ''
+        self.py_is_venv = False
 
         self.process.readyReadStandardError.connect(self._process_stderr)
         self.process.readyReadStandardOutput.connect(self._process_stdout)
@@ -55,13 +57,25 @@ class PyConsoleProcessBrowser(QtGui.QTextBrowser):
         self.info_format.setForeground(QtGui.QColor(CONSOLE_COLOR_INFO))
 
     @property
+    def interpreter(self):
+        return self._interperter
+
+    @interpreter.setter
+    def interpreter(self, val):
+        if type(val) is dict:
+            self._interperter = val
+            self.command = self._interperter['path']
+            self.py_is_venv = self._interperter['virtualenv']
+            self.py_version = self._interperter['version']
+
+    @property
     def command(self):
         return self._command
 
     @command.setter
     def command(self, cmd):
         if not cmd == self._command:
-            # Update and restart
+            # Update
             self._command = cmd
             self._command_dir = os.path.dirname(cmd)
 
@@ -75,19 +89,6 @@ class PyConsoleProcessBrowser(QtGui.QTextBrowser):
     def working_dir(self, path_str):
         self._working_dir = path_str
         self.process.setWorkingDirectory(path_str)
-
-    @property
-    def py_version(self):
-        if self._py_version == '':
-            try:
-                p = subprocess.Popen([self._command, '-c', 'import sys; print(sys.version)'],
-                                     stderr=subprocess.PIPE,
-                                     stdout=subprocess.PIPE)
-                out, err = p.communicate(timeout=1)
-                self._py_version = out.decode().strip()
-            except subprocess.TimeoutExpired:
-                self._py_version = ''
-        return self._py_version
 
     def keyPressEvent(self, event):
         if self.process.state() == self.process.Running:

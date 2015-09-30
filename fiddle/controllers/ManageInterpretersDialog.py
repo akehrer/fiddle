@@ -8,27 +8,29 @@ import json
 import logging
 
 # Import Qt modules
-from PyQt4 import QtCore, QtGui
+from PyQt4 import QtGui
 
 # Import application modules
 from fiddle.views.ManageInterpretersDialog import Ui_manageInterpreters_Dialog
 
-from fiddle.config import PLATFORM, APP_DIR, CONSOLE_PYTHON, CONSOLE_PYTHON_INTERPRETERS
+from fiddle.config import CONSOLE_PYTHON, WINDOW_STYLE
+from fiddle.helpers import check_virtualenv, get_python_version
 
 # Set up the logger
 logger = logging.getLogger(__name__)
 
 
 class ManageInterpretersDialog(QtGui.QDialog):
-    def __init__(self, parent=None):
-        super(ManageInterpretersDialog, self).__init__()
+    def __init__(self, parent=None, interpreters=None):
+        super(ManageInterpretersDialog, self).__init__(parent)
 
         self.parent = parent
 
         self.ui = Ui_manageInterpreters_Dialog()
         self.ui.setupUi(self)
+        self.setStyleSheet(WINDOW_STYLE)
 
-        self.temp_interpreters = CONSOLE_PYTHON_INTERPRETERS
+        self.temp_interpreters = [] if interpreters is None else interpreters
 
         self.py_icon = QtGui.QIcon()
         self.py_icon.addPixmap(QtGui.QPixmap(":/icons/icons/python_twosnakes.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -51,6 +53,7 @@ class ManageInterpretersDialog(QtGui.QDialog):
         for item in self.temp_interpreters:
             w = QtGui.QListWidgetItem()
             w.setText(item['path'])
+            w.setData(32, item)
             if item['virtualenv']:
                 w.setIcon(self.pyvenv_icon)
             else:
@@ -61,18 +64,13 @@ class ManageInterpretersDialog(QtGui.QDialog):
         filepath = QtGui.QFileDialog.getOpenFileName(None,
                                                      None,
                                                      '/',
-                                                     'Python Interpreters (python* ipython*);;All Files (*.*)')
+                                                     'Python Interpreters (python* ipython*)')
         if filepath != '':
             # Check for executable
             if os.path.isfile(filepath) and os.access(filepath, os.X_OK):
-                interpreter = {'path': filepath, 'virtualenv': False}
-                # Check for virtual environment scripts
-                basepath, filename = os.path.split(filepath)
-                files = os.listdir(basepath)
-                for f in files:
-                    if f.startswith('activate'):
-                        interpreter['virtualenv'] = True
-                        break
+                interpreter = {'path': filepath,
+                               'virtualenv': check_virtualenv(filepath),
+                               'version': get_python_version(filepath)}
                 self.temp_interpreters.append(interpreter)
                 self.init_elements()
 
@@ -82,6 +80,7 @@ class ManageInterpretersDialog(QtGui.QDialog):
         self.update_temp_interpreters()
 
     def update_temp_interpreters(self):
-        self.temp_interpreters = []
+        new_order = []
         for i in range(self.ui.pyInterpreters_List.count()):
-            self.temp_interpreters.append(self.ui.pyInterpreters_List.item(i).text())
+            new_order.append(self.ui.pyInterpreters_List.item(i).data(32))
+        self.temp_interpreters = new_order

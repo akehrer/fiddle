@@ -3,15 +3,15 @@
 # (see fiddle/__init__.py for details)
 
 # Import standard library modules
-import os
+import sys
 
 # Import additional modules
 import chardet
 
-from PyQt4 import QtCore, QtGui
+from PyQt4 import QtGui
 
 from fiddle.controllers.Editors import *
-from fiddle.config import FILE_TYPES, PLATFORM
+from fiddle.config import FILE_TYPES
 
 # An iterator to update as the user creates new files
 new_file_iter = 1
@@ -64,7 +64,7 @@ class FiddleTabWidget(QtGui.QTabWidget):
     def _insert_list_of_files(self, file_list):
         for filepath in file_list:
             if filepath.isLocalFile():
-                if 'win32' in PLATFORM:
+                if 'win32' in sys.platform:
                 # mimedata path includes a leading slash that confuses copyfile on windows
                 # http://stackoverflow.com/questions/2144748/is-it-safe-to-use-sys-platform-win32-check-on-64-bit-python
                     fpath = filepath.path()[1:]
